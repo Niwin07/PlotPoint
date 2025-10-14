@@ -1,0 +1,73 @@
+
+/*footer*/
+.footer {
+    background-color: var(--transparente1);
+    padding: 3rem 2rem;
+    margin: 0 auto;
+    max-width: 1200px;
+}
+
+.footer .box-footer {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
+    gap: 1.5rem;
+
+}
+
+.footer .box-footer .box-info h3 {
+    font-size: 2.5rem;
+    color: var(--texto);
+    padding: 1rem 0;
+}
+
+.footer .box-footer .box-info a {
+    display: block;
+    font-size: 1.5rem;
+    color: var(--texto);
+    padding: 1rem 0;
+}
+
+.footer .box-footer .box-info a i {
+    color: var(--secundario1);
+    padding-right: .5rem;
+}
+
+.footer .box-footer .box-info a:hover i {
+    padding-right: 2rem;
+}
+
+.footer .redes {
+    padding: 1rem 0;
+    text-align: center;
+}
+
+.footer .redes a {
+    height: 5rem;
+    width: 5rem;
+    line-height: 5rem;
+    font-size: 2rem;
+    color: var(--white);
+    background-color: var(--secundario2);
+    margin: 0 .3rem;
+    border-radius: 50%;
+}
+
+.footer .redes a:hover {
+   
+    background-color: var(--texto);
+}
+
+.footer .credito {
+    margin-top: 2rem;
+    padding: 0 1rem;
+    padding-top: 2.5rem;
+    font-size: 2rem;
+    color: var(--texto);
+    text-align: center;
+}
+
+.footer .credito span {
+    color: var(--secundario3);
+}
+
+/*fin footer*/
