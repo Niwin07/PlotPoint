@@ -1,37 +1,35 @@
 import React, { useState } from 'react';
+import useUsuario from '../hooks/useUsuario';
 import '../css/crearcuenta.css';
 
 const Signup = () => {
-    const [datos, setDatos] = useState({
-        nombres: '',
-        emails: '',
-        contraseñas: '',
-        terminos: false
-    }); // Estado para los datos del formulario
+    const [usuario, setDato] = useUsuario();
+    const [terminos, setTerminos] = useState(false);
     const [errores, setErrores] = useState({});
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-        setDatos({
-            ...datos,
-            [name]: type === 'checkbox' ? checked : value
-        });
-    }; // Maneja los cambios en los inputs
+        if (name === 'terminos') {
+            setTerminos(checked);
+        } else {
+            setDato(name, value);
+        }
+    };
 
     const validarValores = (e) => {
         e.preventDefault();
         let erroresTemp = {};
 
-        if (!datos.nombres.trim() || datos.nombres.length < 6) {
+        if (!usuario.nombres.trim() || usuario.nombres.length < 6) {
             erroresTemp.nombres = 'El nombre de usuario debe tener al menos 6 caracteres';
         }
-        if (!datos.emails.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,4})+$/)) {
+        if (!usuario.emails.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,4})+$/)) {
             erroresTemp.emails = 'Correo electrónico inválido';
         }
-        if (datos.contraseñas.length < 6) {
+        if (usuario.contraseñas.length < 6) {
             erroresTemp.contraseñas = 'La contraseña debe tener al menos 6 caracteres';
         }
-        if (!datos.terminos) {
+        if (!terminos) {
             erroresTemp.terminos = 'Debes aceptar los términos y condiciones';
         }
 
@@ -39,7 +37,8 @@ const Signup = () => {
 
         if (Object.keys(erroresTemp).length === 0) {
             // Aquí puedes enviar los datos al backend
-            console.log('Datos válidos:', datos);
+            window.location.href = '/inicio'; 
+            console.log('Datos válidos:', { ...usuario, terminos });
         }
     };
 
@@ -55,7 +54,7 @@ const Signup = () => {
                                 name="nombres"
                                 placeholder="Nombre de usuario"
                                 className="input"
-                                value={datos.nombres}
+                                value={usuario.nombres}
                                 onChange={handleChange}
                                 required
                             />
@@ -65,7 +64,7 @@ const Signup = () => {
                                 name="emails"
                                 placeholder="Correo electronico"
                                 className="input"
-                                value={datos.emails}
+                                value={usuario.emails}
                                 onChange={handleChange}
                                 required
                             />
@@ -75,7 +74,7 @@ const Signup = () => {
                                 name="contraseñas"
                                 placeholder="Contraseña"
                                 className="input"
-                                value={datos.contraseñas}
+                                value={usuario.contraseñas}
                                 onChange={handleChange}
                                 required
                             />
@@ -85,7 +84,7 @@ const Signup = () => {
                             type="checkbox"
                             id="acepto-terminos"
                             name="terminos"
-                            checked={datos.terminos}
+                            checked={terminos}
                             onChange={handleChange}
                             required
                         />
@@ -93,7 +92,7 @@ const Signup = () => {
                             Acepto los <a href="/terminosycondiciones">términos y condiciones</a>
                         </label>
                         {errores.terminos && <span className="error">{errores.terminos}</span>}
-                        <input type="submit" className="btn" value="Registrarse" />
+                        <input type="submit" className="btn" value="REGISTRARSE" />
                         <p>¿Ya tienes una cuenta? <span><a href="/iniciarsesion">Iniciar sesión</a></span></p>
                     </div>
                 </form>

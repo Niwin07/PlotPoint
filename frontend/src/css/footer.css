@@ -18,13 +18,15 @@
     font-size: 2.5rem;
     color: var(--texto);
     padding: 1rem 0;
+    font-weight: 500;
 }
 
 .footer .box-footer .box-info a {
     display: block;
-    font-size: 1.5rem;
+    font-size: 1.7rem;
     color: var(--texto);
     padding: 1rem 0;
+    font-weight: 500;
 }
 
 .footer .box-footer .box-info a i {
@@ -58,12 +60,13 @@
 }
 
 .footer .credito {
-    margin-top: 2rem;
+    
     padding: 0 1rem;
     padding-top: 2.5rem;
     font-size: 2rem;
     color: var(--texto);
     text-align: center;
+    font-weight: 500;
 }
 
 .footer .credito span {

@@ -64,16 +64,17 @@
 }
 .signup .row .formulario .box label{
     
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     color: var(--light-color);
     margin: 5px;
+    
 }
 .signup .row .formulario .box span a{
     color: var(--secundario2);
     cursor: pointer;
 }
 .signup .row .formulario .box p{
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     color: var(--light-color);
     padding-top: 1rem;
 }
@@ -81,6 +82,7 @@
     font-size: 3rem;
     margin-bottom: 2rem;
     color: var(--texto);
+    font-weight: 600;
 }
 .signup .row .formulario .flex{
     display: flex;
