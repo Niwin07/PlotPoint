@@ -1,0 +1,83 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inria+Serif:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css');
+* {
+    /*font-family: "Inter", sans-serif;*/
+    font-family: 'Inria Serif', serif;
+    font-optical-sizing: auto;
+
+
+}
+.appBase{
+    display: grid;
+    min-height: 100dvh;
+    grid-template-rows: auto 1fr auto;
+}
+
+:root {
+    
+    --blue: #ffffff;
+    --principal: #FEC87B;
+    --texto: #333333;
+    --fondo: #EBEBEB;
+    --secundario1: #E54D3F;
+    --secundario2: #0087DD;
+    --secundario3: #FFB408;
+    --transparente1: rgba(255, 255, 255, 0);
+    --transparent: #000000;
+    --transparente: rgba(255, 255, 255, 0.103);
+    --black: #000000;
+    --white: #FFF;
+    --light-color: #878585;
+    --light-bg: #f4f4f4;
+    --box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .1);
+    --border: .1rem solid rgba(0, 0, 0, .3);
+    --gradient: linear-gradient(90deg, var(--cyan), var(--blue));
+    --gradient-hover: linear-gradient(90deg, var(--blue), var(--cyan));
+
+}
+p{
+  /*font-family: 'Inria Serif', serif;*/
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+ 
+}
+a{
+    
+    font-weight: 700;
+  font-style: normal;
+    /*color: rgba(255, 255, 255, 0.788);*/
+ 
+}
+
+html {
+    background-image: url('https://i.ibb.co/d4QhKXyq/Agregar-un-t-tulo-20251010-182342-0000.png') ;
+    background-size: cover;
+    /*background-position: center*/
+    font-size: 62.5%;
+    scroll-behavior: smooth;
+    scroll-padding-top: 9rem;
+    /*background: #1A1311;
+    /* fallback for old browsers */
+    /*background: -webkit-linear-gradient(to right, #373B44, #4286f4);  /* Chrome 10-25, Safari 5.1-6 */
+    /*background: linear-gradient(to right, #373B44, #4286f4); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+
+}
+
+
+html, body {
+    
+
+    margin: 0;
+    /* Elimina el margen por defecto del body */
+    padding: 0;
+    /* Elimina el padding por defecto del body */
+    height: 100vh;
+    /* Asegura que el body ocupe toda la altura de la ventana */
+    
+
+}
+
+
