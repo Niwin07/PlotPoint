@@ -1,60 +1,90 @@
-// api/usuarios/login.js
 const router = require('express').Router();
 const jwt = require('jsonwebtoken');
 const { verificarPass } = require('@damianegreco/hashpass');
 const db = require('../../conexion');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'tu_clave_secreta_segura';
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
 
-router.post('/', function(req, res, next){
-    const {user, pass} = req.body;
+router.post('/', async function(req, res, next) {
+    const { user, pass } = req.body;
 
     // Validación de entrada
     if (!user || !pass) {
-        return res.status(400).json({ error: 'Usuario y contraseña son requeridos' });
+        return res.status(400).json({ 
+            error: 'Datos incompletos',
+            message: 'Usuario y contraseña son requeridos' 
+        });
     }
 
-    let sql = "SELECT id, user, pass, rol, nombre FROM users ";
-    sql += "WHERE user = ?";
+    // Validación adicional
+    if (typeof user !== 'string' || typeof pass !== 'string') {
+        return res.status(400).json({ 
+            error: 'Datos inválidos',
+            message: 'Usuario y contraseña deben ser texto' 
+        });
+    }
 
-    db.query(sql, [user])
-    .then(([usuarios]) => {
-        if(usuarios && usuarios.length === 1){
-            const usuario = usuarios[0];
-            
-            if (verificarPass(pass, usuario.pass)){
-                // Generar JWT real
-                const token = jwt.sign(
-                    { 
-                        id: usuario.id, 
-                        user: usuario.user,
-                        rol: usuario.rol || 'usuario'
-                    },
-                    JWT_SECRET,
-                    { expiresIn: '24h' }
-                );
-                
-                res.status(200).json({
-                    status: "ok", 
-                    token: token,
-                    usuario: {
-                        id: usuario.id,
-                        user: usuario.user,
-                        nombre: usuario.nombre,
-                        rol: usuario.rol
-                    }
-                });
-            } else {
-                res.status(401).json({ error: "Usuario y/o contraseña incorrecto" });
-            }
-        } else {
-            res.status(401).json({ error: "Usuario y/o contraseña incorrecto" });
+    if (user.trim().length < 3) {
+        return res.status(400).json({ 
+            error: 'Usuario inválido',
+            message: 'El usuario debe tener al menos 3 caracteres' 
+        });
+    }
+
+    try {
+        const sql = "SELECT id, user, pass, rol, nombre FROM users WHERE user = ?";
+        const [usuarios] = await db.query(sql, [user.trim()]);
+
+        if (!usuarios || usuarios.length === 0) {
+            return res.status(401).json({ 
+                error: 'Credenciales incorrectas',
+                message: 'Usuario y/o contraseña incorrectos' 
+            });
         }
-    })
-    .catch((error) => {
-        console.error(error);
-        res.status(500).json({ error: "Ocurrió un error en el servidor" });
-    });
+
+        const usuario = usuarios[0];
+        
+        // Verificar contraseña con hashpass
+        const passwordValida = verificarPass(pass, usuario.pass);
+        
+        if (!passwordValida) {
+            return res.status(401).json({ 
+                error: 'Credenciales incorrectas',
+                message: 'Usuario y/o contraseña incorrectos' 
+            });
+        }
+
+        // Generar JWT
+        const token = jwt.sign(
+            { 
+                id: usuario.id, 
+                user: usuario.user,
+                rol: usuario.rol || 'usuario'
+            },
+            JWT_SECRET,
+            { expiresIn: JWT_EXPIRES_IN }
+        );
+        
+        res.status(200).json({
+            status: "ok",
+            message: "Inicio de sesión exitoso",
+            token: token,
+            usuario: {
+                id: usuario.id,
+                user: usuario.user,
+                nombre: usuario.nombre,
+                rol: usuario.rol
+            }
+        });
+
+    } catch (error) {
+        console.error('Error en login:', error);
+        res.status(500).json({ 
+            error: 'Error del servidor',
+            message: 'Ocurrió un error al procesar la solicitud' 
+        });
+    }
 });
 
 module.exports = router;

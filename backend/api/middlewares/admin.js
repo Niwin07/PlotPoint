@@ -1,11 +1,19 @@
-// api/middlewares/admin.js
 function verificarAdmin(req, res, next) {
-    // req.usuario viene del middleware verificarToken
-    if (req.usuario && req.usuario.rol === 'admin') {
-        next();
-    } else {
-        return res.status(403).json({ error: 'Acceso denegado. Se requiere rol de administrador' });
+    if (!req.usuario) {
+        return res.status(401).json({ 
+            error: 'No autenticado',
+            message: 'Debes estar autenticado para acceder a este recurso' 
+        });
     }
+    
+    if (req.usuario.rol !== 'admin') {
+        return res.status(403).json({ 
+            error: 'Acceso denegado',
+            message: 'Se requiere rol de administrador para esta acción' 
+        });
+    }
+    
+    next();
 }
 
 module.exports = verificarAdmin;

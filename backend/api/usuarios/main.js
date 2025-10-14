@@ -1,4 +1,6 @@
-// api/usuarios/main.js
+// ============================================
+// backend/api/usuarios/main.js (REGISTRO MEJORADO)
+// ============================================
 const router = require('express').Router();
 const db = require('../../conexion');
 const { hashPass } = require('@damianegreco/hashpass');
@@ -11,42 +13,96 @@ const verificarAdmin = require('../middlewares/admin');
 // ========== RUTAS PÚBLICAS ==========
 router.use("/login", loginRouter);
 
-// Registro público de usuario
-router.post('/registro', function (req, res, next) {
+// Registro público de usuario (MEJORADO)
+router.post('/registro', async function (req, res, next) {
     const { nombre, user, pass } = req.body;
 
-    // Validación
+    // Validaciones básicas
     if (!nombre || !user || !pass) {
-        return res.status(400).json({ error: 'Todos los campos son requeridos' });
+        return res.status(400).json({ 
+            error: 'Datos incompletos',
+            message: 'Nombre, usuario y contraseña son requeridos' 
+        });
     }
 
-    let sql = "INSERT INTO users (nombre, user, pass, rol)";
-    sql += " VALUES (?, ?, ?, 'usuario')"; // Rol por defecto
-
-    const passHash = hashPass(pass);
-
-    db.query(sql, [nombre, user, passHash])
-        .then(() => {
-            res.status(201).json({ message: 'Usuario registrado exitosamente' });
-        })
-        .catch((error) => {
-            console.error(error);
-            if (error.code === 'ER_DUP_ENTRY') {
-                return res.status(409).json({ error: 'El nombre de usuario ya existe' });
-            }
-            res.status(500).json({ error: 'Error al registrar usuario' });
+    // Validaciones de tipo
+    if (typeof nombre !== 'string' || typeof user !== 'string' || typeof pass !== 'string') {
+        return res.status(400).json({ 
+            error: 'Datos inválidos',
+            message: 'Todos los campos deben ser texto' 
         });
+    }
+
+    // Validaciones de longitud
+    if (nombre.trim().length < 2) {
+        return res.status(400).json({ 
+            error: 'Nombre inválido',
+            message: 'El nombre debe tener al menos 2 caracteres' 
+        });
+    }
+
+    if (user.trim().length < 3) {
+        return res.status(400).json({ 
+            error: 'Usuario inválido',
+            message: 'El usuario debe tener al menos 3 caracteres' 
+        });
+    }
+
+    if (pass.length < 6) {
+        return res.status(400).json({ 
+            error: 'Contraseña débil',
+            message: 'La contraseña debe tener al menos 6 caracteres' 
+        });
+    }
+
+    // Validar formato de usuario (solo letras, números y guiones bajos)
+    const userRegex = /^[a-zA-Z0-9_]+$/;
+    if (!userRegex.test(user.trim())) {
+        return res.status(400).json({ 
+            error: 'Usuario inválido',
+            message: 'El usuario solo puede contener letras, números y guiones bajos' 
+        });
+    }
+
+    try {
+        // Hashear contraseña con @damianegreco/hashpass
+        const passHash = hashPass(pass);
+
+        const sql = "INSERT INTO users (nombre, user, pass, rol) VALUES (?, ?, ?, 'usuario')";
+        
+        await db.query(sql, [nombre.trim(), user.trim(), passHash]);
+        
+        res.status(201).json({ 
+            status: 'ok',
+            message: 'Usuario registrado exitosamente' 
+        });
+
+    } catch (error) {
+        console.error('Error en registro:', error);
+        
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(409).json({ 
+                error: 'Usuario duplicado',
+                message: 'El nombre de usuario ya existe' 
+            });
+        }
+        
+        res.status(500).json({ 
+            error: 'Error del servidor',
+            message: 'Error al registrar usuario' 
+        });
+    }
 });
 
-// ========== RUTAS DE PERFIL (requieren autenticación) ==========
+// ========== RUTAS DE PERFIL ==========
 router.use('/perfil', perfilRouter);
 
 // ========== RUTAS DE ADMINISTRADOR ==========
-// Búsqueda de usuarios (solo admin)
-router.get('/', verificarToken, verificarAdmin, function (req, res, next) {
+// Las demás rutas se mantienen igual...
+router.get('/', verificarToken, verificarAdmin, async function (req, res, next) {
     const { busqueda } = req.query;
 
-    let sql = "SELECT id, nombre, user, rol FROM users"; // NO incluir pass
+    let sql = "SELECT id, nombre, user, rol FROM users";
     let params = [];
     
     if (busqueda) {
@@ -55,85 +111,117 @@ router.get('/', verificarToken, verificarAdmin, function (req, res, next) {
         params = [busquedaParcial, busquedaParcial];
     }
 
-    db.query(sql, params)
-        .then(([rows]) => {
-            res.json(rows);
-        })
-        .catch((error) => {
-            console.error(error);
-            res.status(500).json({ error: 'Error en la consulta' });
+    try {
+        const [rows] = await db.query(sql, params);
+        res.json({ status: 'ok', usuarios: rows });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ 
+            error: 'Error del servidor',
+            message: 'Error en la consulta' 
         });
+    }
 });
 
-// Editar cualquier usuario (solo admin)
-router.put('/:user_id', verificarToken, verificarAdmin, function (req, res, next) {
+router.put('/:user_id', verificarToken, verificarAdmin, async function (req, res, next) {
     const { nombre, user, pass, rol } = req.body;
     const { user_id } = req.params;
 
     if (!nombre && !user && !pass && !rol) {
-        return res.status(400).json({ error: 'Debe proporcionar al menos un campo para actualizar' });
+        return res.status(400).json({ 
+            error: 'Datos incompletos',
+            message: 'Debe proporcionar al menos un campo para actualizar' 
+        });
     }
 
-    let sql = "UPDATE users SET ";
-    const params = [];
     const updates = [];
+    const params = [];
 
     if (nombre) {
         updates.push("nombre = ?");
-        params.push(nombre);
+        params.push(nombre.trim());
     }
     if (user) {
         updates.push("user = ?");
-        params.push(user);
+        params.push(user.trim());
     }
     if (pass) {
+        // Hashear con @damianegreco/hashpass
         updates.push("pass = ?");
-        params.push(hashPass(pass)); // Hashear contraseña
+        params.push(hashPass(pass));
     }
-    if (rol) {
+    if (rol && ['admin', 'usuario'].includes(rol)) {
         updates.push("rol = ?");
         params.push(rol);
     }
 
-    sql += updates.join(", ");
-    sql += " WHERE id = ?";
+    const sql = `UPDATE users SET ${updates.join(", ")} WHERE id = ?`;
     params.push(user_id);
 
-    db.query(sql, params)
-        .then(() => {
-            res.json({ message: 'Usuario actualizado exitosamente' });
-        })
-        .catch((error) => {
-            console.error(error);
-            if (error.code === 'ER_DUP_ENTRY') {
-                return res.status(409).json({ error: 'El nombre de usuario ya existe' });
-            }
-            res.status(500).json({ error: 'Error al actualizar usuario' });
+    try {
+        const [result] = await db.query(sql, params);
+        
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ 
+                error: 'Usuario no encontrado',
+                message: 'No existe un usuario con ese ID' 
+            });
+        }
+        
+        res.json({ 
+            status: 'ok',
+            message: 'Usuario actualizado exitosamente' 
         });
+    } catch (error) {
+        console.error(error);
+        
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(409).json({ 
+                error: 'Usuario duplicado',
+                message: 'El nombre de usuario ya existe' 
+            });
+        }
+        
+        res.status(500).json({ 
+            error: 'Error del servidor',
+            message: 'Error al actualizar usuario' 
+        });
+    }
 });
 
-// Eliminar usuario (solo admin)
-router.delete('/:user_id', verificarToken, verificarAdmin, function (req, res, next) {
+router.delete('/:user_id', verificarToken, verificarAdmin, async function (req, res, next) {
     const { user_id } = req.params;
     
-    // Evitar que el admin se elimine a sí mismo
     if (req.usuario.id == user_id) {
-        return res.status(400).json({ error: 'No puedes eliminar tu propia cuenta' });
+        return res.status(400).json({ 
+            error: 'Operación no permitida',
+            message: 'No puedes eliminar tu propia cuenta' 
+        });
     }
     
     const sql = "DELETE FROM users WHERE id = ?";
     
-    db.query(sql, [user_id])
-        .then(([result]) => {
-            if (result.affectedRows === 0) {
-                return res.status(404).json({ error: 'Usuario no encontrado' });
-            }
-            res.json({ message: 'Usuario eliminado exitosamente' });
-        })
-        .catch((error) => {
-            console.error(error);
-            res.status(500).json({ error: 'Error al eliminar usuario' });
+    try {
+        const [result] = await db.query(sql, [user_id]);
+        
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ 
+                error: 'Usuario no encontrado',
+                message: 'No existe un usuario con ese ID' 
+            });
+        }
+        
+        res.json({ 
+            status: 'ok',
+            message: 'Usuario eliminado exitosamente' 
         });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ 
+            error: 'Error del servidor',
+            message: 'Error al eliminar usuario' 
+        });
+    }
 });
 
 module.exports = router;
