@@ -48,6 +48,7 @@
     font-size: 3rem;
     margin-bottom: 2rem;
     color: var(--texto);
+    font-weight: 600;
 }
 .contacto .row .formulario .flex{
     display: flex;

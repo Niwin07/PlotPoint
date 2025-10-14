@@ -62,7 +62,7 @@
     cursor: pointer;
 }
 .login .row .formulario .box p{
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     color: var(--light-color);
     padding-top: 1rem;
 }
@@ -70,6 +70,7 @@
     font-size: 3rem;
     margin-bottom: 2rem;
     color: var(--texto);
+    font-weight: 600;
 }
 .login .row .formulario .flex{
     display: flex;

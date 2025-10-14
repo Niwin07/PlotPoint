@@ -9,7 +9,7 @@ const Tyc = () => {
     }
     return (
         <>
-        <button className='atras' onClick={handleBack}>Atras</button>
+        <button className='atras' onClick={handleBack}>VOLVER</button>
         <div className='tyc'>
             <h1>Términos y condiciones</h1>
             <h2>Última actualización: 11 de octubre de 2025</h2>

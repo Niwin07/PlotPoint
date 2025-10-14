@@ -11,7 +11,7 @@ const Soporte = () => {
                         <h3>Soporte</h3>
                        
                         <textarea name="" placeholder="Escribe tus dudas..."></textarea>
-                        <input type="submit" value="Enviar mensaje" class="btn"></input>
+                        <input type="submit" value="ENVIAR" class="btn"></input>
                     </div>
                 </form>
                 <div class="imagen-form">

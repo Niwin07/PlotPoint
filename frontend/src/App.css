@@ -1,13 +1,30 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Inria+Serif:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+/* Importacion de iconos de FontAwesome */
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css');
-* {
-    /*font-family: "Inter", sans-serif;*/
-    font-family: 'Inria Serif', serif;
+
+/* Tipografia Playfair Display para titulos , subtitulos y botones */
+
+@import url('https://fonts.googleapis.com/css2?family=Inria+Serif:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lora:ital,wght@0,400..700;1,400..700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+
+/* Tipografia Lora para parrafos */
+@import url('https://fonts.googleapis.com/css2?family=Inria+Serif:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lora:ital,wght@0,400..700;1,400..700&display=swap');
+
+
+button,
+input{
+    font-family: "Playfair Display", serif;
     font-optical-sizing: auto;
-
-
+    font-weight: 500;
+    font-style: normal;
 }
+label,
+textarea{
+    font-family: "Lora", serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
 .appBase{
     display: grid;
     min-height: 100dvh;
@@ -38,10 +55,19 @@
 }
 p{
   /*font-family: 'Inria Serif', serif;*/
+  font-family: "Lora", serif;
+  
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+ 
+}
+h1, h2, h3, h4, h5, h6{
+  font-family: "Playfair Display", serif;
   font-optical-sizing: auto;
   font-weight: 700;
   font-style: normal;
- 
+  
 }
 a{
     

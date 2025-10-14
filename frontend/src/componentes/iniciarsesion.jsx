@@ -14,7 +14,7 @@ const iniciarsesion = () => {
                             <input type="password" placeholder="Contraseña" class="input"></input>
             
                         </div>
-                        <input type="submit" value="Continuar" class="btn"></input>
+                        <input type="submit" value="CONTINUAR" class="btn"></input>
                         <p>¿No tienes una cuenta? <span><a href="/registro">Crear cuenta</a></span></p>
                     </div>
                 </form>
