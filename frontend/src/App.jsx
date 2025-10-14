@@ -8,6 +8,7 @@ import Soporte from './componentes/soporte';
 import Tyc from './componentes/terminosycondiciones';
 import Iniciarsesion from './componentes/iniciarsesion';
 import Crearcuenta from './componentes/crearcuenta';
+import fondo from "./img/fondo.webp"
 import { Route, Switch, useLocation } from "wouter";
 
 import './App.css'

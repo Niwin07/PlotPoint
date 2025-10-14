@@ -2,6 +2,7 @@ import React from 'react';
 import '../css/iniciarsesion.css';
 
 
+
 const iniciarsesion = () => {
     return (
         <div class="login" id="login">
@@ -19,7 +20,7 @@ const iniciarsesion = () => {
                     </div>
                 </form>
                 <div class="imagen-form">
-                    <img src="https://i.ibb.co/wZtxms8j/Agregar-un-t-tulo-20251011-032943-0000.png" alt=""></img>
+                    <img src="src/img/ilustracion.webp" alt=""></img>
                 </div>
             </div>
 

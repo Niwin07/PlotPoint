@@ -78,7 +78,7 @@ a{
 }
 
 html {
-    background-image: url('https://i.ibb.co/d4QhKXyq/Agregar-un-t-tulo-20251010-182342-0000.png') ;
+    background-image: url(./img/fondo.webp);
     background-size: cover;
     /*background-position: center*/
     font-size: 62.5%;

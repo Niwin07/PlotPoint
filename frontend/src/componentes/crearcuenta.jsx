@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import useUsuario from '../hooks/useUsuario';
+
 import '../css/crearcuenta.css';
 
 const Signup = () => {
@@ -97,7 +98,7 @@ const Signup = () => {
                     </div>
                 </form>
                 <div className="imagen-form">
-                    <img src="https://i.ibb.co/wZtxms8j/Agregar-un-t-tulo-20251011-032943-0000.png" alt="" />
+                    <img src="src/img/ilustracion.webp" alt="" />
                 </div>
             </div>
         </div>

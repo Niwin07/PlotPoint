@@ -37,7 +37,7 @@ const SobreNosotros = () => {
                 <h1 class="cabeza">Sobre nosotros</h1>
                 <div class="row">
                     <div class="imagen">
-                        <img src="https://i.ibb.co/99BJRsHf/free-sobre-nosotros-illustration-svg-download-png-1740019.png" alt=""></img>
+                        <img src="/src/img/sobrenosotros.webp" alt=""></img>
                     </div>
                     <div class="accordion-container">
                         <div class="box-preguntas">
@@ -92,7 +92,7 @@ const SobreNosotros = () => {
                     <div class="base">
                         <div class="developer">
                             <div class="developer-info">
-                                <img src="https://i.ibb.co/jPrTh6MW/c7c9020664c01cb56a85a0232a68ea00.jpg" alt=""></img>
+                                <img src="/src/img/perfil.webp" alt=""></img>
                                 <h3>Aranda Cristian David</h3>
                                 <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Earum, perspiciatis eaque nisi placeat a nam assumenda tempore adipisci dolore molestiae?
                                 </p>
@@ -102,7 +102,7 @@ const SobreNosotros = () => {
                         </div>
                         <div class="developer">
                             <div class="developer-info">
-                                <img src="https://i.ibb.co/jPrTh6MW/c7c9020664c01cb56a85a0232a68ea00.jpg" alt=""></img>
+                                <img src="/src/img/perfil.webp" alt=""></img>
                                 <h3>Henry Nehuen Mesias Rios </h3>
                                 <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Earum, perspiciatis eaque nisi placeat a nam assumenda tempore adipisci dolore molestiae?
                                 </p>
