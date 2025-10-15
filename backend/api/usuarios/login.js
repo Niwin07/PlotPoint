@@ -7,10 +7,10 @@ const JWT_SECRET = process.env.JWT_SECRET || 'tu_clave_secreta_segura';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
 
 router.post('/', async function(req, res, next) {
-    const { user, pass } = req.body;
+    const { nombre_usuario, contrasena } = req.body;
 
     // Validación de entrada
-    if (!user || !pass) {
+    if (!nombre_usuario || !contrasena) {
         return res.status(400).json({ 
             error: 'Datos incompletos',
             message: 'Usuario y contraseña son requeridos' 
@@ -18,14 +18,14 @@ router.post('/', async function(req, res, next) {
     }
 
     // Validación adicional
-    if (typeof user !== 'string' || typeof pass !== 'string') {
+    if (typeof nombre_usuario !== 'string' || typeof contrasena !== 'string') {
         return res.status(400).json({ 
             error: 'Datos inválidos',
             message: 'Usuario y contraseña deben ser texto' 
         });
     }
 
-    if (user.trim().length < 3) {
+    if (nombre_usuario.trim().length < 3) {
         return res.status(400).json({ 
             error: 'Usuario inválido',
             message: 'El usuario debe tener al menos 3 caracteres' 
@@ -33,8 +33,8 @@ router.post('/', async function(req, res, next) {
     }
 
     try {
-        const sql = "SELECT id, user, pass, rol, nombre FROM users WHERE user = ?";
-        const [usuarios] = await db.query(sql, [user.trim()]);
+        const sql = "SELECT id, nombre_usuario, contrasena_hash, rol, nombre, correo FROM Usuario WHERE nombre_usuario = ?";
+        const [usuarios] = await db.query(sql, [nombre_usuario.trim()]);
 
         if (!usuarios || usuarios.length === 0) {
             return res.status(401).json({ 
@@ -46,7 +46,7 @@ router.post('/', async function(req, res, next) {
         const usuario = usuarios[0];
         
         // Verificar contraseña con hashpass
-        const passwordValida = verificarPass(pass, usuario.pass);
+        const passwordValida = verificarPass(contrasena, usuario.contrasena_hash);
         
         if (!passwordValida) {
             return res.status(401).json({ 
@@ -59,7 +59,7 @@ router.post('/', async function(req, res, next) {
         const token = jwt.sign(
             { 
                 id: usuario.id, 
-                user: usuario.user,
+                nombre_usuario: usuario.nombre_usuario,
                 rol: usuario.rol || 'usuario'
             },
             JWT_SECRET,
@@ -72,8 +72,9 @@ router.post('/', async function(req, res, next) {
             token: token,
             usuario: {
                 id: usuario.id,
-                user: usuario.user,
+                nombre_usuario: usuario.nombre_usuario,
                 nombre: usuario.nombre,
+                correo: usuario.correo,
                 rol: usuario.rol
             }
         });

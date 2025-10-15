@@ -1,6 +1,3 @@
-// ============================================
-// backend/api/usuarios/main.js (REFACTORIZADO)
-// ============================================
 const router = require('express').Router();
 const db = require('../../conexion');
 const { hashPass } = require('@damianegreco/hashpass');
@@ -15,21 +12,22 @@ router.use("/login", loginRouter);
 
 // Registro público de usuario
 router.post('/registro', async function (req, res, next) {
-    const { nombre, user, pass } = req.body;
+    const { nombre, nombre_usuario, correo, contrasena, biografia, url_avatar } = req.body;
 
     // Validaciones básicas
-    if (!nombre || !user || !pass) {
+    if (!nombre || !nombre_usuario || !correo || !contrasena) {
         return res.status(400).json({ 
             error: 'Datos incompletos',
-            message: 'Nombre, usuario y contraseña son requeridos' 
+            message: 'Nombre, usuario, correo y contraseña son requeridos' 
         });
     }
 
     // Validaciones de tipo
-    if (typeof nombre !== 'string' || typeof user !== 'string' || typeof pass !== 'string') {
+    if (typeof nombre !== 'string' || typeof nombre_usuario !== 'string' || 
+        typeof correo !== 'string' || typeof contrasena !== 'string') {
         return res.status(400).json({ 
             error: 'Datos inválidos',
-            message: 'Todos los campos deben ser texto' 
+            message: 'Todos los campos obligatorios deben ser texto' 
         });
     }
 
@@ -41,14 +39,14 @@ router.post('/registro', async function (req, res, next) {
         });
     }
 
-    if (user.trim().length < 3) {
+    if (nombre_usuario.trim().length < 3) {
         return res.status(400).json({ 
             error: 'Usuario inválido',
             message: 'El usuario debe tener al menos 3 caracteres' 
         });
     }
 
-    if (pass.length < 6) {
+    if (contrasena.length < 6) {
         return res.status(400).json({ 
             error: 'Contraseña débil',
             message: 'La contraseña debe tener al menos 6 caracteres' 
@@ -57,20 +55,38 @@ router.post('/registro', async function (req, res, next) {
 
     // Validar formato de usuario (solo letras, números y guiones bajos)
     const userRegex = /^[a-zA-Z0-9_]+$/;
-    if (!userRegex.test(user.trim())) {
+    if (!userRegex.test(nombre_usuario.trim())) {
         return res.status(400).json({ 
             error: 'Usuario inválido',
             message: 'El usuario solo puede contener letras, números y guiones bajos' 
         });
     }
 
+    // Validar formato de correo
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(correo.trim())) {
+        return res.status(400).json({ 
+            error: 'Correo inválido',
+            message: 'El formato del correo no es válido' 
+        });
+    }
+
     try {
         // Hashear contraseña con @damianegreco/hashpass
-        const passHash = hashPass(pass);
+        const contrasenaHash = hashPass(contrasena);
 
-        const sql = "INSERT INTO users (nombre, user, pass, rol) VALUES (?, ?, ?, 'usuario')";
+        const sql = `INSERT INTO Usuario 
+                     (nombre, nombre_usuario, correo, contrasena_hash, biografia, url_avatar, rol) 
+                     VALUES (?, ?, ?, ?, ?, ?, 'usuario')`;
         
-        await db.query(sql, [nombre.trim(), user.trim(), passHash]);
+        await db.query(sql, [
+            nombre.trim(), 
+            nombre_usuario.trim(), 
+            correo.trim(), 
+            contrasenaHash,
+            biografia ? biografia.trim() : null,
+            url_avatar ? url_avatar.trim() : null
+        ]);
         
         res.status(201).json({ 
             status: 'ok',
@@ -82,8 +98,8 @@ router.post('/registro', async function (req, res, next) {
         
         if (error.code === 'ER_DUP_ENTRY') {
             return res.status(409).json({ 
-                error: 'Usuario duplicado',
-                message: 'El nombre de usuario ya existe' 
+                error: 'Datos duplicados',
+                message: 'El nombre de usuario o correo ya existe' 
             });
         }
         

@@ -1,7 +1,3 @@
-// ============================================
-// backend/api/usuarios/admin.js (NUEVO)
-// Gestión de usuarios solo para administradores
-// ============================================
 const router = require('express').Router();
 const db = require('../../conexion');
 const { hashPass } = require('@damianegreco/hashpass');
@@ -14,13 +10,14 @@ router.use(verificarAdmin);
 router.get('/', async function (req, res, next) {
     const { busqueda } = req.query;
 
-    let sql = "SELECT id, nombre, user, rol FROM users";
+    let sql = `SELECT id, nombre, nombre_usuario, correo, biografia, url_avatar, rol, fecha_creacion 
+               FROM Usuario`;
     let params = [];
     
     if (busqueda) {
-        sql += " WHERE user LIKE ? OR nombre LIKE ?";
+        sql += " WHERE nombre_usuario LIKE ? OR nombre LIKE ? OR correo LIKE ?";
         const busquedaParcial = `%${busqueda}%`;
-        params = [busquedaParcial, busquedaParcial];
+        params = [busquedaParcial, busquedaParcial, busquedaParcial];
     }
 
     try {
@@ -37,10 +34,10 @@ router.get('/', async function (req, res, next) {
 
 // PUT /api/usuarios/admin/:user_id - Actualizar cualquier usuario
 router.put('/:user_id', async function (req, res, next) {
-    const { nombre, user, pass, rol } = req.body;
+    const { nombre, nombre_usuario, correo, contrasena, biografia, url_avatar, rol } = req.body;
     const { user_id } = req.params;
 
-    if (!nombre && !user && !pass && !rol) {
+    if (!nombre && !nombre_usuario && !correo && !contrasena && !biografia && !url_avatar && !rol) {
         return res.status(400).json({ 
             error: 'Datos incompletos',
             message: 'Debe proporcionar al menos un campo para actualizar' 
@@ -54,21 +51,55 @@ router.put('/:user_id', async function (req, res, next) {
         updates.push("nombre = ?");
         params.push(nombre.trim());
     }
-    if (user) {
-        updates.push("user = ?");
-        params.push(user.trim());
+    
+    if (nombre_usuario) {
+        // Validar formato de usuario
+        const userRegex = /^[a-zA-Z0-9_]+$/;
+        if (!userRegex.test(nombre_usuario.trim())) {
+            return res.status(400).json({ 
+                error: 'Usuario inválido',
+                message: 'El usuario solo puede contener letras, números y guiones bajos' 
+            });
+        }
+        updates.push("nombre_usuario = ?");
+        params.push(nombre_usuario.trim());
     }
-    if (pass) {
+    
+    if (correo) {
+        // Validar formato de correo
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(correo.trim())) {
+            return res.status(400).json({ 
+                error: 'Correo inválido',
+                message: 'El formato del correo no es válido' 
+            });
+        }
+        updates.push("correo = ?");
+        params.push(correo.trim());
+    }
+    
+    if (contrasena) {
         // Hashear con @damianegreco/hashpass
-        updates.push("pass = ?");
-        params.push(hashPass(pass));
+        updates.push("contrasena_hash = ?");
+        params.push(hashPass(contrasena));
     }
+    
+    if (biografia !== undefined) {
+        updates.push("biografia = ?");
+        params.push(biografia ? biografia.trim() : null);
+    }
+    
+    if (url_avatar !== undefined) {
+        updates.push("url_avatar = ?");
+        params.push(url_avatar ? url_avatar.trim() : null);
+    }
+    
     if (rol && ['admin', 'usuario'].includes(rol)) {
         updates.push("rol = ?");
         params.push(rol);
     }
 
-    const sql = `UPDATE users SET ${updates.join(", ")} WHERE id = ?`;
+    const sql = `UPDATE Usuario SET ${updates.join(", ")} WHERE id = ?`;
     params.push(user_id);
 
     try {
@@ -90,8 +121,8 @@ router.put('/:user_id', async function (req, res, next) {
         
         if (error.code === 'ER_DUP_ENTRY') {
             return res.status(409).json({ 
-                error: 'Usuario duplicado',
-                message: 'El nombre de usuario ya existe' 
+                error: 'Datos duplicados',
+                message: 'El nombre de usuario o correo ya existe' 
             });
         }
         
@@ -114,7 +145,7 @@ router.delete('/:user_id', async function (req, res, next) {
         });
     }
     
-    const sql = "DELETE FROM users WHERE id = ?";
+    const sql = "DELETE FROM Usuario WHERE id = ?";
     
     try {
         const [result] = await db.query(sql, [user_id]);
