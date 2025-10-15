@@ -118,3 +118,8 @@
     background-color: #ff9500;
     
 }
+.login .row .formulario .error{
+    color: red;
+    font-size: 1.4rem;
+    margin-top: 1rem;
+}
