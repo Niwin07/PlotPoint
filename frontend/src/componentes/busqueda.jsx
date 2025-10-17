@@ -134,7 +134,7 @@ const Busqueda = () => {
 
       <div className="resultados">
         {resultados.length === 0 ? (
-          <p className="sin-resultados">Sin resultados.</p>
+          <p className="sin-resultados">Sin resultados</p>
         ) : (
           resultados.map((grupo, i) =>
             grupo.data.length > 0 ? (
