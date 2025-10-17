@@ -67,9 +67,10 @@
     color:var(--white);
     font-size: 1.8rem;
     margin-top: 1rem;
+    font-family: 'Playfair Display';
 }
 .contacto .row .formulario textarea{
-    background-color: var(--black);
+    background-color: var(--texto);
     width:100%;
     resize: none;
     height:15rem;

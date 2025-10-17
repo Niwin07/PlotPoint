@@ -41,7 +41,7 @@ const Header = () => {
                 <nav class="navbar">
                     <a href="/inicio">Inicio</a>
                     <a href="/iniciarsesion">Perfil</a>
-                    <a href="/prueba">Busqueda</a>
+                    <a href="/busqueda">Busqueda</a>
                     <a href="#shop">Reseñas</a>
                 </nav>
 

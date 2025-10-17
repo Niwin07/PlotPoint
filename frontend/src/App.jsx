@@ -8,6 +8,8 @@ import Soporte from './componentes/soporte';
 import Tyc from './componentes/terminosycondiciones';
 import Iniciarsesion from './componentes/iniciarsesion';
 import Crearcuenta from './componentes/crearcuenta';
+import Busqueda from './componentes/busqueda';
+import libro from './componentes/libro';
 import { Route, Switch, useLocation } from "wouter";
 
 import './App.css'
@@ -34,6 +36,8 @@ function App() {
           <Route path="/inicio" component={Inicio} />
           <Route path="/terminosycondiciones" component={Tyc} />
           <Route path="/registro" component={Crearcuenta} />
+          <Route path="/busqueda" component={Busqueda} />
+          <Route path="/libro" component={libro} />
           <Route><h1>Pagina no existente :(</h1></Route>
         </Switch>
 

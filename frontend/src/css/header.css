@@ -23,8 +23,11 @@ img {
     text-decoration: none;
     margin: 0;
     padding: 0;
+
+    /*esencial en la animacion del footer y del header (no hablo del sandwich)*/
     
     transition: all .2s linear;
+    
 }
 
 ::selection {
