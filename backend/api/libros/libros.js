@@ -1,4 +1,15 @@
 const db = require('../../conexion');
+const fileUpload = require("express-fileupload");
+const path = require('path');
+const fs = require("fs");
+
+// Directorio para guardar las portadas
+const directorio = path.join(__dirname, "..", "..", "uploads", "portadas");
+
+// Crear directorio si no existe
+if (!fs.existsSync(directorio)){
+    fs.mkdirSync(directorio, { recursive: true });
+}
 
 // GET /api/libros - Listar todos los libros con información completa
 exports.listar = async function(req, res, next) {
@@ -182,6 +193,9 @@ exports.crear = async function(req, res, next) {
             }
         }
 
+        // Portada por defecto si no se proporciona
+        const portadaFinal = url_portada || '/uploads/portadas/default.png';
+
         const sql = `
             INSERT INTO Libro 
             (titulo, isbn, sinopsis, url_portada, paginas, anio_publicacion, autor_id, editorial_id) 
@@ -192,7 +206,7 @@ exports.crear = async function(req, res, next) {
             titulo.trim(),
             isbn ? isbn.trim() : null,
             sinopsis ? sinopsis.trim() : null,
-            url_portada ? url_portada.trim() : null,
+            portadaFinal,
             paginas || null,
             anio_publicacion || null,
             autor_id || null,
@@ -363,6 +377,155 @@ exports.actualizar = async function(req, res, next) {
     }
 };
 
+// POST /api/libros/:id/upload-portada - Subir portada del libro
+exports.subirPortada = [
+    fileUpload(),
+    async function(req, res, next) {
+        const { id } = req.params;
+        
+        if (!req.files || !req.files.portada) {
+            return res.status(400).json({ 
+                error: 'No hay archivo',
+                message: 'Debe enviar un archivo con el nombre "portada"' 
+            });
+        }
+        
+        const { portada } = req.files;
+        
+        // Validar extensión (solo imágenes)
+        const extension = path.extname(portada.name).toLowerCase();
+        const extensionesPermitidas = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+        
+        if (!extensionesPermitidas.includes(extension)) {
+            return res.status(400).json({ 
+                error: 'Archivo no permitido',
+                message: 'Solo se permiten imágenes (jpg, jpeg, png, gif, webp)' 
+            });
+        }
+        
+        // Validar tamaño (máximo 5MB)
+        const maxSize = 5 * 1024 * 1024; // 5MB en bytes
+        if (portada.size > maxSize) {
+            return res.status(400).json({ 
+                error: 'Archivo muy grande',
+                message: 'El archivo no debe superar los 5MB' 
+            });
+        }
+
+        try {
+            // Verificar que el libro existe
+            const [libro] = await db.query("SELECT id, url_portada FROM Libro WHERE id = ?", [id]);
+            if (libro.length === 0) {
+                return res.status(404).json({ 
+                    error: 'Libro no encontrado',
+                    message: 'No existe un libro con ese ID' 
+                });
+            }
+
+            // Eliminar portada anterior si existe y no es la default
+            const portadaAnterior = libro[0].url_portada;
+            if (portadaAnterior && portadaAnterior.startsWith('/uploads/portadas/') && !portadaAnterior.includes('default')) {
+                const nombreArchivoAnterior = path.basename(portadaAnterior);
+                const filepathAnterior = path.join(directorio, nombreArchivoAnterior);
+                
+                if (fs.existsSync(filepathAnterior)) {
+                    fs.unlinkSync(filepathAnterior);
+                }
+            }
+            
+            // Generar nombre único para el archivo
+            const nombreArchivo = `portada_${id}_${Date.now()}${extension}`;
+            const filepath = path.join(directorio, nombreArchivo);
+            
+            // Guardar el archivo
+            portada.mv(filepath, async function(error) { 
+                if (error) {
+                    console.error(error);
+                    return res.status(500).json({ 
+                        error: 'Error al guardar',
+                        message: 'Ocurrió un error al guardar el archivo' 
+                    });
+                }
+                
+                // Actualizar URL de la portada en la base de datos
+                const urlPortada = `/uploads/portadas/${nombreArchivo}`;
+                const sql = "UPDATE Libro SET url_portada = ? WHERE id = ?";
+                
+                try {
+                    await db.query(sql, [urlPortada, id]);
+                    
+                    res.status(201).json({ 
+                        status: 'ok',
+                        message: 'Portada actualizada exitosamente',
+                        url_portada: urlPortada
+                    });
+                } catch (dbError) {
+                    console.error(dbError);
+                    // Si falla la BD, eliminar el archivo guardado
+                    fs.unlinkSync(filepath);
+                    res.status(500).json({ 
+                        error: 'Error al actualizar',
+                        message: 'El archivo se guardó pero no se pudo actualizar la base de datos' 
+                    });
+                }
+            });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ 
+                error: 'Error del servidor',
+                message: 'Error al procesar la solicitud' 
+            });
+        }
+    }
+];
+
+// DELETE /api/libros/:id/delete-portada - Eliminar portada del libro
+exports.eliminarPortada = async function(req, res, next) {
+    const { id } = req.params;
+    
+    try {
+        // Obtener la portada actual
+        const [libro] = await db.query("SELECT url_portada FROM Libro WHERE id = ?", [id]);
+        
+        if (libro.length === 0) {
+            return res.status(404).json({ 
+                error: 'Libro no encontrado',
+                message: 'No existe un libro con ese ID' 
+            });
+        }
+        
+        const portadaActual = libro[0].url_portada;
+        
+        // Si tiene una portada personalizada, eliminarla del servidor
+        if (portadaActual && portadaActual.startsWith('/uploads/portadas/') && !portadaActual.includes('default')) {
+            const nombreArchivo = path.basename(portadaActual);
+            const filepath = path.join(directorio, nombreArchivo);
+            
+            if (fs.existsSync(filepath)) {
+                fs.unlinkSync(filepath);
+            }
+        }
+        
+        // Establecer portada por defecto en la BD
+        const portadaDefault = '/uploads/portadas/default.png';
+        const sqlUpdate = "UPDATE Libro SET url_portada = ? WHERE id = ?";
+        
+        await db.query(sqlUpdate, [portadaDefault, id]);
+        
+        res.json({ 
+            status: 'ok',
+            message: 'Portada eliminada exitosamente',
+            url_portada: portadaDefault
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ 
+            error: 'Error del servidor',
+            message: 'Error al eliminar portada' 
+        });
+    }
+};
+
 // DELETE /api/libros/:id - Eliminar un libro
 exports.eliminar = async function(req, res, next) {
     const { id } = req.params;
@@ -376,6 +539,27 @@ exports.eliminar = async function(req, res, next) {
                 error: 'No se puede eliminar',
                 message: `El libro tiene ${lecturas[0].total} lectura(s) asociada(s). No se puede eliminar.` 
             });
+        }
+
+        // Obtener portada antes de eliminar
+        const [libro] = await db.query("SELECT url_portada FROM Libro WHERE id = ?", [id]);
+        
+        if (libro.length === 0) {
+            return res.status(404).json({ 
+                error: 'Libro no encontrado',
+                message: 'No existe un libro con ese ID' 
+            });
+        }
+
+        // Eliminar archivo de portada si existe y no es default
+        const portada = libro[0].url_portada;
+        if (portada && portada.startsWith('/uploads/portadas/') && !portada.includes('default')) {
+            const nombreArchivo = path.basename(portada);
+            const filepath = path.join(directorio, nombreArchivo);
+            
+            if (fs.existsSync(filepath)) {
+                fs.unlinkSync(filepath);
+            }
         }
 
         // Los géneros se eliminan automáticamente por ON DELETE CASCADE

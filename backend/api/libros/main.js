@@ -7,11 +7,11 @@ const verificarAdmin = require('../middlewares/admin');
 router.get('/', librosRouter.listar);
 router.get('/:id', librosRouter.obtener);
 
-// Rutas protegidas (requieren autenticación)
-router.post('/', verificarToken, librosRouter.crear);
-router.put('/:id', verificarToken, librosRouter.actualizar);
-
-// Rutas de administrador
+// Rutas de administrador (todas las operaciones de modificación)
+router.post('/', verificarToken, verificarAdmin, librosRouter.crear);
+router.put('/:id', verificarToken, verificarAdmin, librosRouter.actualizar);
+router.post('/:id/upload-portada', verificarToken, verificarAdmin, ...librosRouter.subirPortada);
+router.delete('/:id/delete-portada', verificarToken, verificarAdmin, librosRouter.eliminarPortada);
 router.delete('/:id', verificarToken, verificarAdmin, librosRouter.eliminar);
 
 module.exports = router;

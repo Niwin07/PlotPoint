@@ -120,8 +120,9 @@ router.put('/actualizar', function(req, res, next) {
 });
 
 // POST /api/usuarios/perfil/upload-avatar - Subir foto de perfil
+// El usuario solo puede subir su propia foto (usa el ID del token, no de parámetros)
 router.post('/upload-avatar', fileUpload(), function(req, res, next) {
-    const userId = req.usuario.id;
+    const userId = req.usuario.id; // ID del token JWT (ya verificado)
     
     if (!req.files || !req.files.avatar) {
         return res.status(400).json({ 
