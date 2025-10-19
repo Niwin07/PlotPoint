@@ -74,6 +74,9 @@ router.post('/registro', async function (req, res, next) {
     try {
         // Hashear contraseña con @damianegreco/hashpass
         const contrasenaHash = hashPass(contrasena);
+        
+        // Avatar por defecto si no se proporciona
+        const avatarFinal = url_avatar || '/uploads/avatars/default.png';
 
         const sql = `INSERT INTO Usuario 
                      (nombre, nombre_usuario, correo, contrasena_hash, biografia, url_avatar, rol) 
@@ -85,7 +88,7 @@ router.post('/registro', async function (req, res, next) {
             correo.trim(), 
             contrasenaHash,
             biografia ? biografia.trim() : null,
-            url_avatar ? url_avatar.trim() : null
+            avatarFinal
         ]);
         
         res.status(201).json({ 

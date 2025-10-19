@@ -1,6 +1,17 @@
 const router = require('express').Router();
 const { hashPass, verificarPass } = require('@damianegreco/hashpass');
 const db = require('../../conexion');
+const fileUpload = require("express-fileupload");
+const path = require('path');
+const fs = require("fs");
+
+// Directorio para guardar las fotos de perfil
+const directorio = path.join(__dirname, "..", "..", "uploads", "avatars");
+
+// Crear directorio si no existe
+if (!fs.existsSync(directorio)){
+    fs.mkdirSync(directorio, { recursive: true });
+}
 
 // NOTA: Este router ya recibe verificarToken aplicado desde main.js
 // Por lo tanto, req.usuario siempre estará disponible
@@ -104,6 +115,125 @@ router.put('/actualizar', function(req, res, next) {
             }
             res.status(500).json({ 
                 error: 'Error al actualizar perfil' 
+            });
+        });
+});
+
+// POST /api/usuarios/perfil/upload-avatar - Subir foto de perfil
+router.post('/upload-avatar', fileUpload(), function(req, res, next) {
+    const userId = req.usuario.id;
+    
+    if (!req.files || !req.files.avatar) {
+        return res.status(400).json({ 
+            error: 'No hay archivo',
+            message: 'Debe enviar un archivo con el nombre "avatar"' 
+        });
+    }
+    
+    const { avatar } = req.files;
+    
+    // Validar extensión (solo imágenes)
+    const extension = path.extname(avatar.name).toLowerCase();
+    const extensionesPermitidas = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+    
+    if (!extensionesPermitidas.includes(extension)) {
+        return res.status(400).json({ 
+            error: 'Archivo no permitido',
+            message: 'Solo se permiten imágenes (jpg, jpeg, png, gif, webp)' 
+        });
+    }
+    
+    // Validar tamaño (máximo 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB en bytes
+    if (avatar.size > maxSize) {
+        return res.status(400).json({ 
+            error: 'Archivo muy grande',
+            message: 'El archivo no debe superar los 5MB' 
+        });
+    }
+    
+    // Generar nombre único para el archivo
+    const nombreArchivo = `avatar_${userId}_${Date.now()}${extension}`;
+    const filepath = path.join(directorio, nombreArchivo);
+    
+    // Guardar el archivo
+    avatar.mv(filepath, function(error) { 
+        if (error) {
+            console.error(error);
+            return res.status(500).json({ 
+                error: 'Error al guardar',
+                message: 'Ocurrió un error al guardar el archivo' 
+            });
+        }
+        
+        // Actualizar URL del avatar en la base de datos
+        const urlAvatar = `/uploads/avatars/${nombreArchivo}`;
+        const sql = "UPDATE Usuario SET url_avatar = ? WHERE id = ?";
+        
+        db.query(sql, [urlAvatar, userId])
+            .then(() => {
+                res.status(201).json({ 
+                    status: 'ok',
+                    message: 'Avatar actualizado exitosamente',
+                    url_avatar: urlAvatar
+                });
+            })
+            .catch((error) => {
+                console.error(error);
+                // Si falla la BD, eliminar el archivo guardado
+                fs.unlinkSync(filepath);
+                res.status(500).json({ 
+                    error: 'Error al actualizar perfil',
+                    message: 'El archivo se guardó pero no se pudo actualizar la base de datos' 
+                });
+            });
+    });
+});
+
+// DELETE /api/usuarios/perfil/delete-avatar - Eliminar foto de perfil
+router.delete('/delete-avatar', function(req, res, next) {
+    const userId = req.usuario.id;
+    
+    // Obtener el avatar actual
+    const sqlSelect = "SELECT url_avatar FROM Usuario WHERE id = ?";
+    
+    db.query(sqlSelect, [userId])
+        .then(([rows]) => {
+            if (rows.length === 0) {
+                return res.status(404).json({ 
+                    error: 'Usuario no encontrado' 
+                });
+            }
+            
+            const avatarActual = rows[0].url_avatar;
+            
+            // Si tiene un avatar personalizado, eliminarlo del servidor
+            if (avatarActual && avatarActual.startsWith('/uploads/avatars/')) {
+                const nombreArchivo = path.basename(avatarActual);
+                const filepath = path.join(directorio, nombreArchivo);
+                
+                if (fs.existsSync(filepath)) {
+                    fs.unlinkSync(filepath);
+                }
+            }
+            
+            // Establecer avatar por defecto en la BD
+            const avatarDefault = '/uploads/avatars/default.png';
+            const sqlUpdate = "UPDATE Usuario SET url_avatar = ? WHERE id = ?";
+            
+            return db.query(sqlUpdate, [avatarDefault, userId]);
+        })
+        .then(() => {
+            res.json({ 
+                status: 'ok',
+                message: 'Avatar eliminado exitosamente',
+                url_avatar: '/uploads/avatars/default.png'
+            });
+        })
+        .catch((error) => {
+            console.error(error);
+            res.status(500).json({ 
+                error: 'Error al eliminar avatar' 
             });
         });
 });
