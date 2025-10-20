@@ -40,9 +40,9 @@ const Header = () => {
 
                 <nav class="navbar">
                     <a href="/inicio">Inicio</a>
-                    <a href="/iniciarsesion">Perfil</a>
+                    <a href="/perfil/">Perfil</a>
                     <a href="/busqueda">Busqueda</a>
-                    <a href="#shop">Reseñas</a>
+                    <a href="/reseñasinicio">Reseñas</a>
                 </nav>
 
                 <div id="menu-btn" class="fas fa-bars-staggered"></div>

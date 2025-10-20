@@ -10,6 +10,10 @@ import Iniciarsesion from './componentes/iniciarsesion';
 import Crearcuenta from './componentes/crearcuenta';
 import Busqueda from './componentes/busqueda';
 import libro from './componentes/libro';
+import ReviewDetail from './componentes/ReviewDetail';
+import Perfil from './componentes/Perfil';
+import Usuario from './componentes/Usuario'
+import ListaReseñasInicio from './componentes/ListaReseñasInicio'
 import { Route, Switch, useLocation } from "wouter";
 
 import './App.css'
@@ -38,6 +42,19 @@ function App() {
           <Route path="/registro" component={Crearcuenta} />
           <Route path="/busqueda" component={Busqueda} />
           <Route path="/libro" component={libro} />
+          
+          <Route path="/reseñalibro" component={ReviewDetail} />
+
+          <Route path="/reseñasinicio" component={ListaReseñasInicio}/>
+          
+          
+
+          <Route path="/usuario/*" component={Usuario} />
+          
+         
+          <Route path="/perfil/*" component={Perfil} />
+
+
           <Route><h1>Pagina no existente :(</h1></Route>
         </Switch>
 

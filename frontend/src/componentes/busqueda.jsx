@@ -144,7 +144,7 @@ const Busqueda = () => {
                 {grupo.tipo === "usuarios" ? (
                   <div className="usuarios">
                     {grupo.data.map((usuario) => (
-                      <a href="/sobrenosotros">
+                      <a href="/usuario/">
                       <div className="usuario" key={usuario.id}>
                         <img src="/src/img/perfil.webp" alt="" />
                        
@@ -160,7 +160,7 @@ const Busqueda = () => {
                   <div className="book-grid2">
                     {grupo.data.map((libro) => (
                       <div className="book-item2" key={libro.id}>
-                        <a href="/sobrenosotros">
+                        <a href="/libro">
                         <img src={libro.imagen} alt={libro.titulo} />
                         </a>
                       </div>

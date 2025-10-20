@@ -1,0 +1,32 @@
+import React from "react";
+import "../css/ReseñaCard.css";
+
+const ReseñaCard = ({ titulo, autor, portada, texto }) => {
+  return (
+    <a className="link-reseña" href="/reseñalibro">
+    <div className="reseña-card">
+      <div className="reseña-header">
+        <h3 className="titulo">{titulo}</h3>
+        <div className="autor">
+          <span>{autor}</span>
+          
+          <img src="/src/img/perfil.webp" alt="" />
+          
+        </div>
+      </div>
+
+      <div className="reseña-estrellas">
+        {"⭐".repeat(5)}
+        <span className="corazon">❤️</span>
+      </div>
+
+      <div className="reseña-contenido">
+        <img src={portada} alt={titulo} className="portada" />
+        <p className="texto">{texto}</p>
+      </div>
+    </div>
+    </a>
+  );
+};
+
+export default ReseñaCard;

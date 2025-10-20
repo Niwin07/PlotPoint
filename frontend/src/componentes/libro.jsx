@@ -35,7 +35,7 @@ const BookPage = () => {
         <div className="rating-score">
           <p className="score">3.7</p>
           <div className="stars">★★★★☆</div>
-          <button className="rate-button">Calificar libro</button>
+          <button className="rate-button">CALIFICAR LIBRO</button>
         </div>
         
       </div>
@@ -44,12 +44,13 @@ const BookPage = () => {
         <h2>Reseñas</h2>
 
         {["#002244", "#888888", "#e60000", "#ffcc00"].map((color, index) => (
+          
           <div className="review-card" key={index}>
+            <a href="/reseñalibro">
             <div className="review-header">
               <div
-                className="avatar"
-                style={{ backgroundColor: color }}
-              ></div>
+                className="avatar-foto"
+              ><img src="/src/img/perfil.webp"></img></div>
               <p className="review-user">Beck</p>
               <div className="review-stars">★★★★☆</div>
             </div>
@@ -57,7 +58,10 @@ const BookPage = () => {
               so heartbreaking i lowkey started to feel bad for watching sitting
               down
             </p>
+            </a>
           </div>
+          
+          
         ))}
       </div>
     </div>
