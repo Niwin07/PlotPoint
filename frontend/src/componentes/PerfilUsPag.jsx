@@ -7,7 +7,7 @@ export default function ProfilePageUs() {
     <div className="containerperfil">
       
 
-      {/* Profile Content */}
+      {/* contenedor de tu perfil */}
       <div className="profile-content">
        
        
@@ -20,6 +20,8 @@ export default function ProfilePageUs() {
 
         <div className='editar'>
             <h2 className="username">tu_perfil</h2>
+
+            {/* aqui te direccionara al componente que te permitira editar el nombre de usuario, contraseña o biografia de tu perfil */}
             <a href="editarperfil">
                 <img src="/src/img/editar.webp" alt="" />
             </a>
@@ -28,12 +30,12 @@ export default function ProfilePageUs() {
         
 
         
-        {/* Bio */}
+        {/* Biografia */}
         <p className="bio">
           Hola me llamo Gustavo, me fascinan los libros de fantasía y mi mayor sueño es poder realizar mi propio libro que trate del medio ambiente!
         </p>
 
-        {/* Stats */}
+        {/* cantidad de seguidores, seguidos y reseñas de tu perfil*/}
         <div className="stats">
           <div className="stat-item">
             <div className="stat-number">8</div>

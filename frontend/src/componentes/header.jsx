@@ -3,7 +3,11 @@ import '../css/header.css';
 
 
 const Header = () => {
+    
      useEffect(() => {
+
+        //este useEffect se encarga de que el menu desplegable se active y funcione al estar en tamaño de un dispositivo movil
+        //activa una clase del css que se encargara de mostrar el menu desplegado si tocas el menu 
         let header = document.querySelector('.header');
         let navbar = document.querySelector('.header .flex .navbar');
         let menuBtn = document.getElementById('menu-btn');

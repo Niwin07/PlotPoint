@@ -47,6 +47,8 @@ export default function HeaderNavegacion() {
 import React from 'react';
 import '../css/PerfilPag.css';
 
+//importamos los componentes que utiliza nuestro perfil
+
 import MeGustas from '/src/componentes/MeGustas';
 import PerfilPagUs from '/src/componentes/PerfilUsPag';
 import ListaReseñas from '/src/componentes/ListaReseñas';
@@ -54,6 +56,9 @@ import EditarPerfil from '/src/componentes/EditarPerfil'
 import { Route, Link, useRoute } from "wouter";
 
 export default function HeaderNavegacion() {
+
+    // con esto hacemos que al seleccionar una seccion del perfil (ejemplo "reseñas") se active una clase del css que indique en el navegador del usuario
+    //que nos movimos a esa seccion con un border abajo del nombre de la seccion
     const [matchPerfil] = useRoute("/perfil");
     const [matchReseñas] = useRoute("/perfil/reseñas");
     const [matchMeGustas] = useRoute("/perfil/megustas");
@@ -62,6 +67,10 @@ export default function HeaderNavegacion() {
         <>
             <nav className="nav">
                 <Link href="/perfil/">
+                
+                    {/* activa la clase */}
+
+
                     <div className={`nav-item ${matchPerfil ? "nav-item-active" : ""}`}>
                         Perfil
                     </div>
@@ -79,6 +88,8 @@ export default function HeaderNavegacion() {
                     </div>
                 </Link>
             </nav>
+
+            {/* renderiza el componente seleccionado en el navegador de perfil */}
 
             <Route path="/perfil">
                 <PerfilPagUs />

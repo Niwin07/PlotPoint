@@ -3,6 +3,9 @@ import "../css/libro.css";
 
 const BookPage = () => {
   return (
+
+    //se imprimiran los datos del libro consultado
+
     <div className="book-container">
       <div className="book-header">
         <div className="book-cover-container">
@@ -42,6 +45,8 @@ const BookPage = () => {
 
       <div className="reviews2">
         <h2>Reseñas</h2>
+
+        {/* simulamos reseñas a este libro */}
 
         {["#002244", "#888888", "#e60000", "#ffcc00"].map((color, index) => (
           

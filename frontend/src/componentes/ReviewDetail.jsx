@@ -3,6 +3,8 @@ import '../css/ReviewDetail.css';
 
 export default function BookReviewApp() {
   const [comment, setComment] = useState('');
+
+  //simulamos comentarios de usuarios referentes a la reseña de un usuario
   const [reviews, setReviews] = useState([
     {
       id: 1,
@@ -30,6 +32,8 @@ export default function BookReviewApp() {
     }
   ]);
 
+  //simulamos que hacemos un comentario reaccionando a la reseña
+
   const handleSubmit = () => {
     if (comment.trim()) {
       const newReview = {
@@ -44,7 +48,10 @@ export default function BookReviewApp() {
   };
 
   return (
+
+    
     <div className="container">
+      {/* tarjeta detallada de una reseña en espefico */}
       <div className="main-card">
         <div className="usuario-reseña">
           <a className="usuario-reseña" href='/usuario/'>
@@ -71,6 +78,7 @@ export default function BookReviewApp() {
 
        
       </div>
+      {/* seccion para agregar tu comentario*/}
        <div className="input-section">
           <input
             type="text"
@@ -86,6 +94,8 @@ export default function BookReviewApp() {
         </div>
 
       <div className="reviews-list">
+
+        {/* imprimimos los comentarios */}
         {reviews.map((review) => (
           <div key={review.id} className="comentario-card">
             

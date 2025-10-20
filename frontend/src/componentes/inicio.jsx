@@ -4,6 +4,8 @@ import portadaHP from '/src/img/libro.webp'
 
 
 const Inicio = () => {
+
+    //simulacion de datos
     const populares = [
         {
             titulo: "Harry Potter and the Deathly Hallows",
@@ -129,6 +131,8 @@ const Inicio = () => {
             <section class="section">
                 <h1>Lo popular esta semana</h1>
                 <div class="book-grid">
+
+                    {/*imprimimos el array de libros mas populares */}
                     {populares.map((popular) => (
                         <div key={popular.id} className="book-item">
                             <a href='/libro'>
@@ -145,6 +149,8 @@ const Inicio = () => {
             <section class="section">
                 <h1>Mas leídos</h1>
                 <div class="book-grid">
+
+                    {/*imprimimos el array de libros mas leidos */}
                     {leidos.map((leido) => (
                         <div key={leido.id} className="book-item">
                             <a href='/libro'>
@@ -158,6 +164,8 @@ const Inicio = () => {
             <section class="section">
                 <h1>Favoritos de tus amigos</h1>
                 <div class="book-grid">
+
+                    {/*imprimimos el array de los libros favoritos de tus amigos (gente que sigues)*/}
                     {favoritos.map((favorito) => (
                         <div key={favorito.id} className="book-item">
                             <a href='/libro'>

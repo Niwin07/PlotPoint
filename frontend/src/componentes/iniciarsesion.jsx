@@ -7,16 +7,23 @@ const IniciarSesion = () => {
     const [errores, setErrores] = useState({});
     const [mensaje, setMensaje] = useState('');
 
+    //setea el valor que estas agregando/cambiando 
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setDato(name, value);
     };
 
+    //realiza una breve validacion en el frontend antes de verificar si los datos existen en el backend, esto es para que no se realizen consultas innecesarias
+
     const validar = (e) => {
         e.preventDefault();
         let erroresTemp = {};
+
+        //verifica si los valores no sean nulos o si no cumplen con los 6 caracteres minimos
         if (!usuario.nombres.trim() || usuario.nombres.length < 6) erroresTemp.nombres = 'Usuario requerido';
         if (!usuario.contraseñas || usuario.contraseñas.length < 6) erroresTemp.contraseñas = 'Contraseña requerida';
+        //imprime el error para que el usuario se entere
         setErrores(erroresTemp);
 
         if (Object.keys(erroresTemp).length === 0) {

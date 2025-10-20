@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import '../css/EditarPerfil.css';
 
 export default function EditProfilePage() {
+
+  //simula datos de un usuario
   const [formData, setFormData] = useState({
     username: 'usuario_nombre',
     email: 'santaespinacruz@gmail.com',
@@ -11,6 +13,8 @@ export default function EditProfilePage() {
     photoName: ''
   });
 
+  //si cambiar el nombre y la biografia lo setea a FormData
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -18,6 +22,8 @@ export default function EditProfilePage() {
       [name]: value
     }));
   };
+
+  //si cambia la foto de perfil lo setea a FormData
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -30,6 +36,8 @@ export default function EditProfilePage() {
     }
   };
 
+  //simulacion si guardas los datos correctamente
+
   const handleSave = () => {
     console.log('Datos guardados:', formData);
     alert('Perfil actualizado exitosamente!');
@@ -39,9 +47,9 @@ export default function EditProfilePage() {
     <div className="edit-page-container">
     
 
-      {/* Main Content */}
+      {/* Contenedor */}
       <div className="edit-main-content">
-        {/* Username Field */}
+        {/* nombre de usuario*/}
         <div className="field-container">
           <label className="field-label">Nombre de usuario</label>
           <input
@@ -53,7 +61,7 @@ export default function EditProfilePage() {
           />
         </div>
 
-        {/* Email Field (Disabled) */}
+        {/* tu correo electronico (desabilitado) */}
         <div className="field-container">
           <label className="field-label">Correo electronico</label>
           <input
@@ -65,7 +73,7 @@ export default function EditProfilePage() {
           />
         </div>
 
-        {/* Photo Upload */}
+        {/* cambiar foto de perfil */}
         <div className="photo-container">
           <input
             type="file"
@@ -82,7 +90,7 @@ export default function EditProfilePage() {
           </span>
         </div>
 
-        {/* Biography Field */}
+        {/* Biografia textarea */}
         <div className="field-container">
           <label className="field-label">Biografia</label>
           <textarea
@@ -94,7 +102,7 @@ export default function EditProfilePage() {
           />
         </div>
 
-        {/* Action Buttons */}
+        {/*botones de accion*/}
         <div className="button-container">
           <button onClick={handleSave} className="save-button">
             Guardar
@@ -104,7 +112,7 @@ export default function EditProfilePage() {
           </button>
         </div>
 
-        {/* Logout Link */}
+        {/* cerrar sesion */}
         <div className="logout-container">
           <a href='/iniciarsesion' className="logout-button">Cerrar sesión</a>
         </div>

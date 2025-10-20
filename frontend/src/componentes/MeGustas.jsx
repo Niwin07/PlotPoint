@@ -5,6 +5,8 @@ import portadaHP from '/src/img/libro.webp'
 
 const MeGustas = () => {
 
+    //simula un array de libros a las cuales TE GUSTARON A TI o a UN USUARIO en especifico
+
     const libros = [
         {
             titulo: "Harry Potter and the Deathly Hallows",
@@ -42,6 +44,9 @@ const MeGustas = () => {
 
 
                 <div class="book-grid">
+                    {/* imprimimos el array para que lo vea el usuario */}
+
+
                     {libros.map((libro) => (
                         <div key={libro.id} className="book-item">
                             <a href='/libro'>

@@ -8,6 +8,8 @@ const Signup = () => {
     const [terminos, setTerminos] = useState(false);
     const [errores, setErrores] = useState({});
 
+    //setea el valor que estas agregando/cambiando 
+
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         if (name === 'terminos') {
@@ -17,27 +19,35 @@ const Signup = () => {
         }
     };
 
+    //realiza una breve validacion de los datos ingresados
+
     const validarValores = (e) => {
         e.preventDefault();
         let erroresTemp = {};
 
         if (!usuario.nombres.trim() || usuario.nombres.length < 6) {
+            //por si nombre incumple (esta vacio o tiene menos de 6 caracteres)
             erroresTemp.nombres = 'El nombre de usuario debe tener al menos 6 caracteres';
         }
         if (!usuario.emails.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,4})+$/)) {
+            //por si el correo incumple (no cumple con la estructura de un correo, "@" ".")
             erroresTemp.emails = 'Correo electrónico inválido';
         }
         if (usuario.contraseñas.length < 6) {
+            //por si la contraseña incumple  (esta vacio o tiene menos de 6 caracteres)
             erroresTemp.contraseñas = 'La contraseña debe tener al menos 6 caracteres';
         }
         if (!terminos) {
+            //por si no aprobaste los terminos y condiciones (check)
             erroresTemp.terminos = 'Debes aceptar los términos y condiciones';
         }
+
+        //imprime el error en el componente para que el usuario lo vea
 
         setErrores(erroresTemp);
 
         if (Object.keys(erroresTemp).length === 0) {
-            // Aquí puedes enviar los datos al backend
+            // Aquí ya puedes enviar los datos al backend
             window.location.href = '/inicio'; 
             console.log('Datos válidos:', { ...usuario, terminos });
         }

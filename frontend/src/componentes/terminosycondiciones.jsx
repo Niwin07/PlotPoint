@@ -1,10 +1,15 @@
 import React from 'react';
 import '../css/terminosycondiciones.css';
 
+//terminos y condiciones, sin mas.
+
 
 
 const Tyc = () => {
     const handleBack = () => {
+        //te devuelve al componente o componentes anteriormente renderizados, esto para evitar que el usuario ingrese a otra seccion que no este
+        //permitido (ejemplo: en el crear cuenta, el usuario debe ver y aceptar los terminos y condiciones al momento de crear cuenta, y esto hara
+        //que el usuario no tenga acceso al header o al footer del navegacion si no esta  logueado)
         window.history.back();
     }
     return (

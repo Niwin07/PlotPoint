@@ -1,6 +1,8 @@
 import React from "react";
 import "../css/ReseñaCard.css";
 
+//tarjeta de reseña de un usuario en espeficico o tuyo (para la seccion de "reseñas" del perfil)
+
 const ReseñaCardUs = ({ titulo, portada, texto }) => {
   return (
     <a className="link-reseña" href="/reseñalibro">

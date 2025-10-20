@@ -4,6 +4,8 @@ import '../css/sobrenosotros.css';
 
 const SobreNosotros = () => {
     useEffect(() => {
+        //este useEffect se encargara accionar una clase dependiedo de la pregunta que quieras conocer de nosotros y de ocultar las otras que no
+        //seleccionaste
         const preguntas = document.querySelectorAll('.pregunta');
         preguntas.forEach(pregunta => {
             pregunta.addEventListener('click', function () {
@@ -41,6 +43,8 @@ const SobreNosotros = () => {
                     </div>
                     <div class="accordion-container">
                         <div class="box-preguntas">
+
+                            {/* preguntas con sus respuestas ocultas hasta que tocas la pregunta */}
                             <h1 class="pregunta">
                                 ¿Que es Plotpoint?
                             </h1>
@@ -89,6 +93,7 @@ const SobreNosotros = () => {
             <section class="reviews" id="reviews">
 
                 <div class="reviews-slider">
+                    {/* informacion de los desarrolladores (David y Nehuen) */}
                     <div class="base">
                         <div class="developer">
                             <div class="developer-info">

@@ -1,51 +1,7 @@
-/*
 import React from 'react';
 import '../css/PerfilPag.css';
 
-import MeGustas from '/src/componentes/MeGustas';
-import PerfilPag from '/src/componentes/PerfilPag';
-import ListaReseñas from '/src/componentes/ListaReseñas';
-import { Route, Link, useRoute } from "wouter";
-
-export default function HeaderNavegacion() {
-    return (
-        <>
-            <nav className="nav">
-                <a href='/headernavegacion'>
-                    <div className="nav-item nav-item-active">
-                        Perfil
-                    </div>
-                </a>
-                <a href='/headernavegacion/reseñas'>
-                    <div className="nav-item">
-                        Reseñas
-                    </div>
-                </a>
-                <a href='/headernavegacion/megustas'>
-                    <div className="nav-item">
-                        Me gustas
-                    </div>
-                </a>
-            </nav>
-
-            <Route path="/headernavegacion">
-                <PerfilPag />
-            </Route>
-
-            <Route path="/headernavegacion/reseñas">
-                <ListaReseñas />
-            </Route>
-
-            <Route path="/headernavegacion/megustas">
-               <MeGustas />
-            </Route>
-        </>
-    );
-}
-*/
-
-import React from 'react';
-import '../css/PerfilPag.css';
+//importamos los componentes que utiliza el usuario
 
 import MeGustas from '/src/componentes/MeGustas';
 import PerfilPag from '/src/componentes/PerfilPag';
@@ -54,6 +10,10 @@ import ListaReseñas from '/src/componentes/ListaReseñas';
 import { Route, Link, useRoute } from "wouter";
 
 export default function Usuario() {
+
+    
+    // con esto hacemos que al seleccionar una seccion del usuario (ejemplo "reseñas") se active una clase del css que indique en el navegador del usuario
+    //que nos movimos a esa seccion con un border abajo del nombre de la seccion
     const [matchPerfil] = useRoute("/usuario");
     const [matchReseñas] = useRoute("/usuario/reseñas");
     const [matchMeGustas] = useRoute("/usuario/megustas");
@@ -61,6 +21,8 @@ export default function Usuario() {
     return (
         <>
             <nav className="nav">
+
+                 {/* activa la clase */}
                 <Link href="/usuario/">
                     <div className={`nav-item ${matchPerfil ? "nav-item-active" : ""}`}>
                         Perfil
@@ -79,6 +41,8 @@ export default function Usuario() {
                     </div>
                 </Link>
             </nav>
+
+            {/* renderiza el componente seleccionado en el navegador de perfil */}
 
             <Route path="/usuario">
                 <PerfilPag />

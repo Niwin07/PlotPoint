@@ -5,10 +5,10 @@ import '../css/PerfilPag.css';
 export default function ProfilePage() {
   return (
     <div className="containerperfil">
-      {/* Header Navigation */}
+      
       
 
-      {/* Profile Content */}
+      {/* contenedor de usuario*/}
       <div className="profile-content">
        
        
@@ -19,18 +19,18 @@ export default function ProfilePage() {
           <div className="dot-decoration"></div>
         </div>
 
-        {/* Username */}
+        {/* nombre de usuario */}
         <h2 className="username">usuario_diferente</h2>
 
-        {/* Follow Button */}
+        {/* boton de seguir */}
         <button className="follow-button">Seguir</button>
 
-        {/* Bio */}
+        {/* biografia */}
         <p className="bio">
           Hola me llamo Gustavo, me fascinan los libros de fantasía y mi mayor sueño es poder realizar mi propio libro que trate del medio ambiente!
         </p>
 
-        {/* Stats */}
+        {/* cantidad de seguidores, seguidos y reseñas del usuario */}
         <div className="stats">
           <div className="stat-item">
             <div className="stat-number">8</div>

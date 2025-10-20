@@ -4,6 +4,8 @@ import ReseñaCardUs from "./ReseñaCardUs";
 import portadaHP from "/src/img/libro.webp"; 
 
 const ListaReseñasInicio = () => {
+
+  //simula un array de reseñas de VARIOS USUARIOS  (unicamente para la seccion de "reseñas" del inicio) 
   const reseñas = [
     {
       titulo: "Harry Potter and the Deathly Hallows",
@@ -37,6 +39,8 @@ const ListaReseñasInicio = () => {
 
   return (
     <div className="lista-reseñas">
+
+      {/* se imprimen las reseñas al array */}
       {reseñas.map((r, i) => (
         <ReseñaCard key={i} {...r} />
       ))}
