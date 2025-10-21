@@ -14,6 +14,8 @@ import ReviewDetail from './componentes/ReviewDetail';
 import Perfil from './componentes/Perfil';
 import Usuario from './componentes/Usuario'
 import ListaReseñasInicio from './componentes/ListaReseñasInicio'
+
+import ModalNoCuenta from './componentes/ModalNoCuenta'
 import { Route, Switch, useLocation } from "wouter";
 
 import './App.css'
@@ -23,7 +25,7 @@ import './App.css'
 function App() {
 
   const [location] = useLocation();
-
+  const [showModal, setShowModal] = useState(false);
   const ocultarLayout = ["/iniciarsesion", "/registro", "/terminosycondiciones"].includes(location);
 
   return (
@@ -42,21 +44,28 @@ function App() {
           <Route path="/registro" component={Crearcuenta} />
           <Route path="/busqueda" component={Busqueda} />
           <Route path="/libro" component={libro} />
-          
+
           <Route path="/reseñalibro" component={ReviewDetail} />
 
-          <Route path="/reseñasinicio" component={ListaReseñasInicio}/>
-          
-          
+          <Route path="/reseñasinicio" component={ListaReseñasInicio} />
+
+
 
           <Route path="/usuario/*" component={Usuario} />
-          
-         
+
+
           <Route path="/perfil/*" component={Perfil} />
 
 
           <Route><h1>Pagina no existente :(</h1></Route>
         </Switch>
+        {/*
+
+        <button onClick={() => setShowModal(true)}>Abrir modal</button>
+
+        {showModal && <ModalNoCuenta onClose={() => setShowModal(false)} />}
+
+        */}
 
       </main>
 

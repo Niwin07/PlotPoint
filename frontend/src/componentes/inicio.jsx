@@ -1,6 +1,5 @@
 import React from 'react';
 import '../css/inicio.css';
-import portadaHP from '/src/img/libro.webp'
 
 
 const Inicio = () => {
@@ -10,37 +9,27 @@ const Inicio = () => {
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 1,
-            portada: portadaHP,
-            texto: "An unforgettable experience that blends emotion, tension, and beauty in perfect harmony. The characters feel alive, their choices meaningful, and the world richly detailed. Every twist adds weight to the story, creating a rhythm that never loses momentum. It’s the kind of book that leaves you quiet afterward, lost in thought, replaying moments and lines long after the final page is turned.",
-            color: "blue",
+            portada: "/src/img/libro.webp",
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 2,
-            portada: portadaHP,
-            texto: "so heartbreaking i lowkey started to feel bad for watching sitting down",
-            color: "magenta",
+            portada: "/src/img/libro.webp",
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 3,
-            portada: portadaHP,
-            texto: "so heartbreaking i lowkey started to feel bad for watching sitting down",
-            color: "limegreen",
+            portada: "/src/img/libro.webp",
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 4,
-            portada: portadaHP,
-            texto: "so heartbreaking i lowkey started to feel bad for watching sitting down",
-            color: "goldenrod",
+            portada: "/src/img/libro.webp",
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 5,
-            portada: portadaHP,
-            texto: "so heartbreaking i lowkey started to feel bad for watching sitting down",
-            color: "goldenrod",
+            portada: "/src/img/libro.webp",
         },
     ];
 
@@ -48,44 +37,32 @@ const Inicio = () => {
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 1,
-            portada: portadaHP,
-            texto: "An unforgettable experience that blends emotion, tension, and beauty in perfect harmony. The characters feel alive, their choices meaningful, and the world richly detailed. Every twist adds weight to the story, creating a rhythm that never loses momentum. It’s the kind of book that leaves you quiet afterward, lost in thought, replaying moments and lines long after the final page is turned.",
-            color: "blue",
+            portada: "/src/img/libro.webp",
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 2,
-            portada: portadaHP,
-            texto: "so heartbreaking i lowkey started to feel bad for watching sitting down",
-            color: "magenta",
+            portada: "/src/img/libro.webp",
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 3,
-            portada: portadaHP,
-            texto: "so heartbreaking i lowkey started to feel bad for watching sitting down",
-            color: "limegreen",
+            portada: "/src/img/libro.webp",
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 4,
-            portada: portadaHP,
-            texto: "so heartbreaking i lowkey started to feel bad for watching sitting down",
-            color: "goldenrod",
+            portada: "/src/img/libro.webp",
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 5,
-            portada: portadaHP,
-            texto: "so heartbreaking i lowkey started to feel bad for watching sitting down",
-            color: "goldenrod",
+            portada: "/src/img/libro.webp",
         },
           {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 6,
-            portada: portadaHP,
-            texto: "so heartbreaking i lowkey started to feel bad for watching sitting down",
-            color: "goldenrod",
+            portada: "/src/img/libro.webp",
         }
     ];
 
@@ -93,37 +70,27 @@ const Inicio = () => {
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 1,
-            portada: portadaHP,
-            texto: "An unforgettable experience that blends emotion, tension, and beauty in perfect harmony. The characters feel alive, their choices meaningful, and the world richly detailed. Every twist adds weight to the story, creating a rhythm that never loses momentum. It’s the kind of book that leaves you quiet afterward, lost in thought, replaying moments and lines long after the final page is turned.",
-            color: "blue",
+            portada:"/src/img/libro.webp",
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 2,
-            portada: portadaHP,
-            texto: "so heartbreaking i lowkey started to feel bad for watching sitting down",
-            color: "magenta",
+            portada: "/src/img/libro.webp",
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 3,
-            portada: portadaHP,
-            texto: "so heartbreaking i lowkey started to feel bad for watching sitting down",
-            color: "limegreen",
+            portada: "/src/img/libro.webp",
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 4,
-            portada: portadaHP,
-            texto: "so heartbreaking i lowkey started to feel bad for watching sitting down",
-            color: "goldenrod",
+            portada: "/src/img/libro.webp",
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 5,
-            portada: portadaHP,
-            texto: "so heartbreaking i lowkey started to feel bad for watching sitting down",
-            color: "goldenrod",
+            portada: "/src/img/libro.webp",
         },
     ];
     return (
@@ -136,7 +103,7 @@ const Inicio = () => {
                     {populares.map((popular) => (
                         <div key={popular.id} className="book-item">
                             <a href='/libro'>
-                                <img src="/src/img/libro.webp" alt="Harry Potter and the Deathly Hallows"></img>
+                                <img src={popular.portada} alt={popular.titulo}></img>
                             </a>
                         </div>
                     ))}
@@ -154,7 +121,7 @@ const Inicio = () => {
                     {leidos.map((leido) => (
                         <div key={leido.id} className="book-item">
                             <a href='/libro'>
-                                <img src="/src/img/libro.webp" alt="Harry Potter and the Deathly Hallows"></img>
+                                <img src={leido.portada} alt={leido.titulo}></img>
                             </a>
                         </div>
                     ))}
@@ -169,7 +136,7 @@ const Inicio = () => {
                     {favoritos.map((favorito) => (
                         <div key={favorito.id} className="book-item">
                             <a href='/libro'>
-                                <img src="/src/img/libro.webp" alt="Harry Potter and the Deathly Hallows"></img>
+                                <img src={favorito.portada} alt={favorito.titulo}></img>
                             </a>
                         </div>
                     ))}

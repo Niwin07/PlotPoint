@@ -1,8 +1,30 @@
 
-import React from 'react';
+import React,  { useState } from 'react';
 import '../css/PerfilPag.css';
 
 export default function ProfilePage() {
+   const user = {
+    id: 1,
+    nombreUsuario: "usuario_diferente",
+    fotoPerfil: "/src/img/perfil.webp",
+    biografia:
+      "Hola me llamo Gustavos, me fascinan los libros de fantasía y mi mayor sueño es poder realizar mi propio libro que trate del medio ambiente!",
+    reseñas: 8,
+    seguidores: 7,
+    seguidos: 4,
+    siguiendo: true, // por si después querés alternar el botón de seguir
+  };
+
+   const [isFollowing, setIsFollowing] = useState(user.siguiendo);
+
+  // Al apretar el botón
+  const handleFollow = () => {
+    setIsFollowing((prev) => !prev);
+  };
+
+  // (opcional) función que podría simular seguir/dejar de seguir
+  
+
   return (
     <div className="containerperfil">
       
@@ -15,33 +37,41 @@ export default function ProfilePage() {
 
         {/* Profile Avatar */}
         <div className="avatar-container">
-          <img className="perfil-foto" src="/src/img/perfil.webp"></img>
+          <img className="perfil-foto" src={user.fotoPerfil}></img>
           <div className="dot-decoration"></div>
         </div>
 
         {/* nombre de usuario */}
-        <h2 className="username">usuario_diferente</h2>
+        <h2 className="username">{user.nombreUsuario}</h2>
 
-        {/* boton de seguir */}
-        <button className="follow-button">Seguir</button>
+
+         <button
+          className="follow-button"
+          onClick={handleFollow}
+          style={{
+            backgroundColor: isFollowing ? "var(--secundario2)" : "var(--secundario1)",
+          }}
+        >
+          {isFollowing ? "Seguido" : "Seguir"}
+        </button>
 
         {/* biografia */}
         <p className="bio">
-          Hola me llamo Gustavo, me fascinan los libros de fantasía y mi mayor sueño es poder realizar mi propio libro que trate del medio ambiente!
+         {user.biografia}
         </p>
 
         {/* cantidad de seguidores, seguidos y reseñas del usuario */}
         <div className="stats">
           <div className="stat-item">
-            <div className="stat-number">8</div>
+            <div className="stat-number">{user.reseñas}</div>
             <div className="stat-label">Reseñas</div>
           </div>
           <div className="stat-item">
-            <div className="stat-number">7</div>
+            <div className="stat-number">{user.seguidores}</div>
             <div className="stat-label">Seguidores</div>
           </div>
           <div className="stat-item">
-            <div className="stat-number">4</div>
+            <div className="stat-number">{user.seguidos}</div>
             <div className="stat-label">Seguidos</div>
           </div>
         </div>

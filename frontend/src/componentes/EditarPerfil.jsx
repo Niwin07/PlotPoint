@@ -1,9 +1,12 @@
 
 import React, { useState } from 'react';
 import '../css/EditarPerfil.css';
+import ModalContraseña from './ModalContraseña'
 
 export default function EditProfilePage() {
+  //para manejar el modal para cambiar contraseña
 
+  const [showModal, setShowModal] = useState(false);
   //simula datos de un usuario
   const [formData, setFormData] = useState({
     username: 'usuario_nombre',
@@ -107,7 +110,7 @@ export default function EditProfilePage() {
           <button onClick={handleSave} className="save-button">
             Guardar
           </button>
-          <button className="password-button">
+          <button className="password-button" onClick={() => setShowModal(true)}>
             Cambiar contraseña
           </button>
         </div>
@@ -117,6 +120,7 @@ export default function EditProfilePage() {
           <a href='/iniciarsesion' className="logout-button">Cerrar sesión</a>
         </div>
       </div>
+      {showModal && <ModalContraseña onClose={() => setShowModal(false)} />}
     </div>
   );
 }

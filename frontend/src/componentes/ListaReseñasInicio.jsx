@@ -1,7 +1,7 @@
 import React from "react";
 import ReseñaCard from "./ReseñaCard";
 import ReseñaCardUs from "./ReseñaCardUs";
-import portadaHP from "/src/img/libro.webp"; 
+
 
 const ListaReseñasInicio = () => {
 
@@ -10,30 +10,35 @@ const ListaReseñasInicio = () => {
     {
       titulo: "Harry Potter and the Deathly Hallows",
       autor: "Maria_Jose_Rodriguez2006",
-      portada: portadaHP,
+      portada: "/src/img/libro.webp",
       texto: "An unforgettable experience that blends emotion, tension, and beauty in perfect harmony. The characters feel alive, their choices meaningful, and the world richly detailed. Every twist adds weight to the story, creating a rhythm that never loses momentum. It’s the kind of book that leaves you quiet afterward, lost in thought, replaying moments and lines long after the final page is turned.",
-      color: "blue",
+      rating: 2.5,
+      perfil: "/src/img/perfil.webp"
     },
     {
       titulo: "Harry Potter and the Deathly Hallows",
       autor: "Beck",
-      portada: portadaHP,
+      portada: "/src/img/libro.webp",
       texto: "so heartbreaking i lowkey started to feel bad for watching sitting down",
-      color: "magenta",
+      rating: 1,
+      perfil: "/src/img/perfil.webp"
     },
     {
       titulo: "Harry Potter and the Deathly Hallows",
       autor: "Beck",
-      portada: portadaHP,
+      portada: "/src/img/libro.webp",
       texto: "so heartbreaking i lowkey started to feel bad for watching sitting down",
-      color: "limegreen",
+      rating: 5,
+      perfil: "/src/img/perfil.webp"
+    
     },
     {
       titulo: "Harry Potter and the Deathly Hallows",
       autor: "Beck",
-      portada: portadaHP,
+      portada: "/src/img/libro.webp",
       texto: "so heartbreaking i lowkey started to feel bad for watching sitting down",
-      color: "goldenrod",
+      rating: 3,
+      perfil: "/src/img/perfil.webp"
     },
   ];
 
