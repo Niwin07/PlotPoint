@@ -6,6 +6,8 @@ import './App.css';
 
 //  Componentes comunes
 import Header from './componentes/common/header';
+import HeaderAdmin from './componentes/administracion/HeaderAdmin'
+
 import Footer from './componentes/common/footer';
 
 //  Páginas principales
@@ -66,10 +68,13 @@ function App() {
           <Route path="/iniciarsesion" component={Iniciarsesion} />
           <Route path="/registro" component={Crearcuenta} />
 
-          {/* ℹ Información y soporte */}
+          {/*  Información y soporte */}
           <Route path="/sobrenosotros" component={SobreNosotros} />
           <Route path="/soporte" component={Soporte} />
           <Route path="/terminosycondiciones" component={Tyc} />
+
+          {/* Admin seccion*/}
+          <Route path="/admin/*" component={HeaderAdmin}/>
 
           {/*  Página no encontrada */}
           <Route><h1>Página no existente :(</h1></Route>

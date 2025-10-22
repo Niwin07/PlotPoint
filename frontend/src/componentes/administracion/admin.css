@@ -1,0 +1,42 @@
+table {
+    width:100%;
+    height: 100%;
+}
+table {
+    border: 1px solid black;
+    border-collapse: collapse;
+    overflow: hidden;
+    margin:auto;
+}
+th, td {
+    padding: 15px;
+    text-align: center;
+    font-size: initial;
+}
+table#t01 tr:nth-child(even) {
+    background-color: #eee;
+}
+table#t01 tr:nth-child(odd) {
+   background-color: #fff;
+}
+table#t01 th {
+    color: var(--texto);
+    background-color: var(--light-color);
+}
+.Borrar{
+    padding: 2px 8px;
+    background-color: var(--secundario1);
+    color: white;
+    border-radius: 4px;
+    margin:2px;
+    
+    
+}
+.Editar{
+    padding: 2px 8px;
+    background-color: var(--secundario2);
+    color: white;
+    border-radius: 4px;
+    margin: 2px;
+    
+}
