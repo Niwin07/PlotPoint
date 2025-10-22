@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import useUsuario from '../hooks/useUsuario';
-import '../css/iniciarsesion.css';
+import useUsuario from '/src/hooks/useUsuario';
+import '/src/componentes/auth/iniciarsesion.css';
 
 const IniciarSesion = () => {
     const [usuario, setDato] = useUsuario();

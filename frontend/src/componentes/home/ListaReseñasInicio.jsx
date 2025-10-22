@@ -1,46 +1,56 @@
 import React from "react";
 import ReseñaCard from "./ReseñaCard";
-import ReseñaCardUs from "./ReseñaCardUs";
-import portadaHP from "/src/img/libro.webp"; 
+import ReseñaCardUs from "../perfil/ReseñaCardUs";
 
-const ListaReseñas = () => {
 
-  //simulamos las reseñas de UN USUARIO (para ver tus reseñas o las de un usuario en particular) 
+const ListaReseñasInicio = () => {
+
+  //simula un array de reseñas de VARIOS USUARIOS  (unicamente para la seccion de "reseñas" del inicio) 
   const reseñas = [
     {
       titulo: "Harry Potter and the Deathly Hallows",
+      autor: "Maria_Jose_Rodriguez2006",
       portada: "/src/img/libro.webp",
       texto: "An unforgettable experience that blends emotion, tension, and beauty in perfect harmony. The characters feel alive, their choices meaningful, and the world richly detailed. Every twist adds weight to the story, creating a rhythm that never loses momentum. It’s the kind of book that leaves you quiet afterward, lost in thought, replaying moments and lines long after the final page is turned.",
-      rating: 2,
+      rating: 2.5,
+      perfil: "/src/img/perfil.webp"
     },
     {
       titulo: "Harry Potter and the Deathly Hallows",
-      portada:"/src/img/libro.webp",
-      texto: "so heartbreaking i lowkey started to feel bad for watching sitting down",
-      rating: 3,
-    },
-    {
-      titulo: "Harry Potter and the Deathly Hallows",
+      autor: "Beck",
       portada: "/src/img/libro.webp",
       texto: "so heartbreaking i lowkey started to feel bad for watching sitting down",
-      rating: 4,
+      rating: 1,
+      perfil: "/src/img/perfil.webp"
     },
     {
       titulo: "Harry Potter and the Deathly Hallows",
+      autor: "Beck",
       portada: "/src/img/libro.webp",
       texto: "so heartbreaking i lowkey started to feel bad for watching sitting down",
       rating: 5,
+      perfil: "/src/img/perfil.webp"
+    
+    },
+    {
+      titulo: "Harry Potter and the Deathly Hallows",
+      autor: "Beck",
+      portada: "/src/img/libro.webp",
+      texto: "so heartbreaking i lowkey started to feel bad for watching sitting down",
+      rating: 3,
+      perfil: "/src/img/perfil.webp"
     },
   ];
 
   return (
     <div className="lista-reseñas">
-      {/* se imprime el array de reseñas referente a UN USUARIO*/}
+
+      {/* se imprimen las reseñas al array */}
       {reseñas.map((r, i) => (
-        <ReseñaCardUs key={i} {...r} />
+        <ReseñaCard key={i} {...r} />
       ))}
     </div>
   );
 };
 
-export default ListaReseñas;
+export default ListaReseñasInicio;

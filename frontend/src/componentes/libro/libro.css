@@ -241,6 +241,10 @@
   border-radius: 10px;
   width: 300px;
   text-align: center;
+  border: 1px solid var(--texto);
+}
+.modal h2{
+  font-size: 2rem;
 }
 
 .modal textarea {

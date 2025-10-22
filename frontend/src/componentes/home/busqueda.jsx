@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../css/busqueda.css";
+import "/src/componentes/home/busqueda.css";
 
 const Busqueda = () => {
   const [busqueda, setBusqueda] = useState("");

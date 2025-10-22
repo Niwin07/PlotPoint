@@ -1,5 +1,5 @@
 import React from "react";
-import "../css/ReseñaCard.css";
+import "/src/componentes/home/ReseñaCard.css";
 import Rating from "react-rating";
 
 //tarjeta de las reseñsa de VARIOS USUARIOS (para el la seccion "reseñas" del inicio)

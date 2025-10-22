@@ -19,6 +19,7 @@
   padding: 2rem;
   text-align: center;
   position: relative;
+  border: 1px solid var(--texto);
 }
 
 .volver-btn {

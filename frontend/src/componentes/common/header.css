@@ -40,11 +40,12 @@ img {
 }
 
 ::-webkit-scrollbar-track {
-    background-color: var(--white);
+    background-color: var(--fondo);
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: var(--black);
+    border-radius: 10px;
+    background-color: var(--secundario1);
 }
 /*
 section {

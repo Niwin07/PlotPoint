@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import '../css/header.css';
+import '/src/componentes/common/header.css';
 
 
 const Header = () => {

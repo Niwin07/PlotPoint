@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import '../css/EditarPerfil.css';
-import ModalContraseña from './ModalContraseña'
+import '/src/componentes/perfil/EditarPerfil.css';
+import ModalContraseña from '/src/componentes/modals/ModalContraseña.jsx'
 
 export default function EditProfilePage() {
   //para manejar el modal para cambiar contraseña

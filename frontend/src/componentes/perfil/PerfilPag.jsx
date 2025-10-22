@@ -1,6 +1,6 @@
 
 import React,  { useState } from 'react';
-import '../css/PerfilPag.css';
+import '/src/componentes/perfil/PerfilPag.css';
 
 export default function ProfilePage() {
    const user = {

@@ -1,5 +1,5 @@
 import React from 'react';
-import '../css/soporte.css';
+import '/src/componentes/info/soporte.css';
 
 // este componente se encargara de que si, tienes cualquier duda sobre plotpoint, lo consultes enviandonos un mensaje que nos llegara al correo
 //para que posteriormente nosotros aclaremos o solucionemos tus dudas.

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import useUsuario from '../hooks/useUsuario';
+import useUsuario from '../../hooks/useUsuario';
 
-import '../css/crearcuenta.css';
+import '/src/componentes/auth/crearcuenta.css';
 
 const Signup = () => {
     const [usuario, setDato] = useUsuario();

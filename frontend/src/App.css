@@ -49,8 +49,10 @@ textarea{
     --light-bg: #f4f4f4;
     --box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .1);
     --border: .1rem solid rgba(0, 0, 0, .3);
+    /*
     --gradient: linear-gradient(90deg, var(--cyan), var(--blue));
     --gradient-hover: linear-gradient(90deg, var(--blue), var(--cyan));
+    */
 
 }
 p{

@@ -1,5 +1,5 @@
 import React from 'react';
-import '../css/terminosycondiciones.css';
+import '/src/componentes/info/terminosycondiciones.css';
 
 //terminos y condiciones, sin mas.
 

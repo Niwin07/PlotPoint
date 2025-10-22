@@ -1,11 +1,11 @@
 import React from 'react';
-import '../css/PerfilPag.css';
+import '/src/componentes/perfil/PerfilPag.css';
 
 //importamos los componentes que utiliza el usuario
 
-import MeGustas from '/src/componentes/MeGustas';
-import PerfilPag from '/src/componentes/PerfilPag';
-import ListaReseñas from '/src/componentes/ListaReseñas';
+import MeGustas from '/src/componentes/perfil/MeGustas.jsx';
+import PerfilPag from '/src/componentes/perfil/PerfilPag.jsx';
+import ListaReseñas from '/src/componentes/perfil/ListaReseñas.jsx';
 
 import { Route, Link, useRoute } from "wouter";
 

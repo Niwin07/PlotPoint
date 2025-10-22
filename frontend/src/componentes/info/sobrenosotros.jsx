@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import '../css/sobrenosotros.css';
+import '/src/componentes/info/sobrenosotros.css';
 //import '../js/sobrenosotros.js';
 
 const SobreNosotros = () => {

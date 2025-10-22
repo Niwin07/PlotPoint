@@ -1,5 +1,5 @@
 import React from 'react';
-import '../css/inicio.css';
+import '/src/componentes/home/inicio.css';
 import portadaHP from '/src/img/libro.webp'
 
 

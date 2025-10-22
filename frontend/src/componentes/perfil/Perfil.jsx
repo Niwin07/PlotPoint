@@ -45,14 +45,14 @@ export default function HeaderNavegacion() {
 */
 
 import React from 'react';
-import '../css/PerfilPag.css';
+import '/src/componentes/perfil/PerfilPag.css';
 
 //importamos los componentes que utiliza nuestro perfil
 
-import MeGustas from '/src/componentes/MeGustas';
-import PerfilPagUs from '/src/componentes/PerfilUsPag';
-import ListaReseñas from '/src/componentes/ListaReseñas';
-import EditarPerfil from '/src/componentes/EditarPerfil'
+import MeGustas from '/src/componentes/perfil/MeGustas.jsx';
+import PerfilPagUs from '/src/componentes/perfil/PerfilUsPag.jsx';
+import ListaReseñas from '/src/componentes/perfil/ListaReseñas.jsx';
+import EditarPerfil from '/src/componentes/perfil/EditarPerfil.jsx'
 import { Route, Link, useRoute } from "wouter";
 
 export default function HeaderNavegacion() {

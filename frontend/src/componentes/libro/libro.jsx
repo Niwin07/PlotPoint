@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../css/libro.css";
+import "/src/componentes/libro/libro.css";
 import Rating from "react-rating";
 
 

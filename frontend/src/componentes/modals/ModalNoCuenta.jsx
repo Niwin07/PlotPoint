@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../css/ModalNoCuenta.css";
+import "/src/componentes/modals/ModalNoCuenta.css";
 
 export default function ModalNoCuenta({ onClose }) {
   return (

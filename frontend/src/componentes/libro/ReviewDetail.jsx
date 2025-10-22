@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../css/ReviewDetail.css';
+import '/src/componentes/libro/ReviewDetail.css';
 import Rating from "react-rating";
 
 export default function BookReviewApp() {
