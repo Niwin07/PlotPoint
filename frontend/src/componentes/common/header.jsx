@@ -44,9 +44,11 @@ const Header = () => {
 
                 <nav class="navbar">
                     <a href="/inicio">Inicio</a>
-                    <a href="/perfil/">Perfil</a>
-                    <a href="/busqueda">Busqueda</a>
                     <a href="/reseñasinicio">Reseñas</a>
+                    <a href="/busqueda">Busqueda</a>
+                    <a href="/perfil/">Perfil</a>
+                    <a href="/admin/">Admin</a>
+                    <a href="/iniciarsesion">Cerrar sesion</a>
                 </nav>
 
                 <div id="menu-btn" class="fas fa-bars-staggered"></div>

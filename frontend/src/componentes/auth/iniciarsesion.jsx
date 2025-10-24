@@ -30,7 +30,7 @@ const IniciarSesion = () => {
         if (Object.keys(erroresTemp).length === 0) {
             // Aquí iría la petición al backend para validar usuario y contraseña
             console.log('Intentando iniciar sesión con:', usuario);
-             window.location.href = '/admin/'; 
+             window.location.href = '/inicio'; 
         }
     };
 

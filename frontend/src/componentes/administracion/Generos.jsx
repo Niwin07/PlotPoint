@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import '/src/componentes/administracion/admin.css';
 
 
 const Generos = () => {
-
-     const generos = [
+    const [buscador, setBuscador] = useState('');
+     const [generos, setGeneros] = useState([
         {
             "id": 1,
             "nombre": "Ficcion",
@@ -25,13 +25,44 @@ const Generos = () => {
             "nombre": "Ficcion",
             "descripcion": "Donde la accion y el suspenso se roban el escenario",
         },
-      
+    ])
 
+    const Borrar = (id) => {
+        setGeneros(generos.filter(genero => genero.id !== id));
+    };
 
+    const Editar = (id) => {
+        alert(`Editar genero ${id}`);
+    };
 
-    ]
+    const Buscar = () => {
+        alert(`Buscando: ${buscador}`);
+    };
+
+    const Nuevo = () => {
+        alert('Crear nuevo genero');
+    };
+
     return (
-        <>
+        <div>
+            <div className='acciones'>
+                <input
+                    type="text"
+                    placeholder="Buscar genero"
+                    value={buscador}
+                    onChange={(e) => setBuscador(e.target.value)}
+                    className='InputAdmin'
+                />
+
+                <button className='Buscar' onClick={Buscar}>
+                    Buscar
+                </button>
+                <button className='Nuevo' onClick={Nuevo}>
+                    Nuevo
+                </button>
+            </div>
+
+
             <table id="t01">
                 <tr>
                     <th>ID</th>
@@ -48,15 +79,15 @@ const Generos = () => {
                         <td>{genero.descripcion}</td>
                         
                         <td>
-                            <button className='Borrar'>Borrar</button>
-                            <button className='Editar'>Editar</button>
+                            <button className='Borrar' onClick={() => Borrar(genero.id)}>Borrar</button>
+                            <button className='Editar' onClick={() => Editar(genero.id)}>Editar</button>
                         </td>
                     </tr>
 
                 ))}
 
             </table>
-        </>
+        </div>
     );
 };
 export default Generos;

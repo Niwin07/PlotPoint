@@ -117,7 +117,7 @@ export default function EditProfilePage() {
 
         {/* cerrar sesion */}
         <div className="logout-container">
-          <a href='/iniciarsesion' className="logout-button">Cerrar sesión</a>
+          <a href='/registro' className="logout-button">Eliminar cuenta</a>
         </div>
       </div>
       {showModal && <ModalContraseña onClose={() => setShowModal(false)} />}
