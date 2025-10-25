@@ -1,4 +1,3 @@
-// ModalCrearUsuario.jsx
 import React, { useState } from 'react';
 import '/src/componentes/modals/ModalUsuario.css';
 
@@ -55,7 +54,7 @@ export default function ModalCrearUsuario({ alCerrar, alGuardar }) {
   return (
     <div className="modal-overlay" onClick={alCerrar}>
       <div className="modal-usuario-simple" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close" onClick={alCerrar}>×</button>
+  
         
         <button className="boton-volver" onClick={alCerrar}>VOLVER</button>
 
@@ -67,7 +66,7 @@ export default function ModalCrearUsuario({ alCerrar, alGuardar }) {
             value={datosFormulario.nombreUsuario}
             onChange={manejarCambioInput}
             className="campo-input"
-            placeholder="Juan Perez"
+            placeholder="Nombre de usuario"
           />
 
           <h2 className="titulo-campo">Correo</h2>
@@ -77,7 +76,7 @@ export default function ModalCrearUsuario({ alCerrar, alGuardar }) {
             value={datosFormulario.correo}
             onChange={manejarCambioInput}
             className="campo-input"
-            placeholder="juanperez@gmail.com"
+            placeholder="Correo electronico"
           />
 
           <h2 className="titulo-campo">Contraseña</h2>
@@ -88,7 +87,7 @@ export default function ModalCrearUsuario({ alCerrar, alGuardar }) {
               value={datosFormulario.contrasena}
               onChange={manejarCambioInput}
               className="campo-input"
-              placeholder="••••••••"
+              placeholder="Contraseña"
             />
             <button
               type="button"

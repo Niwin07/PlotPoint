@@ -46,7 +46,7 @@
 }
 
 .boton-volver {
-  background-color: #000;
+  background-color: var(--texto);
   color: #fff;
   border: none;
   padding: 6px 14px;
@@ -58,7 +58,7 @@
 }
 
 .boton-volver:hover {
-  background-color: #333;
+  background-color: black;
 }
 
 .formulario-usuario {
@@ -122,7 +122,7 @@
 }
 
 .boton-editar-usuario {
-  background-color: #3498db;
+  background-color: var(--secundario2);
   color: #fff;
   border: none;
   padding: 12px 40px;
@@ -140,7 +140,7 @@
 }
 
 .boton-crear-usuario {
-  background-color: #f39c12;
+  background-color: var(--secundario3);
   color: #fff;
   border: none;
   padding: 12px 40px;

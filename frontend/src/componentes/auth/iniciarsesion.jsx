@@ -12,6 +12,7 @@ const IniciarSesion = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+        console.log(name)
         setDato(name, value);
     };
 
@@ -22,8 +23,8 @@ const IniciarSesion = () => {
         let erroresTemp = {};
 
         //verifica si los valores no sean nulos o si no cumplen con los 6 caracteres minimos
-        if (!usuario.nombres.trim() || usuario.nombres.length < 6) erroresTemp.nombres = 'Usuario requerido';
-        if (!usuario.contraseñas || usuario.contraseñas.length < 6) erroresTemp.contraseñas = 'Contraseña requerida';
+        if (!usuario.nombreUsuario.trim() || usuario.nombreUsuario.length < 6) erroresTemp.nombreUsuario = 'Usuario requerido';
+        if (!usuario.contrasenaHash || usuario.contrasenaHash.length < 6) erroresTemp.contrasenaHash = 'Contraseña requerida';
         //imprime el error para que el usuario se entere
         setErrores(erroresTemp);
 
@@ -43,22 +44,22 @@ const IniciarSesion = () => {
                         <div className="secciones">
                             <input
                                 type="text"
-                                name="nombres"
+                                name="nombreUsuario"
                                 placeholder="Nombre de usuario"
                                 className="input"
-                                value={usuario.nombres}
+                                value={usuario.nombreUsuario}
                                 onChange={handleChange}
                             />
-                            {errores.nombres && <span className="error">{errores.nombres}</span>}
+                            {errores.nombreUsuario && <span className="error">{errores.nombreUsuario}</span>}
                             <input
                                 type="password"
-                                name="contraseñas"
+                                name="contrasenaHash"
                                 placeholder="Contraseña"
                                 className="input"
-                                value={usuario.contraseñas}
+                                value={usuario.contrasenaHash}
                                 onChange={handleChange}
                             />
-                            {errores.contraseñas && <span className="error">{errores.contraseñas}</span>}
+                            {errores.contrasenaHash && <span className="error">{errores.contrasenaHash}</span>}
                         </div>
                         <input type="submit" value="Continuar" className="btn" />
                         {mensaje && <p>{mensaje}</p>}

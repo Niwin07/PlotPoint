@@ -12,6 +12,7 @@ const Signup = () => {
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
+        console.log(name)
         if (name === 'terminos') {
             setTerminos(checked);
         } else {
@@ -25,17 +26,17 @@ const Signup = () => {
         e.preventDefault();
         let erroresTemp = {};
 
-        if (!usuario.nombres.trim() || usuario.nombres.length < 6) {
+        if (!usuario.nombreUsuario.trim() || usuario.nombreUsuario.length < 6) {
             //por si nombre incumple (esta vacio o tiene menos de 6 caracteres)
-            erroresTemp.nombres = 'El nombre de usuario debe tener al menos 6 caracteres';
+            erroresTemp.nombreUsuario = 'El nombre de usuario debe tener al menos 6 caracteres';
         }
-        if (!usuario.emails.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,4})+$/)) {
+        if (!usuario.correo.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,4})+$/)) {
             //por si el correo incumple (no cumple con la estructura de un correo, "@" ".")
-            erroresTemp.emails = 'Correo electrónico inválido';
+            erroresTemp.correo = 'Correo electrónico inválido';
         }
-        if (usuario.contraseñas.length < 6) {
+        if (usuario.contrasenaHash.length < 6) {
             //por si la contraseña incumple  (esta vacio o tiene menos de 6 caracteres)
-            erroresTemp.contraseñas = 'La contraseña debe tener al menos 6 caracteres';
+            erroresTemp.contrasenaHash = 'La contraseña debe tener al menos 6 caracteres';
         }
         if (!terminos) {
             //por si no aprobaste los terminos y condiciones (check)
@@ -62,34 +63,34 @@ const Signup = () => {
                         <div className="secciones">
                             <input
                                 type="text"
-                                name="nombres"
+                                name="nombreUsuario"
                                 placeholder="Nombre de usuario"
                                 className="input"
-                                value={usuario.nombres}
+                                value={usuario.nombreUsuario}
                                 onChange={handleChange}
                                 required
                             />
-                            {errores.nombres && <span className="error">{errores.nombres}</span>}
+                            {errores.nombreUsuario && <span className="error">{errores.nombreUsuario}</span>}
                             <input
                                 type="email"
-                                name="emails"
+                                name="correo"
                                 placeholder="Correo electronico"
                                 className="input"
-                                value={usuario.emails}
+                                value={usuario.correo}
                                 onChange={handleChange}
                                 required
                             />
-                            {errores.emails && <span className="error">{errores.emails}</span>}
+                            {errores.correo && <span className="error">{errores.correo}</span>}
                             <input
                                 type="password"
-                                name="contraseñas"
+                                name="contrasenaHash"
                                 placeholder="Contraseña"
                                 className="input"
-                                value={usuario.contraseñas}
+                                value={usuario.contrasenaHash}
                                 onChange={handleChange}
                                 required
                             />
-                            {errores.contraseñas && <span className="error">{errores.contraseñas}</span>}
+                            {errores.contrasenaHash && <span className="error">{errores.contrasenaHash}</span>}
                         </div>
                         <input
                             type="checkbox"

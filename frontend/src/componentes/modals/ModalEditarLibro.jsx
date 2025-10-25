@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import '/src/componentes/modals/ModalLibro.css';
 
-export default function BookEditModal({ book, onClose, onSave }) {
-  const availableGenres = [
+export default function ModalEditarLibro({ libro, alCerrar, alGuardar }) {
+  const generosDisponibles = [
     'Ficción',
     'Terror',
     'Humor',
@@ -23,229 +23,247 @@ export default function BookEditModal({ book, onClose, onSave }) {
     'Juvenil'
   ];
 
-  const availableAuthors = [
-    'Gabriel García Márquez',
-    'J.K. Rowling',
-    'Stephen King',
-    'Isabel Allende',
-    'Paulo Coelho',
-    'Mario Vargas Llosa',
-    'Julio Cortázar',
-    'Jorge Luis Borges',
-    'Laura Esquivel',
-    'Carlos Ruiz Zafón',
-    'Haruki Murakami',
-    'Jane Austen',
-    'George Orwell',
-    'Agatha Christie',
-    'Ernest Hemingway'
+  const autoresDisponibles = [
+    { id: 1, nombre: 'Gabriel García Márquez' },
+    { id: 2, nombre: 'J.K. Rowling' },
+    { id: 3, nombre: 'Stephen King' },
+    { id: 4, nombre: 'Isabel Allende' },
+    { id: 5, nombre: 'Paulo Coelho' },
+    { id: 6, nombre: 'Mario Vargas Llosa' },
+    { id: 7, nombre: 'Julio Cortázar' },
+    { id: 8, nombre: 'Jorge Luis Borges' },
+    { id: 9, nombre: 'Laura Esquivel' },
+    { id: 10, nombre: 'Carlos Ruiz Zafón' }
   ];
 
-  const availablePublishers = [
-    'LibroTeca',
-    'Penguin Random House',
-    'Planeta',
-    'Alfaguara',
-    'Anagrama',
-    'Salamandra',
-    'Tusquets',
-    'Ediciones B',
-    'Destino',
-    'Santillana',
-    'HarperCollins',
-    'Editorial Sudamericana',
-    'Paidós',
-    'Crítica',
-    'Seix Barral'
+  const editorialesDisponibles = [
+    { id: 1, nombre: 'LibroTeca' },
+    { id: 2, nombre: 'Penguin Random House' },
+    { id: 3, nombre: 'Planeta' },
+    { id: 4, nombre: 'Alfaguara' },
+    { id: 5, nombre: 'Anagrama' },
+    { id: 6, nombre: 'Salamandra' },
+    { id: 7, nombre: 'Tusquets' },
+    { id: 8, nombre: 'Ediciones B' },
+    { id: 9, nombre: 'Destino' },
+    { id: 10, nombre: 'Santillana' }
   ];
 
-  const [formData, setFormData] = useState({
-    title: book?.title || 'Harry Potter',
-    author: book?.author || 'J.K. Rowling',
-    year: book?.year || '2025',
-    pages: book?.pages || '123',
-    isbn: book?.isbn || '978-030-563-636-3',
-    genres: book?.genres || ['Fantasía'],
-    publisher: book?.publisher || 'LibroTeca',
-    synopsis: book?.synopsis || 'adwdawbdiwabdawbudlhawudawodawdwaoudbawudlawodubawodubawodubawdouawbdouawbdowudlawondbawoudbawoudbawoubdawoudbawodubawoubdawoudbawodbawoudl...',
-    coverImage: book?.coverImage || null
+  const [datosFormulario, setDatosFormulario] = useState({
+    titulo: libro?.titulo || '',
+    isbn: libro?.isbn || '',
+    sinopsis: libro?.sinopsis || '',
+    urlPortada: libro?.urlPortada || null,
+    paginas: libro?.paginas || '',
+    anioPublicacion: libro?.anioPublicacion || '',
+    editorialId: libro?.editorialId || editorialesDisponibles[0].id,
+    autorId: libro?.autorId || autoresDisponibles[0].id,
+    generos: libro?.generos || ['Ficción']
   });
 
-  const [showGenreDropdown, setShowGenreDropdown] = useState(false);
+  const [mostrarDropdownGeneros, setMostrarDropdownGeneros] = useState(false);
 
-  const handleInputChange = (e) => {
+  const manejarCambioInput = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setDatosFormulario(prev => ({
       ...prev,
       [name]: value
     }));
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData(prev => ({
+  const manejarCambioImagen = (e) => {
+    const archivo = e.target.files[0];
+    if (archivo) {
+      const lector = new FileReader();
+      lector.onloadend = () => {
+        setDatosFormulario(prev => ({
           ...prev,
-          coverImage: reader.result
+          urlPortada: lector.result
         }));
       };
-      reader.readAsDataURL(file);
+      lector.readAsDataURL(archivo);
     }
   };
 
-  const handleGenreToggle = (genre) => {
-    setFormData(prev => {
-      const currentGenres = prev.genres;
-      const isSelected = currentGenres.includes(genre);
+  const alternarGenero = (genero) => {
+    setDatosFormulario(prev => {
+      const generosActuales = prev.generos;
+      const estaSeleccionado = generosActuales.includes(genero);
       
-      if (isSelected) {
-        if (currentGenres.length === 1) {
+      if (estaSeleccionado) {
+        if (generosActuales.length === 1) {
           alert('Debe seleccionar al menos 1 género');
           return prev;
         }
         return {
           ...prev,
-          genres: currentGenres.filter(g => g !== genre)
+          generos: generosActuales.filter(g => g !== genero)
         };
       } else {
-        if (currentGenres.length >= 5) {
+        if (generosActuales.length >= 5) {
           alert('Puede seleccionar máximo 5 géneros');
           return prev;
         }
         return {
           ...prev,
-          genres: [...currentGenres, genre]
+          generos: [...generosActuales, genero]
         };
       }
     });
   };
 
-  const handleRemoveGenre = (genre) => {
-    if (formData.genres.length === 1) {
+  const eliminarGenero = (genero) => {
+    if (datosFormulario.generos.length === 1) {
       alert('Debe seleccionar al menos 1 género');
       return;
     }
-    setFormData(prev => ({
+    setDatosFormulario(prev => ({
       ...prev,
-      genres: prev.genres.filter(g => g !== genre)
+      generos: prev.generos.filter(g => g !== genero)
     }));
   };
 
-  const handleSubmit = (e) => {
+  const manejarEnvio = (e) => {
     e.preventDefault();
-    if (formData.genres.length === 0) {
+    
+    // Validaciones
+    if (!datosFormulario.titulo.trim()) {
+      alert('El título es obligatorio');
+      return;
+    }
+    if (!datosFormulario.isbn.trim()) {
+      alert('El ISBN es obligatorio');
+      return;
+    }
+    if (!datosFormulario.paginas) {
+      alert('Las páginas son obligatorias');
+      return;
+    }
+    if (!datosFormulario.anioPublicacion) {
+      alert('El año de publicación es obligatorio');
+      return;
+    }
+    if (datosFormulario.generos.length === 0) {
       alert('Debe seleccionar al menos 1 género');
       return;
     }
-    onSave(formData);
+    if (!datosFormulario.sinopsis.trim()) {
+      alert('La sinopsis es obligatoria');
+      return;
+    }
+
+    alGuardar(datosFormulario);
   };
 
   return (
-    <div className="modal-overlay-edit" onClick={onClose}>
-      <div className="modal-container-edit" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-overlay-libro" onClick={alCerrar}>
+      <div className="modal-libro-container" onClick={(e) => e.stopPropagation()}>
+        <button className="modal-close-libro" onClick={alCerrar}>×</button>
         
-        <button className="back-button" onClick={onClose}>VOLVER</button>
+        <button className="boton-volver-libro" onClick={alCerrar}>VOLVER</button>
 
-        <form onSubmit={handleSubmit}>
-          <div className="modal-content">
-            <div className="left-section">
-              <div className="book-cover">
-                {formData.coverImage ? (
-                  <img src={formData.coverImage} alt="Portada" />
+        <form onSubmit={manejarEnvio}>
+          <div className="contenido-modal-libro">
+            <div className="seccion-izquierda-libro">
+              <div className="portada-libro">
+                {datosFormulario.urlPortada ? (
+                  <img src={datosFormulario.urlPortada} alt="Portada" />
                 ) : (
-                  <div className="cover-placeholder">Sin imagen</div>
+                  <div className="placeholder-portada">Sin imagen</div>
                 )}
               </div>
-              <label className="change-cover-btn">
+              <label className="boton-cambiar-portada">
                 Cambiar portada
                 <input 
                   type="file" 
                   accept="image/*" 
-                  onChange={handleImageChange}
+                  onChange={manejarCambioImagen}
                   hidden
                 />
               </label>
             </div>
 
-            <div className="right-section">
-              <h2 className="section-title">Título</h2>
+            <div className="seccion-derecha-libro">
+              <h2 className="titulo-campo-libro">Título</h2>
               <input
                 type="text"
-                name="title"
-                value={formData.title}
-                onChange={handleInputChange}
-                className="input-field"
+                name="titulo"
+                value={datosFormulario.titulo}
+                onChange={manejarCambioInput}
+                className="campo-input-libro"
+                placeholder="Ingrese el título del libro"
               />
 
-              <h2 className="section-title">Autor</h2>
+              <h2 className="titulo-campo-libro">Autor</h2>
               <select
-                name="author"
-                value={formData.author}
-                onChange={handleInputChange}
-                className="input-field select-field"
+                name="autorId"
+                value={datosFormulario.autorId}
+                onChange={manejarCambioInput}
+                className="campo-input-libro campo-select-libro"
               >
-                {availableAuthors.map(author => (
-                  <option key={author} value={author}>
-                    {author}
+                {autoresDisponibles.map(autor => (
+                  <option key={autor.id} value={autor.id}>
+                    {autor.nombre}
                   </option>
                 ))}
               </select>
 
-              <div className="three-column">
-                <div className="column">
-                  <h2 className="section-title">Año</h2>
+              <div className="tres-columnas-libro">
+                <div className="columna-libro">
+                  <h2 className="titulo-campo-libro">Año</h2>
                   <input
                     type="text"
-                    name="year"
-                    value={formData.year}
-                    onChange={handleInputChange}
-                    className="input-field small"
+                    name="anioPublicacion"
+                    value={datosFormulario.anioPublicacion}
+                    onChange={manejarCambioInput}
+                    className="campo-input-libro campo-pequeno"
+                    placeholder="2024"
                   />
                 </div>
-                <div className="column">
-                  <h2 className="section-title">Páginas</h2>
+                <div className="columna-libro">
+                  <h2 className="titulo-campo-libro">Páginas</h2>
                   <input
                     type="text"
-                    name="pages"
-                    value={formData.pages}
-                    onChange={handleInputChange}
-                    className="input-field small"
+                    name="paginas"
+                    value={datosFormulario.paginas}
+                    onChange={manejarCambioInput}
+                    className="campo-input-libro campo-pequeno"
+                    placeholder="123"
                   />
                 </div>
-                <div className="column">
-                  <h2 className="section-title">ISBN</h2>
+                <div className="columna-libro">
+                  <h2 className="titulo-campo-libro">ISBN</h2>
                   <input
                     type="text"
                     name="isbn"
-                    value={formData.isbn}
-                    onChange={handleInputChange}
-                    className="input-field"
+                    value={datosFormulario.isbn}
+                    onChange={manejarCambioInput}
+                    className="campo-input-libro"
+                    placeholder="978-xxx-xxx-xxx-x"
                   />
                 </div>
               </div>
 
-              <div className="two-column">
-                <div className="column">
-                  <h2 className="section-title">
-                    Genero ({formData.genres.length}/5)
+              <div className="dos-columnas-libro">
+                <div className="columna-libro">
+                  <h2 className="titulo-campo-libro">
+                    Genero ({datosFormulario.generos.length}/5)
                   </h2>
-                  <div className="genre-selector">
+                  <div className="selector-generos">
                     <div 
-                      className="genre-display"
-                      onClick={() => setShowGenreDropdown(!showGenreDropdown)}
+                      className="display-generos"
+                      onClick={() => setMostrarDropdownGeneros(!mostrarDropdownGeneros)}
                     >
-                      <div className="selected-genres">
-                        {formData.genres.map(genre => (
-                          <span key={genre} className="genre-tag">
-                            {genre}
+                      <div className="generos-seleccionados">
+                        {datosFormulario.generos.map(genero => (
+                          <span key={genero} className="etiqueta-genero">
+                            {genero}
                             <button
                               type="button"
-                              className="remove-genre"
+                              className="boton-eliminar-genero"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleRemoveGenre(genre);
+                                eliminarGenero(genero);
                               }}
                             >
                               ×
@@ -253,52 +271,53 @@ export default function BookEditModal({ book, onClose, onSave }) {
                           </span>
                         ))}
                       </div>
-                      <span className="dropdown-arrow">˅</span>
+                      <span className="flecha-dropdown">˅</span>
                     </div>
                     
-                    {showGenreDropdown && (
-                      <div className="genre-dropdown">
-                        {availableGenres.map(genre => (
-                          <label key={genre} className="genre-option">
+                    {mostrarDropdownGeneros && (
+                      <div className="dropdown-generos">
+                        {generosDisponibles.map(genero => (
+                          <label key={genero} className="opcion-genero">
                             <input
                               type="checkbox"
-                              checked={formData.genres.includes(genre)}
-                              onChange={() => handleGenreToggle(genre)}
+                              checked={datosFormulario.generos.includes(genero)}
+                              onChange={() => alternarGenero(genero)}
                             />
-                            <span>{genre}</span>
+                            <span>{genero}</span>
                           </label>
                         ))}
                       </div>
                     )}
                   </div>
                 </div>
-                <div className="column">
-                  <h2 className="section-title">Editorial</h2>
+                <div className="columna-libro">
+                  <h2 className="titulo-campo-libro">Editorial</h2>
                   <select
-                    name="publisher"
-                    value={formData.publisher}
-                    onChange={handleInputChange}
-                    className="input-field select-field"
+                    name="editorialId"
+                    value={datosFormulario.editorialId}
+                    onChange={manejarCambioInput}
+                    className="campo-input-libro campo-select-libro"
                   >
-                    {availablePublishers.map(publisher => (
-                      <option key={publisher} value={publisher}>
-                        {publisher}
+                    {editorialesDisponibles.map(editorial => (
+                      <option key={editorial.id} value={editorial.id}>
+                        {editorial.nombre}
                       </option>
                     ))}
                   </select>
                 </div>
               </div>
 
-              <h2 className="section-title">Sinopsis</h2>
+              <h2 className="titulo-campo-libro">Sinopsis</h2>
               <textarea
-                name="synopsis"
-                value={formData.synopsis}
-                onChange={handleInputChange}
-                className="textarea-field"
+                name="sinopsis"
+                value={datosFormulario.sinopsis}
+                onChange={manejarCambioInput}
+                className="campo-textarea-libro"
                 rows="5"
+                placeholder="Ingrese la sinopsis del libro"
               />
 
-              <button type="submit" className="edit-button">
+              <button type="submit" className="boton-editar-libro">
                 Editar
               </button>
             </div>

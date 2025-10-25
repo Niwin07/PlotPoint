@@ -1,4 +1,3 @@
-// ModalEditarUsuario.jsx
 import React, { useState } from 'react';
 import '/src/componentes/modals/ModalUsuario.css';
 

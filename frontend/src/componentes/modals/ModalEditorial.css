@@ -1,5 +1,5 @@
-/* ModalAutor.css */
-.modal-overlay-autor {
+/* ModalEditorial.css */
+.modal-overlay-editorial {
   position: fixed;
   top: 0;
   left: 0;
@@ -13,7 +13,7 @@
   padding: 20px;
 }
 
-.modal-autor-container {
+.modal-editorial-container {
   background-color: #fff;
   border-radius: 8px;
   width: 100%;
@@ -23,7 +23,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.modal-close-autor {
+.modal-close-editorial {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -41,11 +41,11 @@
   line-height: 1;
 }
 
-.modal-close-autor:hover {
+.modal-close-editorial:hover {
   color: #666;
 }
 
-.boton-volver-autor {
+.boton-volver-editorial {
   background-color: var(--texto);
   color: #fff;
   border: none;
@@ -57,17 +57,17 @@
   border-radius: 4px;
 }
 
-.boton-volver-autor:hover {
+.boton-volver-editorial:hover {
   background-color: black;
 }
 
-.formulario-autor {
+.formulario-editorial {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.titulo-campo-autor {
+.titulo-campo-editorial {
   font-size: 16px;
   font-weight: normal;
   color: #333;
@@ -75,7 +75,7 @@
   margin-bottom: 6px;
 }
 
-.campo-input-autor {
+.campo-input-editorial {
   width: 100%;
   padding: 14px 18px;
   font-size: 16px;
@@ -86,56 +86,16 @@
   box-sizing: border-box;
 }
 
-.campo-input-autor::placeholder {
+.campo-input-editorial::placeholder {
   color: #999;
 }
 
-.campo-input-autor:focus {
+.campo-input-editorial:focus {
   outline: none;
   border-color: #3498db;
 }
 
-.boton-editar-autor {
-  background-color: var(--secundario2);
-  color: #fff;
-  border: none;
-  padding: 14px 50px;
-  font-size: 18px;
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 8px;
-  align-self: center;
-  margin-top: 15px;
-  min-width: 150px;
-}
-
-.boton-editar-autor:hover {
-  background-color: #2980b9;
-}
-
-/* Responsive */
-@media (max-width: 480px) {
-  .modal-autor-container {
-    padding: 20px;
-    max-width: 320px;
-  }
-
-  .titulo-campo-autor {
-    font-size: 15px;
-  }
-
-  .campo-input-autor {
-    font-size: 15px;
-    padding: 12px 16px;
-  }
-
-  .boton-editar-autor {
-    width: 100%;
-  }
-}
-
-/* Botón Crear - color amarillo/naranja */
-.boton-crear-autor {
+.boton-editar-editorial {
   background-color: var(--secundario3);
   color: #fff;
   border: none;
@@ -149,12 +109,51 @@
   min-width: 150px;
 }
 
-.boton-crear-autor:hover {
+.boton-editar-editorial:hover {
+  background-color: #2980b9;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .modal-editorial-container {
+    padding: 20px;
+    max-width: 320px;
+  }
+
+  .titulo-campo-editorial {
+    font-size: 15px;
+  }
+
+  .campo-input-editorial {
+    font-size: 15px;
+    padding: 12px 16px;
+  }
+
+  .boton-editar-editorial {
+    width: 100%;
+  }
+}
+/* Botón Crear - color amarillo/naranja */
+.boton-crear-editorial {
+  background-color: var(--secundario3);
+  color: #fff;
+  border: none;
+  padding: 14px 50px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 8px;
+  align-self: center;
+  margin-top: 15px;
+  min-width: 150px;
+}
+
+.boton-crear-editorial:hover {
   background-color: #e67e22;
 }
 
 @media (max-width: 480px) {
-  .boton-crear-autor {
+  .boton-crear-editorial {
     width: 100%;
   }
 }

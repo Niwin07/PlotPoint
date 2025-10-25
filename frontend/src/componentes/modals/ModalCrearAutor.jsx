@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import '/src/componentes/modals/ModalAutor.css';
 
-export default function ModalEditarAutor({ autor, alCerrar, alGuardar }) {
+export default function ModalCrearAutor({ alCerrar, alGuardar }) {
   const [datosFormulario, setDatosFormulario] = useState({
-    nombre: autor?.nombre || '',
-    apellido: autor?.apellido || '',
-    nacionalidad: autor?.nacionalidad || ''
+    nombre: '',
+    apellido: '',
+    nacionalidad: ''
   });
 
   const manejarCambioInput = (e) => {
@@ -39,7 +39,7 @@ export default function ModalEditarAutor({ autor, alCerrar, alGuardar }) {
   return (
     <div className="modal-overlay-autor" onClick={alCerrar}>
       <div className="modal-autor-container" onClick={(e) => e.stopPropagation()}>
-       
+   
         
         <button className="boton-volver-autor" onClick={alCerrar}>VOLVER</button>
 
@@ -51,7 +51,7 @@ export default function ModalEditarAutor({ autor, alCerrar, alGuardar }) {
             value={datosFormulario.nombre}
             onChange={manejarCambioInput}
             className="campo-input-autor"
-            placeholder="Juan"
+            placeholder="Nombre"
           />
 
           <h2 className="titulo-campo-autor">Apellido</h2>
@@ -61,7 +61,7 @@ export default function ModalEditarAutor({ autor, alCerrar, alGuardar }) {
             value={datosFormulario.apellido}
             onChange={manejarCambioInput}
             className="campo-input-autor"
-            placeholder="Perez"
+            placeholder="Apellido"
           />
 
           <h2 className="titulo-campo-autor">Nacionalidad</h2>
@@ -71,11 +71,11 @@ export default function ModalEditarAutor({ autor, alCerrar, alGuardar }) {
             value={datosFormulario.nacionalidad}
             onChange={manejarCambioInput}
             className="campo-input-autor"
-            placeholder="Argentino"
+            placeholder="Nacionalidad"
           />
 
-          <button type="submit" className="boton-editar-autor">
-            Editar
+          <button type="submit" className="boton-crear-autor">
+            Crear
           </button>
         </form>
       </div>

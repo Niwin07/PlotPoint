@@ -5,185 +5,203 @@ import ModalEditarLibro from '/src/componentes/modals/ModalEditarLibro.jsx';
 import ModalCrearLibro from '/src/componentes/modals/ModalCrearLibro.jsx';
 
 const Libros = () => {
-    const [showEditModal, setShowEditModal] = useState(false);
-    const [showCreateModal, setShowCreateModal] = useState(false);
-    const [selectedBook, setSelectedBook] = useState(null);
+    const [mostrarModalEditar, setMostrarModalEditar] = useState(false);
+    const [mostrarModalCrear, setMostrarModalCrear] = useState(false);
+    const [libroSeleccionado, setLibroSeleccionado] = useState(null);
 
     const [buscador, setBuscador] = useState('');
     const [buscarFecha, setBuscarFecha] = useState('');
     const [buscarCategoria, setBuscarCategoria] = useState('');
     const [buscarLetra, setBuscarLetra] = useState('');
+
+    // Definir autores y editoriales disponibles (idealmente vendrían de tu API)
+    const autoresDisponibles = [
+        { id: 1, nombre: 'Gabriel García Márquez' },
+        { id: 2, nombre: 'J.K. Rowling' },
+        { id: 3, nombre: 'Stephen King' },
+        { id: 4, nombre: 'Isabel Allende' },
+        { id: 5, nombre: 'Paulo Coelho' },
+        { id: 6, nombre: 'Mario Vargas Llosa' },
+        { id: 7, nombre: 'Julio Cortázar' },
+        { id: 8, nombre: 'Jorge Luis Borges' },
+        { id: 9, nombre: 'Laura Esquivel' },
+        { id: 10, nombre: 'Carlos Ruiz Zafón' }
+    ];
+
+    const editorialesDisponibles = [
+        { id: 1, nombre: 'LibroTeca' },
+        { id: 2, nombre: 'Penguin Random House' },
+        { id: 3, nombre: 'Planeta' },
+        { id: 4, nombre: 'Alfaguara' },
+        { id: 5, nombre: 'Anagrama' },
+        { id: 6, nombre: 'Salamandra' },
+        { id: 7, nombre: 'Tusquets' },
+        { id: 8, nombre: 'Ediciones B' },
+        { id: 9, nombre: 'Destino' },
+        { id: 10, nombre: 'Santillana' }
+    ];
+
     const [libros, setLibros] = useState([
         {
             id: 1,
-            titulo: "Harry Potter",
+            titulo: "Harry Potter y la Piedra Filosofal",
             isbn: "978-030-563-636-3",
             sinopsis: "Harry Potter es un huérfano que vive con sus desagradables tíos, los Dursley, y su repelente primo Dudley...",
-            url_portada: null,
+            urlPortada: null,
             paginas: 223,
-            anio_publicacion: 2001,
-            editorial_id: 1,
-            autor_id: 1,
-            autor_nombre: "J.K. Rowling",
-            editorial_nombre: "Salamandra",
+            anioPublicacion: 2001,
+            editorialId: 6,
+            autorId: 2,
+            autorNombre: "J.K. Rowling",
+            editorialNombre: "Salamandra",
             generos: ["Fantasía", "Aventura"],
-            reviews: 13,
-            rating: 4.5,
+            resenas: 13,
+            calificacion: 4.5,
         },
         {
             id: 2,
             titulo: "Harry Potter y la Cámara Secreta",
             isbn: "978-030-563-636-4",
             sinopsis: "Tras derrotar una vez más a lord Voldemort, su siniestro enemigo en Harry Potter y la piedra filosofal...",
-            url_portada: null,
+            urlPortada: null,
             paginas: 251,
-            anio_publicacion: 2002,
-            editorial_id: 1,
-            autor_id: 1,
-            autor_nombre: "J.K. Rowling",
-            editorial_nombre: "Salamandra",
+            anioPublicacion: 2002,
+            editorialId: 6,
+            autorId: 2,
+            autorNombre: "J.K. Rowling",
+            editorialNombre: "Salamandra",
             generos: ["Fantasía", "Aventura"],
-            reviews: 13,
-            rating: 4.5,
+            resenas: 13,
+            calificacion: 4.5,
         },
         {
             id: 3,
             titulo: "Cien años de soledad",
             isbn: "978-030-563-636-5",
-            sinopsis: "La novela narra la historia de la familia Buendía a lo largo de siete generaciones...",
-            url_portada: null,
+            sinopsis: "La novela narra la historia de la familia Buendía a lo largo de siete generaciones en el pueblo ficticio de Macondo...",
+            urlPortada: null,
             paginas: 471,
-            anio_publicacion: 1967,
-            editorial_id: 2,
-            autor_id: 2,
-            autor_nombre: "Gabriel García Márquez",
-            editorial_nombre: "Editorial Sudamericana",
+            anioPublicacion: 1967,
+            editorialId: 4,
+            autorId: 1,
+            autorNombre: "Gabriel García Márquez",
+            editorialNombre: "Alfaguara",
             generos: ["Ficción", "Realismo Mágico", "Drama"],
-            reviews: 13,
-            rating: 4.5,
+            resenas: 13,
+            calificacion: 4.5,
         },
         {
             id: 4,
             titulo: "El Código Da Vinci",
             isbn: "978-030-563-636-6",
             sinopsis: "Robert Langdon, experto en simbología, es convocado a un museo para investigar un misterioso asesinato...",
-            url_portada: null,
+            urlPortada: null,
             paginas: 656,
-            anio_publicacion: 2003,
-            editorial_id: 3,
-            autor_id: 3,
-            autor_nombre: "Dan Brown",
-            editorial_nombre: "Planeta",
+            anioPublicacion: 2003,
+            editorialId: 3,
+            autorId: 3,
+            autorNombre: "Dan Brown",
+            editorialNombre: "Planeta",
             generos: ["Misterio", "Thriller"],
-            reviews: 13,
-            rating: 4.5,
+            resenas: 13,
+            calificacion: 4.5,
         },
     ]);
 
     const Buscar = () => {
-        alert(`Buscando: ${buscador}`);
+        const resultados = libros.filter(libro => 
+            libro.titulo.toLowerCase().includes(buscador.toLowerCase()) ||
+            libro.autorNombre.toLowerCase().includes(buscador.toLowerCase())
+        );
+        
+        if (resultados.length === 0) {
+            alert('No se encontraron libros');
+        } else {
+            alert(`Se encontraron ${resultados.length} libro(s)`);
+        }
     };
 
     const Nuevo = () => {
-        setShowCreateModal(true);
+        setMostrarModalCrear(true);
     };
 
-    const handleEdit = (book) => {
-        setSelectedBook(book);
-        setShowEditModal(true);
+    const Editar = (libro) => {
+        setLibroSeleccionado(libro);
+        setMostrarModalEditar(true);
     };
 
-    const handleCloseEditModal = () => {
-        setShowEditModal(false);
-        setSelectedBook(null);
+    const cerrarModalEditar = () => {
+        setMostrarModalEditar(false);
+        setLibroSeleccionado(null);
     };
 
-    const handleCloseCreateModal = () => {
-        setShowCreateModal(false);
+    const cerrarModalCrear = () => {
+        setMostrarModalCrear(false);
     };
 
-    const handleSaveBook = (updatedBook) => {
+    const guardarLibro = (datosActualizados) => {
+        // Encontrar el autor y editorial por ID
+        const autorSeleccionado = autoresDisponibles.find(a => a.id === parseInt(datosActualizados.autorId));
+        const editorialSeleccionada = editorialesDisponibles.find(e => e.id === parseInt(datosActualizados.editorialId));
+
+        // Actualizar el libro en el estado
         setLibros(prevLibros =>
             prevLibros.map(libro =>
-                libro.id === selectedBook.id
+                libro.id === libroSeleccionado.id
                     ? { 
                         ...libro,
-                        titulo: updatedBook.title,
-                        isbn: updatedBook.isbn,
-                        sinopsis: updatedBook.synopsis,
-                        url_portada: updatedBook.coverImage,
-                        paginas: parseInt(updatedBook.pages),
-                        anio_publicacion: parseInt(updatedBook.year),
-                        autor_nombre: updatedBook.author,
-                        editorial_nombre: updatedBook.publisher,
-                        generos: updatedBook.genres
+                        titulo: datosActualizados.titulo,
+                        isbn: datosActualizados.isbn,
+                        sinopsis: datosActualizados.sinopsis,
+                        urlPortada: datosActualizados.urlPortada,
+                        paginas: parseInt(datosActualizados.paginas),
+                        anioPublicacion: parseInt(datosActualizados.anioPublicacion),
+                        editorialId: parseInt(datosActualizados.editorialId),
+                        autorId: parseInt(datosActualizados.autorId),
+                        generos: datosActualizados.generos,
+                        autorNombre: autorSeleccionado ? autorSeleccionado.nombre : libro.autorNombre,
+                        editorialNombre: editorialSeleccionada ? editorialSeleccionada.nombre : libro.editorialNombre
                     }
                     : libro
             )
         );
 
-        setShowEditModal(false);
-        setSelectedBook(null);
+        setMostrarModalEditar(false);
+        setLibroSeleccionado(null);
         alert('Libro actualizado correctamente');
-
-          // Aquí deberías hacer la petición a tu API para actualizar en la base de datos
-        // fetch('/api/libros/' + selectedBook.id, {
-        //     method: 'PUT',
-        //     body: JSON.stringify({
-        //         titulo: updatedBook.title,
-        //         isbn: updatedBook.isbn,
-        //         sinopsis: updatedBook.synopsis,
-        //         url_portada: updatedBook.coverImage,
-        //         paginas: updatedBook.pages,
-        //         anio_publicacion: updatedBook.year,
-        //         editorial_id: updatedBook.editorial_id,
-        //         autor_id: updatedBook.autor_id
-        //     })
-        // })
     };
 
-    const handleCreateBook = (newBookData) => {
+    const crearLibro = (datosNuevoLibro) => {
         // Generar nuevo ID
-        const newId = Math.max(...libros.map(l => l.id)) + 1;
-        
-        const newBook = {
-            id: newId,
-            titulo: newBookData.title,
-            isbn: newBookData.isbn,
-            sinopsis: newBookData.synopsis,
-            url_portada: newBookData.coverImage,
-            paginas: parseInt(newBookData.pages),
-            anio_publicacion: parseInt(newBookData.year),
-            editorial_id: 1, // Aquí deberías obtener el ID real según la editorial seleccionada
-            autor_id: 1, // Aquí deberías obtener el ID real según el autor seleccionado
-            autor_nombre: newBookData.author,
-            editorial_nombre: newBookData.publisher,
-            generos: newBookData.genres,
-            reviews: 0,
-            rating: 0,
+        const nuevoId = Math.max(...libros.map(l => l.id)) + 1;
+
+        // Encontrar el autor y editorial por ID
+        const autorSeleccionado = autoresDisponibles.find(a => a.id === parseInt(datosNuevoLibro.autorId));
+        const editorialSeleccionada = editorialesDisponibles.find(e => e.id === parseInt(datosNuevoLibro.editorialId));
+
+        const nuevoLibro = {
+            id: nuevoId,
+            titulo: datosNuevoLibro.titulo,
+            isbn: datosNuevoLibro.isbn,
+            sinopsis: datosNuevoLibro.sinopsis,
+            urlPortada: datosNuevoLibro.urlPortada,
+            paginas: parseInt(datosNuevoLibro.paginas),
+            anioPublicacion: parseInt(datosNuevoLibro.anioPublicacion),
+            editorialId: parseInt(datosNuevoLibro.editorialId),
+            autorId: parseInt(datosNuevoLibro.autorId),
+            generos: datosNuevoLibro.generos,
+            autorNombre: autorSeleccionado ? autorSeleccionado.nombre : 'Autor Desconocido',
+            editorialNombre: editorialSeleccionada ? editorialSeleccionada.nombre : 'Editorial Desconocida',
+            resenas: 0,
+            calificacion: 0,
         };
 
-        setLibros([...libros, newBook]);
-        setShowCreateModal(false);
+        setLibros([...libros, nuevoLibro]);
+        setMostrarModalCrear(false);
         alert('Libro creado correctamente');
-
-        // Aquí deberías hacer la petición POST a tu API
-        // fetch('/api/libros', {
-        //     method: 'POST',
-        //     body: JSON.stringify({
-        //         titulo: newBookData.title,
-        //         isbn: newBookData.isbn,
-        //         sinopsis: newBookData.synopsis,
-        //         url_portada: newBookData.coverImage,
-        //         paginas: newBookData.pages,
-        //         anio_publicacion: newBookData.year,
-        //         editorial_id: ...,
-        //         autor_id: ...
-        //     })
-        // })
     };
 
-    const handleDelete = (id) => {
+    const Borrar = (id) => {
         if (window.confirm('¿Estás seguro de que deseas eliminar este libro?')) {
             setLibros(libros.filter(libro => libro.id !== id));
         }
@@ -253,23 +271,23 @@ const Libros = () => {
                             <td>{libro.id}</td>
                             <td>
                                 <p style={{ margin: 0, fontWeight: 'bold' }}>{libro.titulo}</p>
-                                <span style={{ fontSize: '13px', color: '#666' }}>{libro.autor_nombre}</span>
+                                <span style={{ fontSize: '13px', color: '#666' }}>{libro.autorNombre}</span>
                             </td>
                             <td>
-                                {libro.generos.map((genre, index) => (
+                                {libro.generos.map((genero, index) => (
                                     <span key={index}>
-                                        {genre}
+                                        {genero}
                                         {index < libro.generos.length - 1 ? ', ' : ''}
                                     </span>
                                 ))}
                             </td>
-                            <td>{libro.reviews}</td>
-                            <td>{libro.rating}</td>
+                            <td>{libro.resenas}</td>
+                            <td>{libro.calificacion}</td>
                             <td>
-                                <button className='Borrar' onClick={() => handleDelete(libro.id)}>
+                                <button className='Borrar' onClick={() => Borrar(libro.id)}>
                                     Borrar
                                 </button>
-                                <button className='Editar' onClick={() => handleEdit(libro)}>
+                                <button className='Editar' onClick={() => Editar(libro)}>
                                     Editar
                                 </button>
                             </td>
@@ -278,31 +296,29 @@ const Libros = () => {
                 </tbody>
             </table>
 
-            {showEditModal && (
+            {mostrarModalEditar && (
                 <ModalEditarLibro
-                    book={{
-                        id: selectedBook.id,
-                        title: selectedBook.titulo,
-                        author: selectedBook.autor_nombre,
-                        year: selectedBook.anio_publicacion.toString(),
-                        pages: selectedBook.paginas.toString(),
-                        isbn: selectedBook.isbn,
-                        genres: selectedBook.generos,
-                        publisher: selectedBook.editorial_nombre,
-                        synopsis: selectedBook.sinopsis,
-                        coverImage: selectedBook.url_portada,
-                        autor_id: selectedBook.autor_id,
-                        editorial_id: selectedBook.editorial_id
+                    libro={{
+                        id: libroSeleccionado.id,
+                        titulo: libroSeleccionado.titulo,
+                        isbn: libroSeleccionado.isbn,
+                        sinopsis: libroSeleccionado.sinopsis,
+                        urlPortada: libroSeleccionado.urlPortada,
+                        paginas: libroSeleccionado.paginas.toString(),
+                        anioPublicacion: libroSeleccionado.anioPublicacion.toString(),
+                        editorialId: libroSeleccionado.editorialId,
+                        autorId: libroSeleccionado.autorId,
+                        generos: libroSeleccionado.generos
                     }}
-                    onClose={handleCloseEditModal}
-                    onSave={handleSaveBook}
+                    alCerrar={cerrarModalEditar}
+                    alGuardar={guardarLibro}
                 />
             )}
 
-            {showCreateModal && (
+            {mostrarModalCrear && (
                 <ModalCrearLibro
-                    onClose={handleCloseCreateModal}
-                    onSave={handleCreateBook}
+                    alCerrar={cerrarModalCrear}
+                    alGuardar={crearLibro}
                 />
             )}
         </div>

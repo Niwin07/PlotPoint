@@ -1,5 +1,5 @@
-/* ModalAutor.css */
-.modal-overlay-autor {
+/* ModalGenero.css */
+.modal-overlay-genero {
   position: fixed;
   top: 0;
   left: 0;
@@ -13,17 +13,17 @@
   padding: 20px;
 }
 
-.modal-autor-container {
+.modal-genero-container {
   background-color: #fff;
   border-radius: 8px;
   width: 100%;
-  max-width: 400px;
+  max-width: 450px;
   position: relative;
   padding: 30px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.modal-close-autor {
+.modal-close-genero {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -41,11 +41,11 @@
   line-height: 1;
 }
 
-.modal-close-autor:hover {
+.modal-close-genero:hover {
   color: #666;
 }
 
-.boton-volver-autor {
+.boton-volver-genero {
   background-color: var(--texto);
   color: #fff;
   border: none;
@@ -57,17 +57,17 @@
   border-radius: 4px;
 }
 
-.boton-volver-autor:hover {
+.boton-volver-genero:hover {
   background-color: black;
 }
 
-.formulario-autor {
+.formulario-genero {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.titulo-campo-autor {
+.titulo-campo-genero {
   font-size: 16px;
   font-weight: normal;
   color: #333;
@@ -75,7 +75,7 @@
   margin-bottom: 6px;
 }
 
-.campo-input-autor {
+.campo-input-genero {
   width: 100%;
   padding: 14px 18px;
   font-size: 16px;
@@ -86,16 +86,39 @@
   box-sizing: border-box;
 }
 
-.campo-input-autor::placeholder {
+.campo-input-genero::placeholder {
   color: #999;
 }
 
-.campo-input-autor:focus {
+.campo-input-genero:focus {
   outline: none;
   border-color: #3498db;
 }
 
-.boton-editar-autor {
+.campo-textarea-genero {
+  width: 100%;
+  padding: 14px 18px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #2d3540;
+  color: #fff;
+  resize: vertical;
+  font-family: inherit;
+  box-sizing: border-box;
+  min-height: 150px;
+}
+
+.campo-textarea-genero::placeholder {
+  color: #999;
+}
+
+.campo-textarea-genero:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.boton-editar-genero {
   background-color: var(--secundario2);
   color: #fff;
   border: none;
@@ -109,33 +132,34 @@
   min-width: 150px;
 }
 
-.boton-editar-autor:hover {
+.boton-editar-genero:hover {
   background-color: #2980b9;
 }
 
 /* Responsive */
 @media (max-width: 480px) {
-  .modal-autor-container {
+  .modal-genero-container {
     padding: 20px;
-    max-width: 320px;
+    max-width: 350px;
   }
 
-  .titulo-campo-autor {
+  .titulo-campo-genero {
     font-size: 15px;
   }
 
-  .campo-input-autor {
+  .campo-input-genero,
+  .campo-textarea-genero {
     font-size: 15px;
     padding: 12px 16px;
   }
 
-  .boton-editar-autor {
+  .boton-editar-genero {
     width: 100%;
   }
 }
 
 /* Botón Crear - color amarillo/naranja */
-.boton-crear-autor {
+.boton-crear-genero {
   background-color: var(--secundario3);
   color: #fff;
   border: none;
@@ -149,12 +173,12 @@
   min-width: 150px;
 }
 
-.boton-crear-autor:hover {
+.boton-crear-genero:hover {
   background-color: #e67e22;
 }
 
 @media (max-width: 480px) {
-  .boton-crear-autor {
+  .boton-crear-genero {
     width: 100%;
   }
 }
