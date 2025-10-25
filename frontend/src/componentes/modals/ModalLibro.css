@@ -1,428 +1,4 @@
-/* BookEditModal.css */
-/*
-.modal-overlay-edit {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  padding: 20px;
-}
 
-.modal-container-edit {
-  background-color: #f5f5f5;
-  border-radius: 8px;
-  width: 100%;
-  max-width: 900px;
-  max-height: 90vh;
-  overflow-y: auto;
-  position: relative;
-  padding: 20px;
-}
-
-.modal-overlay-create {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  padding: 20px;
-}
-
-.modal-container-create {
-  background-color: #f5f5f5;
-  border-radius: 8px;
-  width: 100%;
-  max-width: 900px;
-  max-height: 90vh;
-  overflow-y: auto;
-  position: relative;
-  padding: 20px;
-}
-
-
-.modal-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 32px;
-  cursor: pointer;
-  color: #333;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-}
-
-.back-button {
-  background-color: #000;
-  color: #fff;
-  border: none;
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  margin-bottom: 20px;
-  border-radius: 4px;
-}
-
-.modal-content {
-  display: flex;
-  gap: 30px;
-}
-
-.left-section {
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.book-cover {
-  width: 180px;
-  height: 270px;
-  border-radius: 4px;
-  overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.book-cover img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.cover-placeholder {
-  width: 100%;
-  height: 100%;
-  background-color: #ddd;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #666;
-  font-size: 14px;
-}
-
-.change-cover-btn {
-  background-color: var(--secundario2);
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 4px;
-  text-align: center;
-  display: block;
-}
-
-.right-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.section-title {
-  font-size: 16px;
-  font-weight: normal;
-  color: #333;
-  margin: 0;
-  margin-bottom: 5px;
-}
-
-.input-field {
-  width: 100%;
-  padding: 12px 16px;
-  font-size: 15px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: #202020;
-  color: #ccc;
-  box-sizing: border-box;
-  font-family: "Playtime Display";
-}
-
-.input-field.small {
-  padding: 12px 10px;
-}
-
-.select-field {
-  cursor: pointer;
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 18px;
-  padding-right: 40px;
-  background-color: #202020;
-  color: #ccc;
-  border-radius:8px
-}
-
-.select-field option {
-  background-color: #2d3540;
-  color: #fff;
-  padding: 10px;
-}
-
-.textarea-field {
-  width: 100%;
-  padding: 12px 16px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #202020;
-  color: #fff;
-  resize: vertical;
-  font-family: inherit;
-  box-sizing: border-box;
-}
-
-.three-column {
-  display: grid;
-  grid-template-columns: 100px 100px 1fr;
-  gap: 15px;
-}
-
-.two-column {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-}
-
-.column {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Genre Selector Styles */
-/*
-.genre-selector {
-  position: relative;
-}
-
-.genre-display {
-  background-color: #202020;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 8px 12px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 44px;
-}
-
-.selected-genres {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  flex: 1;
-}
-
-.genre-tag {
-  background-color: var(--secundario2);
-  color: #fff;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 13px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.remove-genre {
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 18px;
-  cursor: pointer;
-  padding: 0;
-  width: 16px;
-  height: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-}
-
-.remove-genre:hover {
-  color: #ff6b6b;
-}
-
-.dropdown-arrow {
-  color: #fff;
-  font-size: 16px;
-  margin-left: 8px;
-}
-
-.genre-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  margin-top: 4px;
-  max-height: 250px;
-  overflow-y: auto;
-  z-index: 100;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.genre-option {
-  display: flex;
-  align-items: center;
-  padding: 10px 12px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.genre-option:hover {
-  background-color: #f0f0f0;
-}
-
-.genre-option input[type="checkbox"] {
-  margin-right: 10px;
-  cursor: pointer;
-  width: 18px;
-  height: 18px;
-}
-
-.genre-option span {
-  font-size: 14px;
-  color: #333;
-}
-
-.edit-button {
-  background-color: var(--secundario2);
-  color: #fff;
-  border: none;
-  padding: 14px 40px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 4px;
- 
-  margin-top: 10px;
-}
-
-.edit-button:hover {
-  background-color: #2980b9;
-}
-
-/* Botón Crear - mismo estilo que Editar pero con color amarillo/naranja */
-/*
-.create-button {
-  background-color: var(--secundario3);
-  color: #fff;
-  border: none;
-  padding: 14px 40px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 4px;
-  margin-top: 10px;
-}
-
-.create-button:hover {
-  background-color: #e67e22;
-}
-
-.back-button:hover {
-  background-color: black;
-}
-
-.change-cover-btn:hover {
-  background-color: #0090c8;
-}
-
-/* Responsive */
-/*
-@media (max-width: 768px) {
-  .modal-content {
-    flex-direction: column;
-  }
-
-  .left-section {
-    flex-direction: row;
-    align-items: center;
-    gap: 20px;
-  }
-
-  .book-cover {
-    width: 120px;
-    height: 180px;
-  }
-
-  .change-cover-btn {
-    flex: 1;
-  }
-
-  .three-column {
-    grid-template-columns: 1fr;
-  }
-
-  .two-column {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 480px) {
-  .modal-container-edit {
-    padding: 15px;
-  }
-
-  .modal-container-create {
-    padding: 15px;
-  }
-
-
-  .left-section {
-    flex-direction: column;
-  }
-
-  .book-cover {
-    width: 100%;
-    max-width: 200px;
-    height: 280px;
-    margin: 0 auto;
-  }
-
-  .section-title {
-    font-size: 14px;
-  }
-
-  .input-field,
-  .textarea-field {
-    font-size: 14px;
-    padding: 10px 12px;
-  }
-
-  .genre-tag {
-    font-size: 12px;
-    padding: 3px 6px;
-  }
-}
-*/
-
-/* ModalLibro.css */
 .modal-overlay-libro {
   position: fixed;
   top: 0;
@@ -466,7 +42,7 @@
 }
 
 .boton-volver-libro {
-  background-color: #000;
+  background-color: var(--texto);
   color: #fff;
   border: none;
   padding: 8px 16px;
@@ -515,7 +91,7 @@
 }
 
 .boton-cambiar-portada {
-  background-color: #00a8e8;
+  background-color: var(--secundario2);
   color: #fff;
   border: none;
   padding: 10px 20px;
@@ -569,6 +145,7 @@
   background-position: right 12px center;
   background-size: 18px;
   padding-right: 40px;
+  font-family: "Playtime Display";
 }
 
 .campo-select-libro option {
@@ -635,7 +212,7 @@
 }
 
 .etiqueta-genero {
-  background-color: #3498db;
+  background-color: var(--secundario2);
   color: #fff;
   padding: 4px 8px;
   border-radius: 4px;
@@ -706,7 +283,7 @@
 }
 
 .boton-editar-libro {
-  background-color: #3498db;
+  background-color: var(--secundario2);
   color: #fff;
   border: none;
   padding: 14px 40px;
@@ -791,9 +368,9 @@
   }
 }
 
-/* Botón Crear - color amarillo/naranja */
+
 .boton-crear-libro {
-  background-color: #f39c12;
+  background-color: var(--secundario3);
   color: #fff;
   border: none;
   padding: 14px 40px;

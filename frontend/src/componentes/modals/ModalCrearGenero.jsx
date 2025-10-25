@@ -1,39 +1,30 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './ModalGenero.css';
+import useGenero from '/src/hooks/useGenero';
 
 export default function ModalCrearGenero({ alCerrar, alGuardar }) {
-  const [datosFormulario, setDatosFormulario] = useState({
-    nombre: '',
-    descripcion: ''
-  });
-
-  const manejarCambioInput = (e) => {
-    const { name, value } = e.target;
-    setDatosFormulario(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  const [datos, setDato] = useGenero();
 
   const manejarEnvio = (e) => {
     e.preventDefault();
     
     // Validaciones
-    if (!datosFormulario.nombre.trim()) {
+    if (!datos.nombre.trim()) {
       alert('El nombre del género es obligatorio');
       return;
     }
-    if (!datosFormulario.descripcion.trim()) {
+    if (!datos.descripcion.trim()) {
       alert('La descripción es obligatoria');
       return;
     }
 
-    alGuardar(datosFormulario);
+    alGuardar(datos);
   };
 
   return (
     <div className="modal-overlay-genero" onClick={alCerrar}>
       <div className="modal-genero-container" onClick={(e) => e.stopPropagation()}>
+        
         
         <button className="boton-volver-genero" onClick={alCerrar}>VOLVER</button>
 
@@ -41,18 +32,16 @@ export default function ModalCrearGenero({ alCerrar, alGuardar }) {
           <h2 className="titulo-campo-genero">Genero</h2>
           <input
             type="text"
-            name="nombre"
-            value={datosFormulario.nombre}
-            onChange={manejarCambioInput}
+            value={datos.nombre}
+            onChange={(e) => setDato('nombre', e.target.value)}
             className="campo-input-genero"
             placeholder="Genero"
           />
 
           <h2 className="titulo-campo-genero">Descripcion</h2>
           <textarea
-            name="descripcion"
-            value={datosFormulario.descripcion}
-            onChange={manejarCambioInput}
+            value={datos.descripcion}
+            onChange={(e) => setDato('descripcion', e.target.value)}
             className="campo-textarea-genero"
             rows="6"
             placeholder="Descripcion"

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import './ModalLibro.css';
 
@@ -127,6 +128,11 @@ export default function ModalCrearLibro({ alCerrar, alGuardar }) {
     e.preventDefault();
     
     // Validaciones
+
+    if(!datosFormulario.urlPortada){
+      alert('La portada es obligatoria')
+      return;
+    }
     if (!datosFormulario.titulo.trim()) {
       alert('El título es obligatorio');
       return;
@@ -158,7 +164,7 @@ export default function ModalCrearLibro({ alCerrar, alGuardar }) {
   return (
     <div className="modal-overlay-libro" onClick={alCerrar}>
       <div className="modal-libro-container" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close-libro" onClick={alCerrar}>×</button>
+        
         
         <button className="boton-volver-libro" onClick={alCerrar}>VOLVER</button>
 
@@ -212,23 +218,23 @@ export default function ModalCrearLibro({ alCerrar, alGuardar }) {
                 <div className="columna-libro">
                   <h2 className="titulo-campo-libro">Año</h2>
                   <input
-                    type="text"
+                    type="number"
                     name="anioPublicacion"
                     value={datosFormulario.anioPublicacion}
                     onChange={manejarCambioInput}
                     className="campo-input-libro campo-pequeno"
-                    placeholder="2024"
+                    placeholder="Año"
                   />
                 </div>
                 <div className="columna-libro">
                   <h2 className="titulo-campo-libro">Páginas</h2>
                   <input
-                    type="text"
+                    type="number"
                     name="paginas"
                     value={datosFormulario.paginas}
                     onChange={manejarCambioInput}
                     className="campo-input-libro campo-pequeno"
-                    placeholder="123"
+                    placeholder="Paginas"
                   />
                 </div>
                 <div className="columna-libro">

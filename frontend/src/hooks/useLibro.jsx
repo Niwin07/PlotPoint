@@ -10,7 +10,7 @@ export default function useLibro() {
     const [anioPublicacion, setAnioPublicacion] = useState('');
     const [editorialId, setEditorialId] = useState(null);
     const [autorId, setAutorId] = useState(null);
-    const [generos, setGeneros] = useState([]);
+    const [generos, setGeneros] = useState(['Ficción']);
 
     const setDato = (campo, valor) => {
         switch (campo) {

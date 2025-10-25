@@ -158,7 +158,7 @@ export default function ModalEditarLibro({ libro, alCerrar, alGuardar }) {
   return (
     <div className="modal-overlay-libro" onClick={alCerrar}>
       <div className="modal-libro-container" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close-libro" onClick={alCerrar}>×</button>
+        
         
         <button className="boton-volver-libro" onClick={alCerrar}>VOLVER</button>
 

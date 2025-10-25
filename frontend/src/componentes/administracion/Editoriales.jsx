@@ -91,6 +91,7 @@ const Editoriales = () => {
             nombre: datosNuevaEditorial.nombre,
             pais: datosNuevaEditorial.pais
         };
+        console.log(nuevaEditorial)
 
         setEditoriales([...editoriales, nuevaEditorial]);
         setMostrarModalCrear(false);

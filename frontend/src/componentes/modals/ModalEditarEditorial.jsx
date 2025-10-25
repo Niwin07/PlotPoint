@@ -1,40 +1,40 @@
-import React, { useState } from 'react';
-import '/src/componentes/modals/ModalEditorial.css';
+
+import React, { useEffect } from 'react';
+import './ModalEditorial.css';
+import useEditorial from '/src/hooks/useEditorial';
 
 export default function ModalEditarEditorial({ editorial, alCerrar, alGuardar }) {
-  const [datosFormulario, setDatosFormulario] = useState({
-    nombre: editorial?.nombre || '',
-    pais: editorial?.pais || ''
-  });
+  const [datos, setDato] = useEditorial();
 
-  const manejarCambioInput = (e) => {
-    const { name, value } = e.target;
-    setDatosFormulario(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  // Cargar los datos de la editorial cuando el modal se abre
+  useEffect(() => {
+    if (editorial) {
+      setDato('id', editorial.id);
+      setDato('nombre', editorial.nombre);
+      setDato('pais', editorial.pais);
+    }
+  }, [editorial]);
 
   const manejarEnvio = (e) => {
     e.preventDefault();
     
     // Validaciones
-    if (!datosFormulario.nombre.trim()) {
+    if (!datos.nombre.trim()) {
       alert('El nombre de la editorial es obligatorio');
       return;
     }
-    if (!datosFormulario.pais.trim()) {
+    if (!datos.pais.trim()) {
       alert('El país es obligatorio');
       return;
     }
 
-    alGuardar(datosFormulario);
+    alGuardar(datos);
   };
 
   return (
     <div className="modal-overlay-editorial" onClick={alCerrar}>
       <div className="modal-editorial-container" onClick={(e) => e.stopPropagation()}>
-       
+        
         
         <button className="boton-volver-editorial" onClick={alCerrar}>VOLVER</button>
 
@@ -42,9 +42,8 @@ export default function ModalEditarEditorial({ editorial, alCerrar, alGuardar })
           <h2 className="titulo-campo-editorial">Editorial</h2>
           <input
             type="text"
-            name="nombre"
-            value={datosFormulario.nombre}
-            onChange={manejarCambioInput}
+            value={datos.nombre}
+            onChange={(e) => setDato('nombre', e.target.value)}
             className="campo-input-editorial"
             placeholder="LibroTeca"
           />
@@ -52,9 +51,8 @@ export default function ModalEditarEditorial({ editorial, alCerrar, alGuardar })
           <h2 className="titulo-campo-editorial">Pais</h2>
           <input
             type="text"
-            name="pais"
-            value={datosFormulario.pais}
-            onChange={manejarCambioInput}
+            value={datos.pais}
+            onChange={(e) => setDato('pais', e.target.value)}
             className="campo-input-editorial"
             placeholder="Argentino"
           />

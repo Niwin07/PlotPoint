@@ -1,60 +1,50 @@
+
 import React, { useState } from 'react';
-import '/src/componentes/modals/ModalUsuario.css';
+import './ModalUsuario.css';
+import useUsuario from '/src/hooks/useUsuario';
 
 export default function ModalCrearUsuario({ alCerrar, alGuardar }) {
-  const [datosFormulario, setDatosFormulario] = useState({
-    nombreUsuario: '',
-    correo: '',
-    contrasena: ''
-  });
-
+  const [datos, setDato] = useUsuario();
   const [mostrarContrasena, setMostrarContrasena] = useState(false);
-
-  const manejarCambioInput = (e) => {
-    const { name, value } = e.target;
-    setDatosFormulario(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
 
   const manejarEnvio = (e) => {
     e.preventDefault();
     
     // Validaciones
-    if (!datosFormulario.nombreUsuario.trim()) {
+    if (!datos.nombreUsuario.trim()) {
       alert('El nombre de usuario es obligatorio');
       return;
     }
-    if (!datosFormulario.correo.trim()) {
+
+    if (!datos.correo.trim()) {
       alert('El correo es obligatorio');
       return;
     }
     
     // Validar formato de correo
     const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!regexCorreo.test(datosFormulario.correo)) {
+    if (!regexCorreo.test(datos.correo)) {
       alert('Por favor ingrese un correo válido');
       return;
     }
-
-    if (!datosFormulario.contrasena.trim()) {
+    
+    if (!datos.contrasenaHash.trim()) {
       alert('La contraseña es obligatoria');
       return;
     }
 
-    if (datosFormulario.contrasena.length < 6) {
+    if (datos.contrasenaHash.length < 6) {
       alert('La contraseña debe tener al menos 6 caracteres');
       return;
     }
 
-    alGuardar(datosFormulario);
+    alGuardar(datos);
   };
 
   return (
     <div className="modal-overlay" onClick={alCerrar}>
       <div className="modal-usuario-simple" onClick={(e) => e.stopPropagation()}>
-  
+        
         
         <button className="boton-volver" onClick={alCerrar}>VOLVER</button>
 
@@ -62,9 +52,8 @@ export default function ModalCrearUsuario({ alCerrar, alGuardar }) {
           <h2 className="titulo-campo">Nombre de usuario</h2>
           <input
             type="text"
-            name="nombreUsuario"
-            value={datosFormulario.nombreUsuario}
-            onChange={manejarCambioInput}
+            value={datos.nombreUsuario}
+            onChange={(e) => setDato('nombreUsuario', e.target.value)}
             className="campo-input"
             placeholder="Nombre de usuario"
           />
@@ -72,20 +61,18 @@ export default function ModalCrearUsuario({ alCerrar, alGuardar }) {
           <h2 className="titulo-campo">Correo</h2>
           <input
             type="email"
-            name="correo"
-            value={datosFormulario.correo}
-            onChange={manejarCambioInput}
+            value={datos.correo}
+            onChange={(e) => setDato('correo', e.target.value)}
             className="campo-input"
-            placeholder="Correo electronico"
+            placeholder="Correo"
           />
 
           <h2 className="titulo-campo">Contraseña</h2>
           <div className="contenedor-contrasena">
             <input
               type={mostrarContrasena ? "text" : "password"}
-              name="contrasena"
-              value={datosFormulario.contrasena}
-              onChange={manejarCambioInput}
+              value={datos.contrasenaHash}
+              onChange={(e) => setDato('contrasenaHash', e.target.value)}
               className="campo-input"
               placeholder="Contraseña"
             />

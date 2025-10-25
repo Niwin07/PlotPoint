@@ -1,46 +1,51 @@
-import React, { useState } from 'react';
-import '/src/componentes/modals/ModalUsuario.css';
+
+import React, { useEffect } from 'react';
+import './ModalUsuario.css';
+import useUsuario from '/src/hooks/useUsuario';
 
 export default function ModalEditarUsuario({ usuario, alCerrar, alGuardar }) {
-  const [datosFormulario, setDatosFormulario] = useState({
-    nombreUsuario: usuario?.nombreUsuario || '',
-    correo: usuario?.correo || ''
-  });
+  const [datos, setDato] = useUsuario();
 
-  const manejarCambioInput = (e) => {
-    const { name, value } = e.target;
-    setDatosFormulario(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  // Cargar los datos del usuario cuando el modal se abre
+  useEffect(() => {
+    if (usuario) {
+      setDato('id', usuario.id);
+      setDato('nombreUsuario', usuario.nombreUsuario);
+      setDato('correo', usuario.correo); 
+    }
+  }, [usuario]);
 
   const manejarEnvio = (e) => {
     e.preventDefault();
     
     // Validaciones
-    if (!datosFormulario.nombreUsuario.trim()) {
+    if (!datos.nombreUsuario.trim()) {
       alert('El nombre de usuario es obligatorio');
       return;
     }
-    if (!datosFormulario.correo.trim()) {
+    if (!datos.correo.trim()) {
       alert('El correo es obligatorio');
       return;
     }
     
     // Validar formato de correo
     const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!regexCorreo.test(datosFormulario.correo)) {
+    if (!regexCorreo.test(datos.correo)) {
       alert('Por favor ingrese un correo válido');
       return;
     }
 
-    alGuardar(datosFormulario);
+    // Enviamos los datos con la estructura correcta
+    alGuardar({
+      nombreUsuario: datos.nombreUsuario,
+      correo: datos.correo
+    });
   };
 
   return (
     <div className="modal-overlay" onClick={alCerrar}>
       <div className="modal-usuario-simple" onClick={(e) => e.stopPropagation()}>
+        
         
         <button className="boton-volver" onClick={alCerrar}>VOLVER</button>
 
@@ -48,21 +53,19 @@ export default function ModalEditarUsuario({ usuario, alCerrar, alGuardar }) {
           <h2 className="titulo-campo">Nombre de usuario</h2>
           <input
             type="text"
-            name="nombreUsuario"
-            value={datosFormulario.nombreUsuario}
-            onChange={manejarCambioInput}
+            value={datos.nombreUsuario}
+            onChange={(e) => setDato('nombreUsuario', e.target.value)}
             className="campo-input"
-            placeholder="Juan Perez"
+            placeholder=""
           />
 
           <h2 className="titulo-campo">Correo</h2>
           <input
             type="email"
-            name="correo"
-            value={datosFormulario.correo}
-            onChange={manejarCambioInput}
+            value={datos.correo}
+            onChange={(e) => setDato('correo', e.target.value)}
             className="campo-input"
-            placeholder="juanperez@gmail.com"
+            placeholder=""
           />
 
           <button type="submit" className="boton-editar-usuario">
