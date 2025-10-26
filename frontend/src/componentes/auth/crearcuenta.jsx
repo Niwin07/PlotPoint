@@ -49,6 +49,7 @@ const Signup = () => {
 
         if (Object.keys(erroresTemp).length === 0) {
             // Aquí ya puedes enviar los datos al backend
+            localStorage.setItem("usuario", JSON.stringify({ nombre: "Cristian", rol: "usuario" }));
             window.location.href = '/inicio'; 
             console.log('Datos válidos:', { ...usuario, terminos });
         }

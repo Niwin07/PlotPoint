@@ -7,16 +7,15 @@ const BookPage = () => {
    const libro = {
     id: 1,
     titulo: "Harry Potter and the Deathly Hallows",
-    autor: "J. K. Rowling",
-    anio: 2025,
+    autorId: "J. K. Rowling",
+    anioPublicacion: 2025,
     paginas: 137,
-    genero: "Fantasía",
-    editorial: "LibroTeca",
-    descripcion:
+    generoId: "Fantasía",
+    editorialId: "LibroTeca",
+    sinopsis:
       "Harry, Ron y Hermione emprenden una peligrosa misión para encontrar y destruir los Horrocruxes restantes de Voldemort, creyendo que este es el único camino para derrotarlo definitivamente. Mientras buscan, descubren la existencia de las legendarias Reliquias de la Muerte...",
     promedio: 3.5,
-    portada: "/src/img/libro.webp",
-    fans: 38,
+    urlPortada: "/src/img/libro.webp",
   };
 
   const [reviews, setReviews] = useState([]);
@@ -58,7 +57,7 @@ const BookPage = () => {
       <div className="book-header">
         <div className="book-cover-container">
           <img
-            src={libro.portada}
+            src={libro.urlPortada}
             alt={libro.titulo}
             className="book-cover"
           />
@@ -66,13 +65,13 @@ const BookPage = () => {
         </div>
 
         <h1 className="book-title">{libro.titulo}</h1>
-        <p className="book-info">{libro.anio} - Escrito por {libro.autor}</p>
+        <p className="book-info">{libro.anioPublicacion} - Escrito por {libro.autorId}</p>
         <p className="book-info">{libro.paginas} páginas</p>
-        <p className="book-info">Género: {libro.genero}</p>
-        <p className="book-info">Editorial: {libro.editorial}</p>
+        <p className="book-info">Género: {libro.generoId}</p>
+        <p className="book-info">Editorial: {libro.editorialId}</p>
 
         <p className="book-description">
-          {libro.descripcion}
+          {libro.sinopsis}
         </p>
       </div>
 

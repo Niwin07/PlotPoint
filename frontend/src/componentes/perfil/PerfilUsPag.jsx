@@ -5,7 +5,7 @@ import '/src/componentes/perfil/PerfilPag.css';
 export default function ProfilePageUs() {
   const user = {
     nombreUsuario: "tu_perfil",
-    fotoPerfil: "/src/img/perfil.webp",
+    urlAvatar: "/src/img/perfil.webp",
     biografia:
       "Hola me llamo David, me fascinan los libros de fantasía y mi mayor sueño es poder realizar mi propio libro que trate del medio ambiente!",
     reseñas: 8,
@@ -23,7 +23,7 @@ export default function ProfilePageUs() {
 
         {/* Profile Avatar */}
         <div className="avatar-container">
-          <img className="perfil-foto" src={user.fotoPerfil}></img>
+          <img className="perfil-foto" src={user.urlAvatar}></img>
           <div className="dot-decoration"></div>
         </div>
 

@@ -7,13 +7,13 @@ export default function BookReviewApp() {
 
   const reviewData = {
     id: 101,
-    user: 'Maria_Jose_Rodriguez2006',
-    userImg: '/src/img/perfil.webp',
-    bookTitle: 'Harry Potter and the Deathly Hallows',
-    year: 2022,
-    stars: 4,
-    bookImg: '/src/img/libro.webp',
-    reviewText: `An unforgettable experience that blends emotion, tension, and beauty in perfect harmony. 
+    nombreUsuario: 'Maria_Jose_Rodriguez2006',
+    urlAvatar: '/src/img/perfil.webp',
+    titulo: 'Harry Potter and the Deathly Hallows',
+    anioPublicacion: 2022,
+    puntuacion: 4,
+    urlPortada: '/src/img/libro.webp',
+    contenido: `An unforgettable experience that blends emotion, tension, and beauty in perfect harmony. 
     The characters feel alive, their choices meaningful, and the world richly detailed. Every twist adds 
     weight to the story, creating a rhythm that never loses momentum. It’s the kind of book that leaves you 
     quiet afterward, lost in thought, replaying moments and lines long after the final page is turned.`
@@ -24,27 +24,27 @@ export default function BookReviewApp() {
   const [reviews, setReviews] = useState([
     {
       id: 1,
-      user: 'Beck',
-      perfil: "/src/img/perfil.webp",
-      text: 'this is my favourite review'
+      nombreUsuario: 'Beck',
+      urlAvatar:"/src/img/perfil.webp",
+      contenido: 'this is my favourite review'
     },
     {
       id: 2,
-      user: 'Beck',
-      perfil: "/src/img/perfil.webp",
-      text: 'Desde mi sincera opinion tu perspectiva me resulto bastante elocuente y blablablablablablablabla'
+      nombreUsuario: 'Beck',
+      urlAvatar: "/src/img/perfil.webp",
+      contenido: 'Desde mi sincera opinion tu perspectiva me resulto bastante elocuente y blablablablablablablabla'
     },
     {
       id: 3,
-      user: 'Beck',
-      perfil: "/src/img/perfil.webp",
-      text: 'this is my favourite review'
+      nombreUsuario:'Beck',
+      urlAvatar: "/src/img/perfil.webp",
+      contenido: 'this is my favourite review'
     },
     {
       id: 4,
-      user: 'Beck',
-      perfil: "/src/img/perfil.webp",
-      text: 'Borra la cuenta'
+      nombreUsuario: 'Beck',
+      urlAvatar: "/src/img/perfil.webp",
+      contenido: 'Borra la cuenta'
     }
   ]);
 
@@ -71,30 +71,30 @@ export default function BookReviewApp() {
       <div className="main-card">
         <div className="usuario-reseña">
           <a className="usuario-reseña" href='/usuario/'>
-            <img className="foto-perfil" src={reviewData.userImg}></img>
+            <img className="foto-perfil" src={reviewData.urlAvatar}></img>
 
-            <h2 className="user-name">{reviewData.user}</h2>
+            <h2 className="user-name">{reviewData.nombreUsuario}</h2>
           </a>
         </div>
 
         <div className="content">
           <div className="book-info">
-            <h1 className="book-titulo">{reviewData.bookTitle} {reviewData.year}</h1>
+            <h1 className="book-titulo">{reviewData.titulo} {reviewData.anioPublicacion}</h1>
             <div className="estrellas">
               <Rating
-                initialRating={reviewData.stars}
+                initialRating={reviewData.puntuacion}
                 readonly
                 emptySymbol={<span className="star empty">☆</span>}
                 fullSymbol={<span className="star full">★</span>}
               />
             </div>
             <p className="review">
-              {reviewData.reviewText}
+              {reviewData.contenido}
             </p>
           </div>
           <img
-            src={reviewData.bookImg}
-            alt={reviewData.bookTitle}
+            src={reviewData.urlPortada}
+            alt={reviewData.titulo}
             className="book-portada"
           />
         </div>
@@ -124,15 +124,15 @@ export default function BookReviewApp() {
 
 
             <a className="review-usuario" href='/usuario/'>
-              <img src={review.perfil} alt="" className="foto-perfil" />
+              <img src={review.urlAvatar} alt="" className="foto-perfil" />
 
 
-              <h2 className="review-usuario">{review.user}</h2>
+              <h2 className="review-usuario">{review.nombreUsuario}</h2>
             </a>
 
 
 
-            <p className="review-text">{review.text}</p>
+            <p className="review-text">{review.contenido}</p>
           </div>
         ))}
       </div>

@@ -7,7 +7,7 @@ export default function useUsuario() {
     const [contrasenaHash, setContrasenaHash] = useState('');
     const [nombre, setNombre] = useState('');
     const [biografia, setBiografia] = useState('');
-    const [urlAvatar, setUrlAvatar] = useState(null);
+    const [urlAvatar, setUrlAvatar] = useState('/src/img/perfil.webp');
     const [rol, setRol] = useState('usuario');
     const [fechaCreacion, setFechaCreacion] = useState('');
 

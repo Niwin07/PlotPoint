@@ -6,7 +6,7 @@ export default function ProfilePage() {
    const user = {
     id: 1,
     nombreUsuario: "usuario_diferente",
-    fotoPerfil: "/src/img/perfil.webp",
+    urlAvatar: "/src/img/perfil.webp",
     biografia:
       "Hola me llamo Gustavos, me fascinan los libros de fantasía y mi mayor sueño es poder realizar mi propio libro que trate del medio ambiente!",
     reseñas: 8,
@@ -37,7 +37,7 @@ export default function ProfilePage() {
 
         {/* Profile Avatar */}
         <div className="avatar-container">
-          <img className="perfil-foto" src={user.fotoPerfil}></img>
+          <img className="perfil-foto" src={user.urlAvatar}></img>
           <div className="dot-decoration"></div>
         </div>
 

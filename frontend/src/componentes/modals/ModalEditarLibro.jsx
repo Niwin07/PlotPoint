@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
-import '/src/componentes/modals/ModalLibro.css';
+import React, { useState, useEffect } from 'react';
+import './ModalLibro.css';
+import useLibro from '/src/hooks/useLibro';
 
 export default function ModalEditarLibro({ libro, alCerrar, alGuardar }) {
+  const [datos, setDato] = useLibro();
+  const [mostrarDropdownGeneros, setMostrarDropdownGeneros] = useState(false);
+
   const generosDisponibles = [
     'Ficción',
     'Terror',
@@ -49,116 +53,95 @@ export default function ModalEditarLibro({ libro, alCerrar, alGuardar }) {
     { id: 10, nombre: 'Santillana' }
   ];
 
-  const [datosFormulario, setDatosFormulario] = useState({
-    titulo: libro?.titulo || '',
-    isbn: libro?.isbn || '',
-    sinopsis: libro?.sinopsis || '',
-    urlPortada: libro?.urlPortada || null,
-    paginas: libro?.paginas || '',
-    anioPublicacion: libro?.anioPublicacion || '',
-    editorialId: libro?.editorialId || editorialesDisponibles[0].id,
-    autorId: libro?.autorId || autoresDisponibles[0].id,
-    generos: libro?.generos || ['Ficción']
-  });
-
-  const [mostrarDropdownGeneros, setMostrarDropdownGeneros] = useState(false);
-
-  const manejarCambioInput = (e) => {
-    const { name, value } = e.target;
-    setDatosFormulario(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  // Cargar los datos del libro cuando el modal se abre
+  useEffect(() => {
+    if (libro) {
+      setDato('id', libro.id);
+      setDato('titulo', libro.titulo);
+      setDato('isbn', libro.isbn);
+      setDato('sinopsis', libro.sinopsis);
+      setDato('urlPortada', libro.urlPortada);
+      setDato('paginas', libro.paginas);
+      setDato('anioPublicacion', libro.anioPublicacion);
+      setDato('editorialId', libro.editorialId);
+      setDato('autorId', libro.autorId);
+      setDato('generos', libro.generos);
+    }
+  }, [libro]);
 
   const manejarCambioImagen = (e) => {
     const archivo = e.target.files[0];
     if (archivo) {
       const lector = new FileReader();
       lector.onloadend = () => {
-        setDatosFormulario(prev => ({
-          ...prev,
-          urlPortada: lector.result
-        }));
+        setDato('urlPortada', lector.result);
       };
       lector.readAsDataURL(archivo);
     }
   };
 
   const alternarGenero = (genero) => {
-    setDatosFormulario(prev => {
-      const generosActuales = prev.generos;
-      const estaSeleccionado = generosActuales.includes(genero);
-      
-      if (estaSeleccionado) {
-        if (generosActuales.length === 1) {
-          alert('Debe seleccionar al menos 1 género');
-          return prev;
-        }
-        return {
-          ...prev,
-          generos: generosActuales.filter(g => g !== genero)
-        };
-      } else {
-        if (generosActuales.length >= 5) {
-          alert('Puede seleccionar máximo 5 géneros');
-          return prev;
-        }
-        return {
-          ...prev,
-          generos: [...generosActuales, genero]
-        };
+    const generosActuales = datos.generos;
+    const estaSeleccionado = generosActuales.includes(genero);
+    
+    if (estaSeleccionado) {
+      if (generosActuales.length === 1) {
+        alert('Debe seleccionar al menos 1 género');
+        return;
       }
-    });
+      setDato('generos', generosActuales.filter(g => g !== genero));
+    } else {
+      if (generosActuales.length >= 5) {
+        alert('Puede seleccionar máximo 5 géneros');
+        return;
+      }
+      setDato('generos', [...generosActuales, genero]);
+    }
   };
 
   const eliminarGenero = (genero) => {
-    if (datosFormulario.generos.length === 1) {
+    if (datos.generos.length === 1) {
       alert('Debe seleccionar al menos 1 género');
       return;
     }
-    setDatosFormulario(prev => ({
-      ...prev,
-      generos: prev.generos.filter(g => g !== genero)
-    }));
+    setDato('generos', datos.generos.filter(g => g !== genero));
   };
 
   const manejarEnvio = (e) => {
     e.preventDefault();
     
     // Validaciones
-    if (!datosFormulario.titulo.trim()) {
+    if (!datos.titulo.trim()) {
       alert('El título es obligatorio');
       return;
     }
-    if (!datosFormulario.isbn.trim()) {
+    if (!datos.isbn.trim()) {
       alert('El ISBN es obligatorio');
       return;
     }
-    if (!datosFormulario.paginas) {
+    if (!datos.paginas) {
       alert('Las páginas son obligatorias');
       return;
     }
-    if (!datosFormulario.anioPublicacion) {
+    if (!datos.anioPublicacion) {
       alert('El año de publicación es obligatorio');
       return;
     }
-    if (datosFormulario.generos.length === 0) {
+    if (datos.generos.length === 0) {
       alert('Debe seleccionar al menos 1 género');
       return;
     }
-    if (!datosFormulario.sinopsis.trim()) {
+    if (!datos.sinopsis.trim()) {
       alert('La sinopsis es obligatoria');
       return;
     }
 
-    alGuardar(datosFormulario);
+    alGuardar(datos);
   };
 
   return (
     <div className="modal-overlay-libro" onClick={alCerrar}>
       <div className="modal-libro-container" onClick={(e) => e.stopPropagation()}>
-        
         
         <button className="boton-volver-libro" onClick={alCerrar}>VOLVER</button>
 
@@ -166,8 +149,8 @@ export default function ModalEditarLibro({ libro, alCerrar, alGuardar }) {
           <div className="contenido-modal-libro">
             <div className="seccion-izquierda-libro">
               <div className="portada-libro">
-                {datosFormulario.urlPortada ? (
-                  <img src={datosFormulario.urlPortada} alt="Portada" />
+                {datos.urlPortada ? (
+                  <img src={datos.urlPortada} alt="Portada" />
                 ) : (
                   <div className="placeholder-portada">Sin imagen</div>
                 )}
@@ -187,18 +170,16 @@ export default function ModalEditarLibro({ libro, alCerrar, alGuardar }) {
               <h2 className="titulo-campo-libro">Título</h2>
               <input
                 type="text"
-                name="titulo"
-                value={datosFormulario.titulo}
-                onChange={manejarCambioInput}
+                value={datos.titulo}
+                onChange={(e) => setDato('titulo', e.target.value)}
                 className="campo-input-libro"
                 placeholder="Ingrese el título del libro"
               />
 
               <h2 className="titulo-campo-libro">Autor</h2>
               <select
-                name="autorId"
-                value={datosFormulario.autorId}
-                onChange={manejarCambioInput}
+                value={datos.autorId}
+                onChange={(e) => setDato('autorId', parseInt(e.target.value))}
                 className="campo-input-libro campo-select-libro"
               >
                 {autoresDisponibles.map(autor => (
@@ -213,9 +194,8 @@ export default function ModalEditarLibro({ libro, alCerrar, alGuardar }) {
                   <h2 className="titulo-campo-libro">Año</h2>
                   <input
                     type="text"
-                    name="anioPublicacion"
-                    value={datosFormulario.anioPublicacion}
-                    onChange={manejarCambioInput}
+                    value={datos.anioPublicacion}
+                    onChange={(e) => setDato('anioPublicacion', e.target.value)}
                     className="campo-input-libro campo-pequeno"
                     placeholder="2024"
                   />
@@ -224,9 +204,8 @@ export default function ModalEditarLibro({ libro, alCerrar, alGuardar }) {
                   <h2 className="titulo-campo-libro">Páginas</h2>
                   <input
                     type="text"
-                    name="paginas"
-                    value={datosFormulario.paginas}
-                    onChange={manejarCambioInput}
+                    value={datos.paginas}
+                    onChange={(e) => setDato('paginas', e.target.value)}
                     className="campo-input-libro campo-pequeno"
                     placeholder="123"
                   />
@@ -235,9 +214,8 @@ export default function ModalEditarLibro({ libro, alCerrar, alGuardar }) {
                   <h2 className="titulo-campo-libro">ISBN</h2>
                   <input
                     type="text"
-                    name="isbn"
-                    value={datosFormulario.isbn}
-                    onChange={manejarCambioInput}
+                    value={datos.isbn}
+                    onChange={(e) => setDato('isbn', e.target.value)}
                     className="campo-input-libro"
                     placeholder="978-xxx-xxx-xxx-x"
                   />
@@ -247,7 +225,7 @@ export default function ModalEditarLibro({ libro, alCerrar, alGuardar }) {
               <div className="dos-columnas-libro">
                 <div className="columna-libro">
                   <h2 className="titulo-campo-libro">
-                    Genero ({datosFormulario.generos.length}/5)
+                    Genero ({datos.generos.length}/5)
                   </h2>
                   <div className="selector-generos">
                     <div 
@@ -255,7 +233,7 @@ export default function ModalEditarLibro({ libro, alCerrar, alGuardar }) {
                       onClick={() => setMostrarDropdownGeneros(!mostrarDropdownGeneros)}
                     >
                       <div className="generos-seleccionados">
-                        {datosFormulario.generos.map(genero => (
+                        {datos.generos.map(genero => (
                           <span key={genero} className="etiqueta-genero">
                             {genero}
                             <button
@@ -280,7 +258,7 @@ export default function ModalEditarLibro({ libro, alCerrar, alGuardar }) {
                           <label key={genero} className="opcion-genero">
                             <input
                               type="checkbox"
-                              checked={datosFormulario.generos.includes(genero)}
+                              checked={datos.generos.includes(genero)}
                               onChange={() => alternarGenero(genero)}
                             />
                             <span>{genero}</span>
@@ -293,9 +271,8 @@ export default function ModalEditarLibro({ libro, alCerrar, alGuardar }) {
                 <div className="columna-libro">
                   <h2 className="titulo-campo-libro">Editorial</h2>
                   <select
-                    name="editorialId"
-                    value={datosFormulario.editorialId}
-                    onChange={manejarCambioInput}
+                    value={datos.editorialId}
+                    onChange={(e) => setDato('editorialId', parseInt(e.target.value))}
                     className="campo-input-libro campo-select-libro"
                   >
                     {editorialesDisponibles.map(editorial => (
@@ -309,9 +286,8 @@ export default function ModalEditarLibro({ libro, alCerrar, alGuardar }) {
 
               <h2 className="titulo-campo-libro">Sinopsis</h2>
               <textarea
-                name="sinopsis"
-                value={datosFormulario.sinopsis}
-                onChange={manejarCambioInput}
+                value={datos.sinopsis}
+                onChange={(e) => setDato('sinopsis', e.target.value)}
                 className="campo-textarea-libro"
                 rows="5"
                 placeholder="Ingrese la sinopsis del libro"

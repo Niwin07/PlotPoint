@@ -9,11 +9,10 @@ export default function EditProfilePage() {
   const [showModal, setShowModal] = useState(false);
   //simula datos de un usuario
   const [formData, setFormData] = useState({
-    username: 'usuario_nombre',
-    email: 'santaespinacruz@gmail.com',
-    bio: '...',
-    photoFile: null,
-    photoName: ''
+    nombreUsuario: 'usuario_nombre',
+    correo: 'santaespinacruz@gmail.com',
+    biografia: '...',
+    urlAvatar: '/src/img/perfil.webp',
   });
 
   //si cambiar el nombre y la biografia lo setea a FormData
@@ -33,11 +32,19 @@ export default function EditProfilePage() {
     if (file) {
       setFormData(prev => ({
         ...prev,
-        photoFile: file,
+        urlAvatar: file,
         photoName: file.name
       }));
     }
   };
+  const eliminarCuenta = () => {
+
+    if (window.confirm('¿Estás seguro de que deseas eliminar tu cuenta')) {
+      window.location.href = '/registro'; 
+      
+    }
+
+  }
 
   //simulacion si guardas los datos correctamente
 
@@ -48,7 +55,7 @@ export default function EditProfilePage() {
 
   return (
     <div className="edit-page-container">
-    
+
 
       {/* Contenedor */}
       <div className="edit-main-content">
@@ -58,7 +65,7 @@ export default function EditProfilePage() {
           <input
             type="text"
             name="username"
-            value={formData.username}
+            value={formData.nombreUsuario}
             onChange={handleChange}
             className="field-input"
           />
@@ -70,7 +77,7 @@ export default function EditProfilePage() {
           <input
             type="email"
             name="email"
-            value={formData.email}
+            value={formData.correo}
             className="field-input field-disabled"
             disabled
           />
@@ -98,7 +105,7 @@ export default function EditProfilePage() {
           <label className="field-label">Biografia</label>
           <textarea
             name="bio"
-            value={formData.bio}
+            value={formData.biografia}
             onChange={handleChange}
             className="field-textarea"
             rows="8"
@@ -117,7 +124,7 @@ export default function EditProfilePage() {
 
         {/* cerrar sesion */}
         <div className="logout-container">
-          <a href='/registro' className="logout-button">Eliminar cuenta</a>
+          <a onClick={eliminarCuenta} className="logout-button">Eliminar cuenta</a>
         </div>
       </div>
       {showModal && <ModalContraseña onClose={() => setShowModal(false)} />}

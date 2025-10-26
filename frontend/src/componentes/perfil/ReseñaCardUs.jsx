@@ -4,7 +4,7 @@ import Rating from "react-rating";
 
 //tarjeta de reseña de un usuario en espeficico o tuyo (para la seccion de "reseñas" del perfil)
 
-const ReseñaCardUs = ({ titulo, portada, texto, rating }) => {
+const ReseñaCardUs = ({ titulo, urlPortada, contenido, puntuacion }) => {
   return (
     <a className="link-reseña" href="/reseñalibro">
       <div className="reseña-card">
@@ -20,7 +20,7 @@ const ReseñaCardUs = ({ titulo, portada, texto, rating }) => {
 
         <div className="reseña-estrellas">
           <Rating
-            initialRating={rating}
+            initialRating={puntuacion}
             readonly
             emptySymbol={<span className="star empty">☆</span>}
             fullSymbol={<span className="star full">★</span>}
@@ -28,8 +28,8 @@ const ReseñaCardUs = ({ titulo, portada, texto, rating }) => {
         </div>
 
         <div className="reseña-contenido">
-          <img src={portada} alt={titulo} className="portada" />
-          <p className="texto">{texto}</p>
+          <img src={urlPortada} alt={titulo} className="portada" />
+          <p className="texto">{contenido}</p>
         </div>
       </div>
     </a>

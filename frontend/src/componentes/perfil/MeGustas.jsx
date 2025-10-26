@@ -1,6 +1,6 @@
 import React from 'react';
 import '/src/componentes/home/inicio.css';
-import portadaHP from '/src/img/libro.webp'
+
 
 
 const MeGustas = () => {
@@ -11,30 +11,25 @@ const MeGustas = () => {
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 1,
-            portada: portadaHP,
-            texto: "An unforgettable experience that blends emotion, tension, and beauty in perfect harmony. The characters feel alive, their choices meaningful, and the world richly detailed. Every twist adds weight to the story, creating a rhythm that never loses momentum. It’s the kind of book that leaves you quiet afterward, lost in thought, replaying moments and lines long after the final page is turned.",
-            color: "blue",
+            urlPortada: '/src/img/libro.webp',
+            
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 2,
-            portada: portadaHP,
-            texto: "so heartbreaking i lowkey started to feel bad for watching sitting down",
-            color: "magenta",
+            urlPortada: '/src/img/libro.webp',
+            
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 3,
-            portada: portadaHP,
-            texto: "so heartbreaking i lowkey started to feel bad for watching sitting down",
-            color: "limegreen",
+            urlPortada: '/src/img/libro.webp',
+            
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 4,
-            portada: portadaHP,
-            texto: "so heartbreaking i lowkey started to feel bad for watching sitting down",
-            color: "goldenrod",
+            urlPortada: '/src/img/libro.webp',
         },
     ];
     return (
@@ -50,7 +45,7 @@ const MeGustas = () => {
                     {libros.map((libro) => (
                         <div key={libro.id} className="book-item">
                             <a href='/libro'>
-                                <img src="/src/img/libro.webp" alt="Harry Potter and the Deathly Hallows"></img>
+                                <img src={libro.urlPortada} alt={libro.titulo}></img>
                             </a>
                         </div>
                     ))}

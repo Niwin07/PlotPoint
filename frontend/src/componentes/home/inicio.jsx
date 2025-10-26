@@ -9,27 +9,27 @@ const Inicio = () => {
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 1,
-            portada: "/src/img/libro.webp",
+            urlPortada: "/src/img/libro.webp",
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 2,
-            portada: "/src/img/libro.webp",
+            urlPortada: "/src/img/libro.webp",
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 3,
-            portada: "/src/img/libro.webp",
+            urlPortada: "/src/img/libro.webp",
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 4,
-            portada: "/src/img/libro.webp",
+            urlPortada: "/src/img/libro.webp",
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 5,
-            portada: "/src/img/libro.webp",
+            urlPortada: "/src/img/libro.webp",
         },
     ];
 
@@ -37,32 +37,32 @@ const Inicio = () => {
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 1,
-            portada: "/src/img/libro.webp",
+            urlPortada: "/src/img/libro.webp",
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 2,
-            portada: "/src/img/libro.webp",
+            urlPortada: "/src/img/libro.webp",
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 3,
-            portada: "/src/img/libro.webp",
+            urlPortada: "/src/img/libro.webp",
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 4,
-            portada: "/src/img/libro.webp",
+            urlPortada: "/src/img/libro.webp",
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 5,
-            portada: "/src/img/libro.webp",
+            urlPortada: "/src/img/libro.webp",
         },
-          {
+        {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 6,
-            portada: "/src/img/libro.webp",
+            urlPortada: "/src/img/libro.webp",
         }
     ];
 
@@ -70,27 +70,27 @@ const Inicio = () => {
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 1,
-            portada:"/src/img/libro.webp",
+            urlPortada: "/src/img/libro.webp",
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 2,
-            portada: "/src/img/libro.webp",
+            urlPortada: "/src/img/libro.webp",
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 3,
-            portada: "/src/img/libro.webp",
+            urlPortada: "/src/img/libro.webp",
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 4,
-            portada: "/src/img/libro.webp",
+            urlPortada: "/src/img/libro.webp",
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 5,
-            portada: "/src/img/libro.webp",
+            urlPortada: "/src/img/libro.webp",
         },
     ];
     return (
@@ -103,7 +103,7 @@ const Inicio = () => {
                     {populares.map((popular) => (
                         <div key={popular.id} className="book-item">
                             <a href='/libro'>
-                                <img src={popular.portada} alt={popular.titulo}></img>
+                                <img src={popular.urlPortada} alt={popular.titulo}></img>
                             </a>
                         </div>
                     ))}
@@ -121,7 +121,7 @@ const Inicio = () => {
                     {leidos.map((leido) => (
                         <div key={leido.id} className="book-item">
                             <a href='/libro'>
-                                <img src={leido.portada} alt={leido.titulo}></img>
+                                <img src={leido.urlPortada} alt={leido.titulo}></img>
                             </a>
                         </div>
                     ))}
@@ -136,7 +136,7 @@ const Inicio = () => {
                     {favoritos.map((favorito) => (
                         <div key={favorito.id} className="book-item">
                             <a href='/libro'>
-                                <img src={favorito.portada} alt={favorito.titulo}></img>
+                                <img src={favorito.urlPortada} alt={favorito.titulo}></img>
                             </a>
                         </div>
                     ))}

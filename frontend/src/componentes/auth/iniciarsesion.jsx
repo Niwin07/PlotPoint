@@ -31,6 +31,7 @@ const IniciarSesion = () => {
         if (Object.keys(erroresTemp).length === 0) {
             // Aquí iría la petición al backend para validar usuario y contraseña
             console.log('Intentando iniciar sesión con:', usuario);
+            localStorage.setItem("usuario", JSON.stringify({ nombre: "Cristian", rol: "admin" }));
              window.location.href = '/inicio'; 
         }
     };

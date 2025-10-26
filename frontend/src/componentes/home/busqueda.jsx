@@ -9,7 +9,7 @@ const Busqueda = () => {
   // --- Datos simulados ---
   const usuarios = [
     { id: 1, nombre: "Maria_Jose_Rodriguez2006" },
-    { id: 2, nombre: "lector_apasionado"},
+    { id: 2, nombre: "lector_apasionado" },
     { id: 3, nombre: "libromaniaco" },
     { id: 4, nombre: "usuario_diferente" },
     { id: 5, nombre: "lector_apasionado" },
@@ -46,7 +46,7 @@ const Busqueda = () => {
       genero: "romance",
       imagen: "/src/img/libro.webp",
     },
-     {
+    {
       id: 5,
       titulo: "It",
       autor: "Stephen King",
@@ -139,19 +139,19 @@ const Busqueda = () => {
           resultados.map((grupo, i) =>
             grupo.data.length > 0 ? (
               <div key={i}>
-                
+
 
                 {grupo.tipo === "usuarios" ? (
                   <div className="usuarios">
                     {grupo.data.map((usuario) => (
                       <a href="/usuario/">
-                      <div className="usuario" key={usuario.id}>
-                        <img src="/src/img/perfil.webp" alt="" />
-                       
-                        
-                        <p>{usuario.nombre}</p>
-                        
-                      </div>
+                        <div className="usuario" key={usuario.id}>
+                          <img src="/src/img/perfil.webp" alt="" />
+
+
+                          <p>{usuario.nombre}</p>
+
+                        </div>
                       </a>
 
                     ))}
@@ -161,7 +161,7 @@ const Busqueda = () => {
                     {grupo.data.map((libro) => (
                       <div className="book-item2" key={libro.id}>
                         <a href="/libro">
-                        <img src={libro.imagen} alt={libro.titulo} />
+                          <img src={libro.imagen} alt={libro.titulo} />
                         </a>
                       </div>
                     ))}

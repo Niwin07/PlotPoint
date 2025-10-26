@@ -8,37 +8,41 @@ const ListaReseñasInicio = () => {
   //simula un array de reseñas de VARIOS USUARIOS  (unicamente para la seccion de "reseñas" del inicio) 
   const reseñas = [
     {
+      id: 1,
       titulo: "Harry Potter and the Deathly Hallows",
-      autor: "Maria_Jose_Rodriguez2006",
-      portada: "/src/img/libro.webp",
-      texto: "An unforgettable experience that blends emotion, tension, and beauty in perfect harmony. The characters feel alive, their choices meaningful, and the world richly detailed. Every twist adds weight to the story, creating a rhythm that never loses momentum. It’s the kind of book that leaves you quiet afterward, lost in thought, replaying moments and lines long after the final page is turned.",
-      rating: 2.5,
-      perfil: "/src/img/perfil.webp"
+      nombreUsuario: "Maria_Jose_Rodriguez2006",
+      urlPortada: "/src/img/libro.webp",
+      contenido: "An unforgettable experience that blends emotion, tension, and beauty in perfect harmony. The characters feel alive, their choices meaningful, and the world richly detailed. Every twist adds weight to the story, creating a rhythm that never loses momentum. It’s the kind of book that leaves you quiet afterward, lost in thought, replaying moments and lines long after the final page is turned.",
+      puntuacion: 2.5,
+      urlAvatar: "/src/img/perfil.webp"
     },
     {
+      id: 2,
       titulo: "Harry Potter and the Deathly Hallows",
-      autor: "Beck",
-      portada: "/src/img/libro.webp",
-      texto: "so heartbreaking i lowkey started to feel bad for watching sitting down",
-      rating: 1,
-      perfil: "/src/img/perfil.webp"
+      nombreUsuario: "Beck",
+      urlPortada: "/src/img/libro.webp",
+      contenido: "so heartbreaking i lowkey started to feel bad for watching sitting down",
+      puntuacion: 1,
+      urlAvatar: "/src/img/perfil.webp"
     },
     {
+      id: 3,
       titulo: "Harry Potter and the Deathly Hallows",
-      autor: "Beck",
-      portada: "/src/img/libro.webp",
-      texto: "so heartbreaking i lowkey started to feel bad for watching sitting down",
-      rating: 5,
-      perfil: "/src/img/perfil.webp"
-    
+      nombreUsuario: "Beck",
+      urlPortada: "/src/img/libro.webp",
+      contenido: "so heartbreaking i lowkey started to feel bad for watching sitting down",
+      puntuacion: 5,
+      urlAvatar: "/src/img/perfil.webp"
+
     },
     {
+      id: 4,
       titulo: "Harry Potter and the Deathly Hallows",
-      autor: "Beck",
-      portada: "/src/img/libro.webp",
-      texto: "so heartbreaking i lowkey started to feel bad for watching sitting down",
-      rating: 3,
-      perfil: "/src/img/perfil.webp"
+      nombreUsuario: "Beck",
+      urlPortada: "/src/img/libro.webp",
+      contenido: "so heartbreaking i lowkey started to feel bad for watching sitting down",
+      puntuacion: 3,
+      urlAvatar: "/src/img/perfil.webp"
     },
   ];
 
