@@ -7,6 +7,7 @@ const perfilRouter = require('./perfil');
 const adminRouter = require('./admin');
 const verificarToken = require('../middlewares/auth');
 
+
 // ========== RUTAS PÚBLICAS ==========
 router.use("/login", loginRouter);
 

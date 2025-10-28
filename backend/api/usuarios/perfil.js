@@ -20,7 +20,8 @@ if (!fs.existsSync(directorio)){
 router.get('/', function(req, res, next) {
     const userId = req.usuario.id;
     
-    let sql = `SELECT id, nombre, nombre_usuario, correo, biografia, url_avatar, rol, fecha_creacion 
+    // Solo campos que el usuario debería ver/editar en su perfil
+    let sql = `SELECT id, nombre, nombre_usuario, biografia, url_avatar
                FROM Usuario WHERE id = ?`;
     
     db.query(sql, [userId])
@@ -42,10 +43,11 @@ router.get('/', function(req, res, next) {
 
 // PUT /api/usuarios/perfil/actualizar - Actualizar datos del perfil
 router.put('/actualizar', function(req, res, next) {
-    const { nombre, nombre_usuario, correo, biografia, url_avatar } = req.body;
+    // El usuario solo puede editar estos campos
+    const { nombre, nombre_usuario, biografia, url_avatar } = req.body;
     const userId = req.usuario.id;
     
-    if (!nombre && !nombre_usuario && !correo && !biografia && !url_avatar) {
+    if (!nombre && !nombre_usuario && !biografia && !url_avatar) {
         return res.status(400).json({ 
             error: 'Debe proporcionar al menos un campo para actualizar' 
         });
@@ -60,7 +62,6 @@ router.put('/actualizar', function(req, res, next) {
     }
     
     if (nombre_usuario) {
-        // Validar formato de usuario
         const userRegex = /^[a-zA-Z0-9_]+$/;
         if (!userRegex.test(nombre_usuario.trim())) {
             return res.status(400).json({ 
@@ -70,19 +71,6 @@ router.put('/actualizar', function(req, res, next) {
         }
         updates.push("nombre_usuario = ?");
         params.push(nombre_usuario.trim());
-    }
-    
-    if (correo) {
-        // Validar formato de correo
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(correo.trim())) {
-            return res.status(400).json({ 
-                error: 'Correo inválido',
-                message: 'El formato del correo no es válido' 
-            });
-        }
-        updates.push("correo = ?");
-        params.push(correo.trim());
     }
     
     if (biografia !== undefined) {
@@ -110,7 +98,7 @@ router.put('/actualizar', function(req, res, next) {
             if (error.code === 'ER_DUP_ENTRY') {
                 return res.status(409).json({ 
                     error: 'Datos duplicados',
-                    message: 'El nombre de usuario o correo ya existe' 
+                    message: 'El nombre de usuario ya existe' 
                 });
             }
             res.status(500).json({ 
@@ -118,6 +106,7 @@ router.put('/actualizar', function(req, res, next) {
             });
         });
 });
+
 
 // POST /api/usuarios/perfil/upload-avatar - Subir foto de perfil
 // El usuario solo puede subir su propia foto (usa el ID del token, no de parámetros)
@@ -240,60 +229,64 @@ router.delete('/delete-avatar', function(req, res, next) {
 });
 
 // PUT /api/usuarios/perfil/cambiar-password - Cambiar contraseña
-router.put('/cambiar-password', function(req, res, next) {
+router.put('/cambiar-password', async function(req, res, next) {
     const { contrasenaActual, contrasenaNueva } = req.body;
     const userId = req.usuario.id;
     
-    if (!contrasenaActual || !contrasenaNueva) {
-        return res.status(400).json({ 
-            error: 'Contraseña actual y nueva son requeridas' 
-        });
-    }
+    try {
+        // Validaciones iniciales
+        if (!contrasenaActual || !contrasenaNueva) {
+            return res.status(400).json({ 
+                error: 'Contraseña actual y nueva son requeridas' 
+            });
+        }
 
-    if (contrasenaNueva.length < 6) {
-        return res.status(400).json({ 
-            error: 'Contraseña débil',
-            message: 'La contraseña debe tener al menos 6 caracteres' 
+        if (contrasenaNueva.length < 6) {
+            return res.status(400).json({ 
+                error: 'Contraseña débil',
+                message: 'La contraseña debe tener al menos 6 caracteres' 
+            });
+        }
+        
+        // Verificar contraseña actual
+        const [rows] = await db.query(
+            "SELECT contrasena_hash FROM Usuario WHERE id = ?", 
+            [userId]
+        );
+
+        if (rows.length === 0) {
+            return res.status(404).json({ 
+                error: 'Usuario no encontrado' 
+            });
+        }
+        
+        const usuario = rows[0];
+        
+        if (!verificarPass(contrasenaActual, usuario.contrasena_hash)) {
+            return res.status(401).json({ 
+                error: 'Contraseña actual incorrecta' 
+            });
+        }
+        
+        // Actualizar con nueva contraseña hasheada
+        const contrasenaHash = hashPass(contrasenaNueva);
+        await db.query(
+            "UPDATE Usuario SET contrasena_hash = ? WHERE id = ?", 
+            [contrasenaHash, userId]
+        );
+        
+        return res.json({ 
+            status: 'ok',
+            message: 'Contraseña actualizada exitosamente' 
+        });
+
+    } catch (error) {
+        console.error('Error al cambiar contraseña:', error);
+        return res.status(500).json({ 
+            error: 'Error al cambiar contraseña' 
         });
     }
-    
-    // Verificar contraseña actual
-    let sqlSelect = "SELECT contrasena_hash FROM Usuario WHERE id = ?";
-    
-    db.query(sqlSelect, [userId])
-        .then(([rows]) => {
-            if (rows.length === 0) {
-                return res.status(404).json({ 
-                    error: 'Usuario no encontrado' 
-                });
-            }
-            
-            const usuario = rows[0];
-            
-            if (!verificarPass(contrasenaActual, usuario.contrasena_hash)) {
-                return res.status(401).json({ 
-                    error: 'Contraseña actual incorrecta' 
-                });
-            }
-            
-            // Actualizar con nueva contraseña hasheada
-            const contrasenaHash = hashPass(contrasenaNueva);
-            let sqlUpdate = "UPDATE Usuario SET contrasena_hash = ? WHERE id = ?";
-            
-            return db.query(sqlUpdate, [contrasenaHash, userId]);
-        })
-        .then(() => {
-            res.json({ 
-                status: 'ok',
-                message: 'Contraseña actualizada exitosamente' 
-            });
-        })
-        .catch((error) => {
-            console.error(error);
-            res.status(500).json({ 
-                error: 'Error al cambiar contraseña' 
-            });
-        });
 });
+
 
 module.exports = router;
