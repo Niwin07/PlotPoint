@@ -1,0 +1,97 @@
+.reseña-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  margin: 1.5rem auto;
+  padding: 1rem;
+  max-width: 600px;
+  transition: transform 0.2s;
+  border: 1px solid var(--texto);
+}
+.lista-reseñas {
+  padding: 0rem 1rem;
+}
+
+.reseña-card:hover {
+  transform: translateY(-3px);
+}
+
+.reseña-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.titulo {
+  font-size: medium;
+  margin: 0;
+  overflow-wrap: anywhere;
+    width: 60%;
+}
+
+.autor {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: bold;
+  font-size: small;
+  overflow-wrap: anywhere;
+}
+
+.color-dot {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+.autor img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+
+.reseña-estrellas {
+  margin: 0.3rem 0;
+  font-size: 1rem;
+}
+
+.corazon {
+  color: red;
+  margin-left: 5px;
+}
+
+.reseña-contenido {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  overflow-wrap: anywhere;
+}
+.link-reseña {
+  color:var(--texto);
+
+}
+.portada {
+  
+      width: 100px;
+    height: 150px;
+    /* border-radius: 5px; */
+    object-fit: cover;
+}
+
+.texto {
+  flex: 1;
+  font-size: small;
+  /*
+  line-height: 1.4;
+  */
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  
+
+  
+
+  
+  
+}

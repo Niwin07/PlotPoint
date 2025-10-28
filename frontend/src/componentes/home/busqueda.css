@@ -1,0 +1,255 @@
+.busqueda-container {
+    font-family: "Poppins", sans-serif;
+    /*
+    min-height: 100vh;
+    */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 15px;
+}
+
+/* --- Barra de búsqueda --- */
+.buscador {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    max-width: 700px;
+}
+
+.buscador input,
+.buscador select {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 0.5rem;
+    background-color: var(--texto);
+    color: var(--light-color);
+    font-size: 15px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    outline: none;
+    font-family: 'Lora';
+}
+
+.buscador input::placeholder {
+    color: #bfbfbf;
+}
+
+.buscador button {
+    background-color: var(--secundario1);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 10px 25px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+    font-family: 'Playfair Display';
+}
+
+.buscador button:hover {
+    background-color: #d1443c;
+}
+
+/* --- Resultados --- */
+.resultados {
+    width: 100%;
+    max-width: 900px;
+}
+
+/* --- Usuarios --- */
+.usuarios {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 10px;
+}
+
+.usuario {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 15px;
+    width: 100%;
+}
+.usuario:hover {
+    transform: translateX(3px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+}
+.sin-resultados {
+    text-align: center;
+    color: #777;
+    font-size: 18px;
+    margin-top: 20px;
+}   
+
+.usuario .color {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+.usuario img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.usuario p {
+    font-size: 16px;
+    color: #2b2b2b;
+    margin: 0;
+}
+
+/* --- Libros --- */
+.libros {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 15px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.libro {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s;
+}
+
+.libro:hover {
+    transform: scale(1.03);
+}
+
+.libro img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+}
+
+.containe {
+    max-width: 750px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* --- RESPONSIVE --- */
+
+@media (max-width: 600px) {
+    .buscador {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .buscador input,
+    .buscador select,
+    .buscador button {
+        width: 100%;
+    }
+
+    .libro img {
+        height: 200px;
+    }
+
+    .usuario {
+        justify-content: flex-start;
+    }
+}
+
+/*
+@media (min-width: 1200px) {
+  .libros {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+
+  .libro img {
+    height: 250px;
+  }
+}
+*/
+.book-grid2 {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+
+}
+
+.book-item2 {
+    position: relative;
+    aspect-ratio: 2/3;
+    overflow: hidden;
+
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.book-item2:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.book-item2 img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.section h1 {
+    margin: 10px 1px 10px 1px;
+    color: #333;
+    font-size: 2rem;
+    font-weight: 600;
+
+
+
+}
+
+
+@media (max-width: 768px) {
+    /*
+            body {
+                padding: 15px;
+            }
+            */
+
+
+
+    .book-grid2 {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin: 0px 20px
+    }
+
+    .containe {
+        padding: 0 10px;
+    }
+
+
+
+}
+
+@media (max-width: 480px) {
+    .containe {
+        padding: 0 5px;
+    }
+
+
+
+    .book-grid2 {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin: 0px 20px;
+    }
+}
