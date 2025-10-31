@@ -9,7 +9,7 @@ const Inicio = () => {
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 1,
-            urlPortada: "/src/img/libro.webp",
+            urlPortada: "https://books.google.com/books/content?id=mnf9mixwzBAC&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api",
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",

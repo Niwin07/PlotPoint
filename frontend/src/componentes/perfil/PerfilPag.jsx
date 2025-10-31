@@ -6,6 +6,7 @@ export default function ProfilePage() {
    const user = {
     id: 1,
     nombreUsuario: "usuario_diferente",
+    nombre: 'juancito',
     urlAvatar: "/src/img/perfil.webp",
     biografia:
       "Hola me llamo Gustavos, me fascinan los libros de fantasía y mi mayor sueño es poder realizar mi propio libro que trate del medio ambiente!",
@@ -42,7 +43,8 @@ export default function ProfilePage() {
         </div>
 
         {/* nombre de usuario */}
-        <h2 className="username">{user.nombreUsuario}</h2>
+        <h2 className="nombre">{user.nombre}</h2>
+        <h2 className='username'>{user.nombreUsuario}</h2>
 
 
          <button

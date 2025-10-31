@@ -15,7 +15,7 @@ const BookPage = () => {
     sinopsis:
       "Harry, Ron y Hermione emprenden una peligrosa misión para encontrar y destruir los Horrocruxes restantes de Voldemort, creyendo que este es el único camino para derrotarlo definitivamente. Mientras buscan, descubren la existencia de las legendarias Reliquias de la Muerte...",
     promedio: 3.5,
-    urlPortada: "/src/img/libro.webp",
+    urlPortada: "https://books.google.com/books/content?id=mnf9mixwzBAC&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api",
   };
 
   const [reviews, setReviews] = useState([]);

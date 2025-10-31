@@ -5,6 +5,7 @@ import '/src/componentes/perfil/PerfilPag.css';
 export default function ProfilePageUs() {
   const user = {
     nombreUsuario: "tu_perfil",
+    nombre: "juancito",
     urlAvatar: "/src/img/perfil.webp",
     biografia:
       "Hola me llamo David, me fascinan los libros de fantasía y mi mayor sueño es poder realizar mi propio libro que trate del medio ambiente!",
@@ -27,15 +28,17 @@ export default function ProfilePageUs() {
           <div className="dot-decoration"></div>
         </div>
 
+        
+
         <div className='editar'>
-            <h2 className="username">{user.nombreUsuario}</h2>
+            <h2 className="nombre">{user.nombre}</h2>
 
             {/* aqui te direccionara al componente que te permitira editar el nombre de usuario, contraseña o biografia de tu perfil */}
             <a href="editarperfil">
                 <img src="/src/img/editar.webp" alt="Editar Perfil" />
             </a>
-
         </div>
+        <h2 className='username'>{user.nombreUsuario}</h2>
         
 
         

@@ -12,7 +12,7 @@ export default function BookReviewApp() {
     titulo: 'Harry Potter and the Deathly Hallows',
     anioPublicacion: 2022,
     puntuacion: 4,
-    urlPortada: '/src/img/libro.webp',
+    urlPortada: 'https://books.google.com/books/content?id=mnf9mixwzBAC&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api',
     contenido: `An unforgettable experience that blends emotion, tension, and beauty in perfect harmony. 
     The characters feel alive, their choices meaningful, and the world richly detailed. Every twist adds 
     weight to the story, creating a rhythm that never loses momentum. It’s the kind of book that leaves you 
@@ -54,10 +54,11 @@ export default function BookReviewApp() {
     if (comment.trim()) {
       const newReview = {
         id: Date.now(),
-        user: 'Beck',
-        perfil: "/src/img/perfil.webp",
-        text: comment
+        nombreUsuario: 'Beck',
+        urlAvatar: "/src/img/perfil.webp",
+        contenido: comment
       };
+      console.log(newReview)
       setReviews([newReview, ...reviews]);
       setComment('');
     }
