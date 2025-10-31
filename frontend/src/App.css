@@ -49,8 +49,10 @@ textarea{
     --light-bg: #f4f4f4;
     --box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .1);
     --border: .1rem solid rgba(0, 0, 0, .3);
+    /*
     --gradient: linear-gradient(90deg, var(--cyan), var(--blue));
     --gradient-hover: linear-gradient(90deg, var(--blue), var(--cyan));
+    */
 
 }
 p{
@@ -78,7 +80,7 @@ a{
 }
 
 html {
-    background-image: url('https://i.ibb.co/d4QhKXyq/Agregar-un-t-tulo-20251010-182342-0000.png') ;
+    background-image: url(./img/fondo.webp);
     background-size: cover;
     /*background-position: center*/
     font-size: 62.5%;

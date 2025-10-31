@@ -1,0 +1,285 @@
+
+
+.book-container {
+      max-width: 600px;
+    margin: 0rem auto;
+    padding: 1.5rem;
+    /* border-radius: 12px; */
+    /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);*/
+}
+
+.book-header {
+  text-align: center;
+}
+
+.book-cover-container {
+  position: relative;
+  display: inline-block;
+}
+
+.book-cover {
+  width: 180px;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.heart {
+  position: absolute;
+  top: 10px;
+  right: -25px;
+  font-size: 1.6rem;
+  color: #e63946;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.heart:hover {
+  transform: scale(1.2);
+}
+
+.book-title {
+    
+
+  margin: 1rem 1rem;
+}
+
+.book-info {
+      color: var(--texto);
+    font-size: 1.7rem;
+    margin: 0.2rem 0;
+    text-align: justify;
+}
+
+.book-description {
+      margin-top: 1rem;
+    /* font-size: 0.95rem; */
+    color: var(--black);
+    text-align: justify;
+    font-size: medium;
+}
+
+.book-rating {
+  display: flex;
+  justify-content: center;
+  
+  margin-top: 1.5rem;
+  padding: 0 0.5rem;
+}
+
+.rating-label,
+.fans-count {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.rating-score {
+  text-align: center;
+}
+
+.score {
+  font-size: 3rem;
+  margin: 0;
+}
+
+.stars {
+  color: #f5b50a;
+  font-size: 2.5rem;
+}
+
+.rate-button {
+  background-color: var(--secundario1);
+    color: white;
+    border: none;
+    padding: 1.5rem 1.5rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    cursor: pointer;
+    font-weight: 300;
+    transition: background 0.3s ease;
+}
+
+
+.rate-button:hover {
+  background-color: #d62828;
+}
+
+/* Reseñas */
+.reviews2 {
+  margin-top: 2rem;
+}
+.reviews2 h2 {
+  margin-bottom: 1rem;
+    /* font-family: 'Playfair Display'; */
+    font-weight: 600;
+    font-size: large;
+    color: var(--texto);
+}
+
+.review-card {
+  position: relative;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin: 1rem 0;
+  padding: 0.8rem 1rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.review-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+}
+
+.avatar-foto {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  margin-right: 0.6rem;
+}
+.avatar-foto img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.review-user {
+  /*
+  font-weight: 600;
+  margin: 0;
+  */
+
+  font-weight: 600;
+    width: 75%;
+    margin: 0;
+    font-size: medium;
+    overflow-wrap: anywhere;
+        color: var(--texto);
+}
+
+.review-stars {
+  position: absolute;
+  right: 0;
+  color: #f5b50a;
+}
+
+.review-text {
+  /*
+  margin-top: 0.5rem;
+  color: #444;
+  font-size: 0.9rem;
+  */
+
+      margin-top: 0.5rem;
+    color: #444;
+    /* font-size: 0.9rem; */
+    font-size: initial;
+    /* overflow: hidden; */
+    width: 80%;
+    overflow-wrap: anywhere;
+    margin-left: 35px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  
+
+  .book-cover {
+    width: 150px;
+  }
+
+  .book-title {
+    font-size: x-large;
+        font-family: 'Playfair Display';
+        font-weight: 600;
+  }
+
+  
+}
+
+/*modal*/
+
+.star {
+  font-size: 15px;
+}
+
+.star.medium {
+  font-size: 28px; /* tamaño intermedio */
+}
+
+.star.big {
+  font-size: 50px;
+}
+
+.star.full {
+  color: #ffd700;
+}
+
+.star.empty {
+  color: #6b6b6b;
+  
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+  text-align: center;
+  border: 1px solid var(--texto);
+}
+.modal h2{
+  font-size: 2rem;
+}
+
+.modal textarea {
+  width: 85%;
+  height: 250px;
+  margin-top: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  resize: none;
+  padding: 5px;
+  color:var(--light-color);
+  background-color: var(--texto);
+}
+
+.modal-buttons {
+  margin-top: 15px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.save-btn {
+  background: var(--secundario1);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background: var(--texto);
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 5px;
+  display: flex;
+  cursor: pointer;
+}

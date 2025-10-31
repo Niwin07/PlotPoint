@@ -13,6 +13,7 @@
   "description": "",
   "dependencies": {
     "@damianegreco/hashpass": "^2.0.5",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "express-fileupload": "^1.5.2",
