@@ -21,7 +21,7 @@ router.get('/', function(req, res, next) {
     const userId = req.usuario.id;
     
     // Solo campos que el usuario debería ver/editar en su perfil
-    let sql = `SELECT id, nombre, nombre_usuario, biografia, url_avatar
+    let sql = `SELECT id, nombre, nombre_usuario, correo, biografia, url_avatar
                FROM Usuario WHERE id = ?`;
     
     db.query(sql, [userId])
@@ -44,10 +44,10 @@ router.get('/', function(req, res, next) {
 // PUT /api/usuarios/perfil/actualizar - Actualizar datos del perfil
 router.put('/actualizar', function(req, res, next) {
     // El usuario solo puede editar estos campos
-    const { nombre, nombre_usuario, biografia, url_avatar } = req.body;
+    const { nombre, biografia, url_avatar } = req.body;
     const userId = req.usuario.id;
     
-    if (!nombre && !nombre_usuario && !biografia && !url_avatar) {
+    if (!nombre && !biografia && !url_avatar) {
         return res.status(400).json({ 
             error: 'Debe proporcionar al menos un campo para actualizar' 
         });
@@ -61,17 +61,6 @@ router.put('/actualizar', function(req, res, next) {
         params.push(nombre.trim());
     }
     
-    if (nombre_usuario) {
-        const userRegex = /^[a-zA-Z0-9_]+$/;
-        if (!userRegex.test(nombre_usuario.trim())) {
-            return res.status(400).json({ 
-                error: 'Usuario inválido',
-                message: 'El usuario solo puede contener letras, números y guiones bajos' 
-            });
-        }
-        updates.push("nombre_usuario = ?");
-        params.push(nombre_usuario.trim());
-    }
     
     if (biografia !== undefined) {
         updates.push("biografia = ?");

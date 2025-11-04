@@ -1,0 +1,156 @@
+.cabeza{
+    text-transform: none;
+    font-size:30px;
+    color:var(--texto);
+    font-weight:500;
+}
+.cabeza span{
+    text-transform: none;
+    background: linear-gradient(to right, rgb(71, 157, 255), rgb(5, 5, 122));
+    background-clip: text;
+    color:transparent;
+
+
+}
+
+.faq{
+    text-align: center;
+}
+.faq .row{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.faq .row .imagen{
+    flex: 1 1 40rem;
+    padding: .5rem;
+}
+.faq .row .imagen img{
+    /*height:65vh;*/
+    width: 100%;
+    object-fit: contain;
+
+}
+.faq .row .accordion-container{
+    flex: 1 1 40rem;
+    padding: 1rem;
+}
+.faq .row .accordion-container .box-preguntas{
+    text-align: left;
+    padding: .5rem;
+}
+.faq .row .accordion-container .box-preguntas .pregunta{
+    text-transform: none;
+
+    color: #fff;
+    background:var(--secundario2);
+    padding: 1rem;
+    font-size:1.9rem;
+    cursor: pointer;
+    font-weight:500;
+   
+}
+.faq .row .accordion-container .box-preguntas .respuesta{
+    text-transform: none;
+    color: #333;
+    padding: 1rem;
+    font-size:1.5rem;
+    background-color: var(--white);
+    border: .2rem solid var(--secundario2);
+    display: none;
+   
+}
+.faq .row .accordion-container .box-preguntas:nth-child(1) .respuesta{
+    display: block;
+}
+
+/*desarrolladores*/
+
+.reviews .reviews-slider .developer{
+    width:30rem;
+    border: var(--border);
+    padding: 2rem;
+    text-align: center;
+
+    
+    background: var(--secundario3);
+    border-radius: 16px;
+    box-shadow: 0 0 5px;
+
+}
+.reviews .reviews-slider .developer .developer-info{
+    width:30rem;
+    border: var(--border);
+    padding: 2rem;
+    text-align: center;
+    background: var(--white);
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+
+}
+
+
+.reviews .reviews-slider .developer img{
+    height:7rem;
+    width:7rem;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.reviews .reviews-slider .developer h3{
+    text-transform: none;
+    color:var(--texto);
+    font-size: 2.2rem;
+    padding: .5rem 0;
+    font-weight: 600;
+}
+.reviews .reviews-slider .developer p{
+    text-transform: none;
+    color:var(--texto);
+    font-size: 1.5rem;
+    padding: 1rem 0;
+    line-height: 2;
+}
+/*.reviews .reviews-slider .developer h3{
+    text-transform: none;
+    color:var(--black);
+    font-size: 2.2rem;
+    padding: .5rem 0;
+}*/
+.reviews{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.reviews .reviews-slider .base{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap:20px;
+    
+}
+@media (max-width:700px){
+    .reviews .reviews-slider .base{
+        grid-template-columns:1fr;
+    }
+    .faq .row .imagen img{
+        height:45vh;
+        
+    
+    }
+
+}
+.cabezadev{
+    text-align: center;
+    margin-bottom: 2rem;
+    position:relative;
+    font-weight: 500;
+
+}
+
+.cabezadev span{
+    font-size:3rem;
+    padding: .5rem 2rem;
+    color:var(--texto);
+    
+}

@@ -1,11 +1,41 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import '/src/componentes/home/inicio.css';
 
 
 
 const MeGustas = () => {
+    const BACKEND_URL = "http://localhost:3000";
+    const token = localStorage.getItem('token');
+    const [libros, setLibros] = useState([])
+    useEffect(() => {
+        const cargarMeGustas = async () => {
+            try {
+                const response = await axios.get(`${BACKEND_URL}/api/likes/mis-favoritos`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        }
+                    }
+                )
+                console.log(response.data.libros_favoritos)
+                setLibros(response.data.libros_favoritos)
+
+            } catch (err) {
+                console.error("error:", err)
+
+            }
+
+
+        };
+
+        cargarMeGustas()
+    }, [token]);
 
     //simula un array de libros a las cuales TE GUSTARON A TI o a UN USUARIO en especifico
+
+    /*
 
     const libros = [
         {
@@ -32,6 +62,7 @@ const MeGustas = () => {
             urlPortada: '/src/img/libro.webp',
         },
     ];
+    */
     return (
         <div class="container">
             <section class="section">
@@ -43,14 +74,14 @@ const MeGustas = () => {
 
 
                     {libros.map((libro) => (
-                        <div key={libro.id} className="book-item">
+                        <div key={libro.libro_id} className="book-item">
                             <a href='/libro'>
-                                <img src={libro.urlPortada} alt={libro.titulo}></img>
+                                <img src={libro.url_portada} alt={libro.titulo}></img>
                             </a>
                         </div>
                     ))}
-                    
-                   
+
+
                 </div>
             </section>
         </div >

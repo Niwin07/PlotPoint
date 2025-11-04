@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import './ModalUsuario.css';
 import useUsuario from '/src/hooks/useUsuario';
@@ -9,53 +8,54 @@ export default function ModalCrearUsuario({ alCerrar, alGuardar }) {
 
   const manejarEnvio = (e) => {
     e.preventDefault();
-    
-    // Validaciones
-    if (!datos.nombreUsuario.trim()) {
-      alert('El nombre de usuario es obligatorio');
-      return;
-    }
 
-    if (!datos.correo.trim()) {
-      alert('El correo es obligatorio');
-      return;
-    }
-    
-    // Validar formato de correo
+    if (!datos.nombre.trim()) return alert('El nombre real es obligatorio');
+    if (!datos.nombreUsuario.trim()) return alert('El nombre de usuario es obligatorio');
+    if (!datos.correo.trim()) return alert('El correo es obligatorio');
+    if (!datos.contrasenaHash.trim()) return alert('La contraseña es obligatoria');
+
+    // Validar correo
     const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!regexCorreo.test(datos.correo)) {
-      alert('Por favor ingrese un correo válido');
-      return;
-    }
-    
-    if (!datos.contrasenaHash.trim()) {
-      alert('La contraseña es obligatoria');
-      return;
-    }
+    if (!regexCorreo.test(datos.correo)) return alert('Correo inválido');
 
     if (datos.contrasenaHash.length < 6) {
-      alert('La contraseña debe tener al menos 6 caracteres');
-      return;
+      return alert('La contraseña debe tener mínimo 6 caracteres');
     }
 
-    alGuardar(datos);
+    // Enviar datos traducidos al backend
+    alGuardar({
+      nombre: datos.nombre.trim(),
+      nombreUsuario: datos.nombreUsuario.trim(),
+      correo: datos.correo.trim(),
+      contrasenaHash: datos.contrasenaHash.trim(),
+    });
+
   };
 
   return (
     <div className="modal-overlay" onClick={alCerrar}>
       <div className="modal-usuario-simple" onClick={(e) => e.stopPropagation()}>
-        
-        
+
         <button className="boton-volver" onClick={alCerrar}>VOLVER</button>
 
         <form onSubmit={manejarEnvio} className="formulario-usuario">
+
+          <h2 className="titulo-campo">Nombre real</h2>
+          <input
+            type="text"
+            value={datos.nombre}
+            onChange={(e) => setDato('nombre', e.target.value)}
+            className="campo-input"
+            placeholder="Ej: Juan Pérez"
+          />
+
           <h2 className="titulo-campo">Nombre de usuario</h2>
           <input
             type="text"
             value={datos.nombreUsuario}
             onChange={(e) => setDato('nombreUsuario', e.target.value)}
             className="campo-input"
-            placeholder="Nombre de usuario"
+            placeholder="Ej: juan_123"
           />
 
           <h2 className="titulo-campo">Correo</h2>
@@ -64,7 +64,7 @@ export default function ModalCrearUsuario({ alCerrar, alGuardar }) {
             value={datos.correo}
             onChange={(e) => setDato('correo', e.target.value)}
             className="campo-input"
-            placeholder="Correo"
+            placeholder="correo@ejemplo.com"
           />
 
           <h2 className="titulo-campo">Contraseña</h2>
@@ -85,9 +85,7 @@ export default function ModalCrearUsuario({ alCerrar, alGuardar }) {
             </button>
           </div>
 
-          <button type="submit" className="boton-crear-usuario">
-            Crear
-          </button>
+          <button type="submit" className="boton-crear-usuario">Crear Usuario</button>
         </form>
       </div>
     </div>

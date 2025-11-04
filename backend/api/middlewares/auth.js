@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'tu_clave_secreta_segura';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 function verificarToken(req, res, next) {
     // Obtener token del header Authorization

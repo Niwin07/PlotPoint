@@ -1,209 +1,166 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react'; 
 import '/src/componentes/administracion/admin.css';
 import ModalEditarLibro from '/src/componentes/modals/ModalEditarLibro.jsx';
 import ModalCrearLibro from '/src/componentes/modals/ModalCrearLibro.jsx';
+import axios from 'axios';
+
+const ITEMS_POR_PAGINA = 10;
 
 const Libros = () => {
+    const [masterLibros, setMasterLibros] = useState([]); 
+    const [loading, setLoading] = useState(false);
+    
+    const [autores, setAutores] = useState([]);
+    const [editoriales, setEditoriales] = useState([]);
+    const [generos, setGeneros] = useState([]);
+
     const [mostrarModalEditar, setMostrarModalEditar] = useState(false);
     const [mostrarModalCrear, setMostrarModalCrear] = useState(false);
     const [libroSeleccionado, setLibroSeleccionado] = useState(null);
+    const [currentPage, setCurrentPage] = useState(0);
 
     const [buscador, setBuscador] = useState('');
-    const [buscarFecha, setBuscarFecha] = useState('');
-    const [buscarCategoria, setBuscarCategoria] = useState('');
-    const [buscarLetra, setBuscarLetra] = useState('');
+    const [filtroCategoria, setFiltroCategoria] = useState('');
+    const [ordenFecha, setOrdenFecha] = useState(''); 
+    const [ordenLetra, setOrdenLetra] = useState('a-z');
 
-    // Definir autores y editoriales disponibles (idealmente vendrían de tu API)
-    const autoresDisponibles = [
-        { id: 1, nombre: 'Gabriel García Márquez' },
-        { id: 2, nombre: 'J.K. Rowling' },
-        { id: 3, nombre: 'Stephen King' },
-        { id: 4, nombre: 'Isabel Allende' },
-        { id: 5, nombre: 'Paulo Coelho' },
-        { id: 6, nombre: 'Mario Vargas Llosa' },
-        { id: 7, nombre: 'Julio Cortázar' },
-        { id: 8, nombre: 'Jorge Luis Borges' },
-        { id: 9, nombre: 'Laura Esquivel' },
-        { id: 10, nombre: 'Carlos Ruiz Zafón' }
-    ];
+    const token = localStorage.getItem('token');
+    const api = axios.create({
+        baseURL: 'http://localhost:3000/api',
+        headers: { 'Authorization': `Bearer ${token}` }
+    });
 
-    const editorialesDisponibles = [
-        { id: 1, nombre: 'LibroTeca' },
-        { id: 2, nombre: 'Penguin Random House' },
-        { id: 3, nombre: 'Planeta' },
-        { id: 4, nombre: 'Alfaguara' },
-        { id: 5, nombre: 'Anagrama' },
-        { id: 6, nombre: 'Salamandra' },
-        { id: 7, nombre: 'Tusquets' },
-        { id: 8, nombre: 'Ediciones B' },
-        { id: 9, nombre: 'Destino' },
-        { id: 10, nombre: 'Santillana' }
-    ];
+    useEffect(() => {
+        fetchLibros();
+        fetchDatosParaModales();
+    }, []);
 
-    const [libros, setLibros] = useState([
-        {
-            id: 1,
-            titulo: "Harry Potter y la Piedra Filosofal",
-            isbn: "978-030-563-636-3",
-            sinopsis: "Harry Potter es un huérfano que vive con sus desagradables tíos, los Dursley, y su repelente primo Dudley...",
-            urlPortada: null,
-            paginas: 223,
-            anioPublicacion: 2001,
-            editorialId: 6,
-            autorId: 2,
-            autorNombre: "J.K. Rowling",
-            editorialNombre: "Salamandra",
-            generos: ["Fantasía", "Aventura"],
-            resenas: 13,
-            calificacion: 4.5,
-        },
-        {
-            id: 2,
-            titulo: "Harry Potter y la Cámara Secreta",
-            isbn: "978-030-563-636-4",
-            sinopsis: "Tras derrotar una vez más a lord Voldemort, su siniestro enemigo en Harry Potter y la piedra filosofal...",
-            urlPortada: null,
-            paginas: 251,
-            anioPublicacion: 2002,
-            editorialId: 6,
-            autorId: 2,
-            autorNombre: "J.K. Rowling",
-            editorialNombre: "Salamandra",
-            generos: ["Fantasía", "Aventura"],
-            resenas: 13,
-            calificacion: 4.5,
-        },
-        {
-            id: 3,
-            titulo: "Cien años de soledad",
-            isbn: "978-030-563-636-5",
-            sinopsis: "La novela narra la historia de la familia Buendía a lo largo de siete generaciones en el pueblo ficticio de Macondo...",
-            urlPortada: null,
-            paginas: 471,
-            anioPublicacion: 1967,
-            editorialId: 4,
-            autorId: 1,
-            autorNombre: "Gabriel García Márquez",
-            editorialNombre: "Alfaguara",
-            generos: ["Ficción", "Realismo Mágico", "Drama"],
-            resenas: 13,
-            calificacion: 4.5,
-        },
-        {
-            id: 4,
-            titulo: "El Código Da Vinci",
-            isbn: "978-030-563-636-6",
-            sinopsis: "Robert Langdon, experto en simbología, es convocado a un museo para investigar un misterioso asesinato...",
-            urlPortada: null,
-            paginas: 656,
-            anioPublicacion: 2003,
-            editorialId: 3,
-            autorId: 3,
-            autorNombre: "Dan Brown",
-            editorialNombre: "Planeta",
-            generos: ["Misterio", "Thriller"],
-            resenas: 13,
-            calificacion: 4.5,
-        },
-    ]);
-
-    const Buscar = () => {
-        const resultados = libros.filter(libro => 
-            libro.titulo.toLowerCase().includes(buscador.toLowerCase()) ||
-            libro.autorNombre.toLowerCase().includes(buscador.toLowerCase())
-        );
-        
-        if (resultados.length === 0) {
-            alert('No se encontraron libros');
-        } else {
-            alert(`Se encontraron ${resultados.length} libro(s)`);
+    const fetchLibros = async () => {
+        setLoading(true);
+        setBuscador('');
+        setFiltroCategoria('');
+        setOrdenFecha('');
+        setOrdenLetra('a-z');
+        setCurrentPage(0);
+        try {
+            const res = await api.get('/libros'); 
+            if (res.data.status === 'ok') {
+                console.log(res.data)
+                setMasterLibros(res.data.libros);
+            }
+        } catch (err) {
+            alert(`Error al cargar libros: ${err.response?.data?.message || err.message}`);
+        } finally {
+            setLoading(false);
         }
     };
 
-    const Nuevo = () => {
-        setMostrarModalCrear(true);
+
+    const fetchDatosParaModales = async () => {
+        try {
+            const [autoresRes, editorialesRes, generosRes] = await Promise.all([
+                api.get('/autores'),
+                api.get('/editoriales'),
+                api.get('/generos')
+            ]);
+            setAutores(autoresRes.data.autores || []);
+            setEditoriales(editorialesRes.data.editoriales || []);
+            setGeneros(generosRes.data.generos || []);
+        } catch (err) { console.error("Error cargando datos para modales:", err); }
     };
 
-    const Editar = (libro) => {
-        setLibroSeleccionado(libro);
-        setMostrarModalEditar(true);
+    const Refrescar = () => {
+        fetchLibros();
     };
 
-    const cerrarModalEditar = () => {
-        setMostrarModalEditar(false);
-        setLibroSeleccionado(null);
+    const Nuevo = () => setMostrarModalCrear(true);
+    const Editar = (libro) => { setLibroSeleccionado(libro); setMostrarModalEditar(true); };
+    const cerrarModalEditar = () => { setMostrarModalEditar(false); setLibroSeleccionado(null); };
+    const cerrarModalCrear = () => setMostrarModalCrear(false);
+    
+    const crearLibro = async (datosNuevoLibro) => {
+        try {
+            const formData = new FormData();
+            formData.append('titulo', datosNuevoLibro.titulo);
+            formData.append('isbn', datosNuevoLibro.isbn);
+            formData.append('sinopsis', datosNuevoLibro.sinopsis);
+            formData.append('paginas', datosNuevoLibro.paginas);
+            formData.append('anio_publicacion', datosNuevoLibro.anio_publicacion);
+            formData.append('autor_id', datosNuevoLibro.autor_id);
+            formData.append('editorial_id', datosNuevoLibro.editorial_id);
+            if (datosNuevoLibro.portadaFile) { formData.append('portada', datosNuevoLibro.portadaFile); }
+            if (Array.isArray(datosNuevoLibro.generos)) { datosNuevoLibro.generos.forEach(id => formData.append('generos[]', id)); }
+
+            const res = await api.post('/libros', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+            if (res.data.status === 'ok') { alert(' Libro creado'); cerrarModalCrear(); fetchLibros(); } 
+            else { throw new Error(res.data.message); }
+        } catch (err) { alert(`Error al crear libro: ${err.response?.data?.message || err.message}`); }
+    };
+    const guardarLibro = async (datosActualizados) => {
+        try {
+            const res = await api.put(`/libros/${libroSeleccionado.id}`, datosActualizados);
+            if (res.data.status === 'ok') { alert(' Libro actualizado'); cerrarModalEditar(); fetchLibros(); } 
+            else { throw new Error(res.data.message); }
+        } catch (err) { alert(`Error al guardar libro: ${err.response?.data?.message || err.message}`); }
+    };
+    const Borrar = async (id) => {
+        if (window.confirm('¿Seguro deseas eliminar?')) {
+            try {
+                const res = await api.delete(`/libros/${id}`);
+                if (res.data.status === 'ok') { alert('Libro eliminado'); fetchLibros(); } 
+                else { throw new Error(res.data.message); }
+            } catch (err) { alert(`Error al eliminar: ${err.response?.data?.message || err.message}`); }
+        }
     };
 
-    const cerrarModalCrear = () => {
-        setMostrarModalCrear(false);
+
+
+    const librosFiltrados = useMemo(() => {
+        let tempLibros = [...masterLibros];
+        const lowerBuscador = buscador.toLowerCase().trim();
+        tempLibros = tempLibros.filter(libro => {
+            const busquedaMatch = lowerBuscador === '' ||
+                (libro.titulo && libro.titulo.toLowerCase().includes(lowerBuscador)) ||
+                (libro.autor_nombre && libro.autor_nombre.toLowerCase().includes(lowerBuscador)) ||
+                (libro.autor_apellido && libro.autor_apellido.toLowerCase().includes(lowerBuscador));
+
+            const categoriaMatch = !filtroCategoria ||
+                (libro.generos && libro.generos.some(g => g.id === parseInt(filtroCategoria, 10)));
+            
+            return busquedaMatch && categoriaMatch;
+        });
+
+        if (ordenFecha === 'recientes') {
+            tempLibros.sort((a, b) => (b.anio_publicacion || 0) - (a.anio_publicacion || 0));
+        } else if (ordenFecha === 'antiguos') {
+            tempLibros.sort((a, b) => (a.anio_publicacion || 0) - (b.anio_publicacion || 0));
+        } else if (ordenLetra === 'a-z') {
+            tempLibros.sort((a, b) => a.titulo.localeCompare(b.titulo));
+        } else if (ordenLetra === 'z-a') {
+            tempLibros.sort((a, b) => b.titulo.localeCompare(a.titulo));
+        }
+
+        return tempLibros;
+    }, [masterLibros, buscador, filtroCategoria, ordenFecha, ordenLetra]);
+
+    useEffect(() => {
+        setCurrentPage(0);
+    }, [librosFiltrados]); 
+
+
+    const totalPaginas = Math.ceil(librosFiltrados.length / ITEMS_POR_PAGINA);
+    const librosPaginaActual = librosFiltrados.slice(
+        currentPage * ITEMS_POR_PAGINA,
+        (currentPage + 1) * ITEMS_POR_PAGINA
+    );
+    const siguientePagina = () => {
+        if ((currentPage + 1) * ITEMS_POR_PAGINA < librosFiltrados.length) {
+            setCurrentPage(currentPage + 1);
+        }
     };
-
-    const guardarLibro = (datosActualizados) => {
-        // Encontrar el autor y editorial por ID
-        const autorSeleccionado = autoresDisponibles.find(a => a.id === parseInt(datosActualizados.autorId));
-        const editorialSeleccionada = editorialesDisponibles.find(e => e.id === parseInt(datosActualizados.editorialId));
-
-        // Actualizar el libro en el estado
-        setLibros(prevLibros =>
-            prevLibros.map(libro =>
-                libro.id === libroSeleccionado.id
-                    ? { 
-                        ...libro,
-                        titulo: datosActualizados.titulo,
-                        isbn: datosActualizados.isbn,
-                        sinopsis: datosActualizados.sinopsis,
-                        urlPortada: datosActualizados.urlPortada,
-                        paginas: parseInt(datosActualizados.paginas),
-                        anioPublicacion: parseInt(datosActualizados.anioPublicacion),
-                        editorialId: parseInt(datosActualizados.editorialId),
-                        autorId: parseInt(datosActualizados.autorId),
-                        generos: datosActualizados.generos,
-                        autorNombre: autorSeleccionado ? autorSeleccionado.nombre : libro.autorNombre,
-                        editorialNombre: editorialSeleccionada ? editorialSeleccionada.nombre : libro.editorialNombre
-                    }
-                    : libro
-            )
-        );
-
-        setMostrarModalEditar(false);
-        setLibroSeleccionado(null);
-        alert('Libro actualizado correctamente');
-    };
-
-    const crearLibro = (datosNuevoLibro) => {
-        // Generar nuevo ID
-        const nuevoId = Math.max(...libros.map(l => l.id)) + 1;
-
-        // Encontrar el autor y editorial por ID
-        const autorSeleccionado = autoresDisponibles.find(a => a.id === parseInt(datosNuevoLibro.autorId));
-        const editorialSeleccionada = editorialesDisponibles.find(e => e.id === parseInt(datosNuevoLibro.editorialId));
-
-        const nuevoLibro = {
-            id: nuevoId,
-            titulo: datosNuevoLibro.titulo,
-            isbn: datosNuevoLibro.isbn,
-            sinopsis: datosNuevoLibro.sinopsis,
-            urlPortada: datosNuevoLibro.urlPortada,
-            paginas: parseInt(datosNuevoLibro.paginas),
-            anioPublicacion: parseInt(datosNuevoLibro.anioPublicacion),
-            editorialId: parseInt(datosNuevoLibro.editorialId),
-            autorId: parseInt(datosNuevoLibro.autorId),
-            generos: datosNuevoLibro.generos,
-            autorNombre: autorSeleccionado ? autorSeleccionado.nombre : 'Autor Desconocido',
-            editorialNombre: editorialSeleccionada ? editorialSeleccionada.nombre : 'Editorial Desconocida',
-            resenas: 0,
-            calificacion: 0,
-        };
-
-        setLibros([...libros, nuevoLibro]);
-        setMostrarModalCrear(false);
-        alert('Libro creado correctamente');
-    };
-
-    const Borrar = (id) => {
-        if (window.confirm('¿Estás seguro de que deseas eliminar este libro?')) {
-            setLibros(libros.filter(libro => libro.id !== id));
+    const paginaAnterior = () => {
+        if (currentPage > 0) {
+            setCurrentPage(currentPage - 1);
         }
     };
 
@@ -212,42 +169,41 @@ const Libros = () => {
             <div className='acciones'>
                 <input
                     type="text"
-                    placeholder="Buscar libro por nombre"
+                    placeholder="Buscar libro por nombre..."
                     value={buscador}
-                    onChange={(e) => setBuscador(e.target.value)}
+                    onChange={(e) => setBuscador(e.target.value)} 
                     className='InputAdmin'
                 />
                 <select
-                    value={buscarFecha}
-                    onChange={(e) => setBuscarFecha(e.target.value)}
+                    value={ordenFecha}
+                    onChange={(e) => setOrdenFecha(e.target.value)} 
                     className='InputAdmin'
                 >
                     <option value="">Fecha de creación</option>
-                    <option value="1">Mas Recientes</option>
-                    <option value="2">Mas Antiguos</option>
+                    <option value="recientes">Mas Recientes (Año)</option>
+                    <option value="antiguos">Mas Antiguos (Año)</option>
                 </select>
                 <select
-                    value={buscarCategoria}
-                    onChange={(e) => setBuscarCategoria(e.target.value)}
+                    value={filtroCategoria}
+                    onChange={(e) => setFiltroCategoria(e.target.value)}
                     className='InputAdmin'
                 >
-                    <option value="">Categoría</option>
-                    <option value="ficcion">Ficción</option>
-                    <option value="terror">Terror</option>
-                    <option value="humor">Humor</option>
-                    <option value="romance">Romance</option>
+                    <option value="">Categoría (Todas)</option>
+                    {generos.map(g => (
+                        <option key={g.id} value={g.id}>{g.nombre}</option>
+                    ))}
                 </select>
                 <select
-                    value={buscarLetra}
-                    onChange={(e) => setBuscarLetra(e.target.value)}
+                    value={ordenLetra}
+                    onChange={(e) => setOrdenLetra(e.target.value)} 
                     className='InputAdmin'
+                    disabled={ordenFecha !== ''} 
                 >
-                    <option value="">A - Z</option>
                     <option value="a-z">A - Z</option>
                     <option value="z-a">Z - A</option>
                 </select>
-                <button className='Buscar' onClick={Buscar}>
-                    Buscar
+                <button className='Nuevo' onClick={Refrescar}>
+                    Refrescar Datos
                 </button>
                 <button className='Nuevo' onClick={Nuevo}>
                     Nuevo
@@ -259,30 +215,43 @@ const Libros = () => {
                     <tr>
                         <th>ID</th>
                         <th>LIBRO</th>
-                        <th>GENEROS</th>
-                        <th>RESEÑAS</th>
-                        <th>CALIFICACION</th>
+                        <th>GÉNEROS</th>
+                        <th>ISBN</th>
+                        <th>PUBLICADO</th>
                         <th>ACCIONES</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {libros.map((libro) => (
+                    {loading && (
+                        <tr><td colSpan="6">Cargando libros...</td></tr>
+                    )}
+                    {!loading && masterLibros.length === 0 && (
+                         <tr><td colSpan="6">No se encontraron libros.</td></tr>
+                    )}
+                    {!loading && librosFiltrados.length === 0 && masterLibros.length > 0 && (
+                         <tr><td colSpan="6">No hay resultados para los filtros aplicados.</td></tr>
+                    )}
+                    
+
+                    {!loading && librosPaginaActual.map((libro) => (
                         <tr key={libro.id}>
                             <td>{libro.id}</td>
                             <td>
                                 <p style={{ margin: 0, fontWeight: 'bold' }}>{libro.titulo}</p>
-                                <span style={{ fontSize: '13px', color: '#666' }}>{libro.autorNombre}</span>
+                                <span style={{ fontSize: '13px', color: '#666' }}>
+                                    {libro.autor_nombre} {libro.autor_apellido}
+                                </span>
                             </td>
                             <td>
-                                {libro.generos.map((genero, index) => (
-                                    <span key={index}>
-                                        {genero}
+                                {libro.generos && libro.generos.map((g, index) => (
+                                    <span key={g.id}>
+                                        {g.nombre}
                                         {index < libro.generos.length - 1 ? ', ' : ''}
                                     </span>
                                 ))}
                             </td>
-                            <td>{libro.resenas}</td>
-                            <td>{libro.calificacion}</td>
+                            <td>{libro.isbn}</td>
+                            <td>{libro.anio_publicacion}</td>
                             <td>
                                 <button className='Borrar' onClick={() => Borrar(libro.id)}>
                                     Borrar
@@ -296,27 +265,48 @@ const Libros = () => {
                 </tbody>
             </table>
 
+            <div className="paginacion-controles" style={{ textAlign: 'center', margin: '20px 0' }}>
+                <button 
+                    className="Editar"
+                    onClick={paginaAnterior} 
+                    disabled={currentPage === 0}
+                >
+                    &larr; Anterior
+                </button>
+                <span style={{ margin: '0 15px', fontSize: '14px' }}>
+                    Página {currentPage + 1} de {totalPaginas > 0 ? totalPaginas : 1}
+                </span>
+                <button 
+                    className="Editar"
+                    onClick={siguientePagina} 
+                    disabled={(currentPage + 1) * ITEMS_POR_PAGINA >= librosFiltrados.length}
+                >
+                    Siguiente &rarr;
+                </button>
+            </div>
+
             {mostrarModalEditar && (
                 <ModalEditarLibro
                     libro={{
-                        id: libroSeleccionado.id,
-                        titulo: libroSeleccionado.titulo,
-                        isbn: libroSeleccionado.isbn,
-                        sinopsis: libroSeleccionado.sinopsis,
-                        urlPortada: libroSeleccionado.urlPortada,
-                        paginas: libroSeleccionado.paginas.toString(),
-                        anioPublicacion: libroSeleccionado.anioPublicacion.toString(),
-                        editorialId: libroSeleccionado.editorialId,
-                        autorId: libroSeleccionado.autorId,
-                        generos: libroSeleccionado.generos
+                        ...libroSeleccionado,
+                        generos: libroSeleccionado.generos.map(g => g.id), 
+                        paginas: String(libroSeleccionado.paginas || ''),
+                        anio_publicacion: String(libroSeleccionado.anio_publicacion || ''),
                     }}
+                    autores={autores}
+                    editoriales={editoriales}
+                    generosDisponibles={generos}
                     alCerrar={cerrarModalEditar}
                     alGuardar={guardarLibro}
+                    api={api}
+                    libroId={libroSeleccionado.id}
                 />
             )}
-
             {mostrarModalCrear && (
                 <ModalCrearLibro
+                    autores={autores}
+                    editoriales={editoriales}
+                    generosDisponibles={generos}
                     alCerrar={cerrarModalCrear}
                     alGuardar={crearLibro}
                 />

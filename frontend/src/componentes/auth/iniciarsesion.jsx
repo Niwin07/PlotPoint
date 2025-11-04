@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import useUsuario from '/src/hooks/useUsuario';
 import '/src/componentes/auth/iniciarsesion.css';
+import axios from 'axios';
 
 const IniciarSesion = () => {
   const [usuario, setDato] = useUsuario();
@@ -23,39 +24,40 @@ const IniciarSesion = () => {
     if (Object.keys(erroresTemp).length > 0) return;
 
     try {
-      const response = await fetch('http://localhost:3000/api/usuarios/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          nombre_usuario: usuario.nombreUsuario.trim(),
-          contrasena: usuario.contrasenaHash.trim()
-        })
-      });
+      const body = {
+        nombre_usuario: usuario.nombreUsuario.trim(),
+        contrasena: usuario.contrasenaHash.trim()
+      };
 
-      const data = await response.json();
-      console.log("🔍 Respuesta del backend:", data);
+      const response = await axios.post('http://localhost:3000/api/usuarios/login', body);
 
-      if (!response.ok || data.status !== 'ok') {
+      const data = response.data;
+      console.log(" Respuesta del backend:", data);
+
+      if (data.status !== 'ok') {
         setMensaje(data.message || 'Credenciales incorrectas');
         return;
       }
 
-      // Guardar sesión
       localStorage.setItem('token', data.token);
       localStorage.setItem('usuario', JSON.stringify(data.usuario));
 
-      // Redirección según rol
       if (data.usuario.rol === 'admin') {
         alert(`Bienvenido administrador ${data.usuario.nombre_usuario}`);
         window.location.href = '/admin/*';
       } else {
-        alert(`Bienvenido ${data.usuario.nombre_usuario}`);
         window.location.href = '/inicio';
       }
 
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
-      setMensaje('Error de conexión con el servidor');
+      if (error.response) {
+        setMensaje(error.response.data.message || 'Credenciales incorrectas');
+      } else if (error.request) {
+        setMensaje('Error de conexión con el servidor');
+      } else {
+        setMensaje('Error inesperado al preparar la solicitud');
+      }
     }
   };
 

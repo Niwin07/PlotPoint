@@ -9,7 +9,7 @@ const Inicio = () => {
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 1,
-            urlPortada: "/src/img/libro.webp",
+            urlPortada: "https://books.google.com/books/content?id=mnf9mixwzBAC&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api",
         },
         {
             titulo: "Harry Potter and the Deathly Hallows",
@@ -33,7 +33,7 @@ const Inicio = () => {
         },
     ];
 
-    const leidos = [
+    const gustados = [
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 1,
@@ -57,11 +57,6 @@ const Inicio = () => {
         {
             titulo: "Harry Potter and the Deathly Hallows",
             id: 5,
-            urlPortada: "/src/img/libro.webp",
-        },
-        {
-            titulo: "Harry Potter and the Deathly Hallows",
-            id: 6,
             urlPortada: "/src/img/libro.webp",
         }
     ];
@@ -96,7 +91,7 @@ const Inicio = () => {
     return (
         <div class="container">
             <section class="section">
-                <h1>Lo popular esta semana</h1>
+                <h1>Los mejores calificados </h1>
                 <div class="book-grid">
 
                     {/*imprimimos el array de libros mas populares */}
@@ -114,14 +109,14 @@ const Inicio = () => {
             </section >
 
             <section class="section">
-                <h1>Mas leídos</h1>
+                <h1>Mas gustados</h1>
                 <div class="book-grid">
 
                     {/*imprimimos el array de libros mas leidos */}
-                    {leidos.map((leido) => (
-                        <div key={leido.id} className="book-item">
+                    {gustados.map((gustado) => (
+                        <div key={gustado.id} className="book-item">
                             <a href='/libro'>
-                                <img src={leido.urlPortada} alt={leido.titulo}></img>
+                                <img src={gustado.urlPortada} alt={gustado.titulo}></img>
                             </a>
                         </div>
                     ))}

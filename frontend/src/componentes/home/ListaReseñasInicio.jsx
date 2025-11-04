@@ -20,7 +20,7 @@ const ListaReseñasInicio = () => {
       id: 2,
       titulo: "Harry Potter and the Deathly Hallows",
       nombreUsuario: "Beck",
-      urlPortada: "/src/img/libro.webp",
+      urlPortada: "https://books.google.com/books/content?id=mnf9mixwzBAC&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api",
       contenido: "so heartbreaking i lowkey started to feel bad for watching sitting down",
       puntuacion: 1,
       urlAvatar: "/src/img/perfil.webp"

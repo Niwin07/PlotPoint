@@ -1,29 +1,34 @@
 import React, { useState } from "react";
 import "/src/componentes/modals/ModalContraseña.css";
 
-export default function ChangePasswordModal({ onClose }) {
+export default function ChangePasswordModal({ onClose, onCambiarContraseña }) {
   const [oldPassword, setOldPassword] = useState("");
   const [repeatNewPassword, setRepeatNewPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
 
-  const handleChangePassword = () => {
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
     if (!oldPassword || !repeatNewPassword || !newPassword) {
       alert("Por favor completa todos los campos.");
       return;
     }
 
-    if( oldPassword.length <= 5 || repeatNewPassword.length  <= 5 || newPassword.length  <= 5){
-        alert("Las contraseñas deben tener como minimo 6 caracteres")
-        return;
-    }
-
-    if (newPassword !== repeatNewPassword) {
-      alert("Las nueva contraseña no coincide.");
+    if (oldPassword.length <= 5 || repeatNewPassword.length <= 5 || newPassword.length <= 5) {
+      alert("Las contraseñas deben tener como minimo 6 caracteres")
       return;
     }
 
-    alert("Contraseña cambiada correctamente (simulado).");
-    onClose(); // cerrar modal
+    if (newPassword !== repeatNewPassword) {
+      alert("Las contraseñas no coinciden.");
+      return;
+    }
+
+    try {
+      await onCambiarContraseña(oldPassword, newPassword);
+      onClose();
+    } catch (err) {
+      alert(err)
+    } 
   };
 
   return (

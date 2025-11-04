@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import useUsuario from '../../hooks/useUsuario';
 import '/src/componentes/auth/crearcuenta.css';
+import axios from 'axios'; 
 
 const Signup = () => {
     const [usuario, setDato] = useUsuario();
     const [terminos, setTerminos] = useState(false);
     const [errores, setErrores] = useState({});
     const [mensaje, setMensaje] = useState('');
-
-    //setea el valor que estas agregando/cambiando 
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -34,15 +33,11 @@ const Signup = () => {
             erroresTemp.contrasenaHash = 'La contraseña debe tener al menos 6 caracteres';
         }
         if (!terminos) {
-            //por si no aprobaste los terminos y condiciones (check)
             erroresTemp.terminos = 'Debes aceptar los términos y condiciones';
         }
 
-        //imprime el error en el componente para que el usuario lo vea
-
         setErrores(erroresTemp);
 
-        // Si hay errores, cancelar
         if (Object.keys(erroresTemp).length > 0) return;
 
         try {
@@ -55,25 +50,20 @@ const Signup = () => {
                 url_avatar: "" 
             };
 
-            const response = await fetch('http://localhost:3000/api/usuarios/registro', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(datosAEnviar)
-            });
+            const response = await axios.post('http://localhost:3000/api/usuarios/registro', datosAEnviar);
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                setMensaje(data.message || 'Error al registrar usuario');
-                return;
-            }
-
-            alert('✅ Registro exitoso. Ahora puedes iniciar sesión.');
+            alert(' Registro exitoso. Ahora puedes iniciar sesión.');
             window.location.href = '/iniciarsesion';
 
         } catch (error) {
             console.error('Error en registro:', error);
-            setMensaje('Error de conexión con el servidor');
+            if (error.response) {
+                setMensaje(error.response.data.message || 'Error al registrar usuario');
+            } else if (error.request) {
+                setMensaje('Error de conexión con el servidor');
+            } else {
+                setMensaje('Error inesperado al preparar la solicitud');
+            }
         }
     };
 
@@ -94,6 +84,7 @@ const Signup = () => {
                                 required
                             />
                             {errores.nombreUsuario && <span className="error">{errores.nombreUsuario}</span>}
+
                             <input
                                 type="email"
                                 name="correo"
@@ -104,6 +95,7 @@ const Signup = () => {
                                 required
                             />
                             {errores.correo && <span className="error">{errores.correo}</span>}
+
                             <input
                                 type="password"
                                 name="contrasenaHash"

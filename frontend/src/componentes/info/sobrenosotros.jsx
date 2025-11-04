@@ -54,34 +54,34 @@ const SobreNosotros = () => {
                         </div>
                         <div class="box-preguntas">
                             <h1 class="pregunta">
-                                ¿Cual es nuestro objetivo?
+                                Pregunta #2
                             </h1>
                             <p class="respuesta">
-                                Es crear una aplicacion web donde los usuarios puedan compartir sus experiencias de lectura, descubrir nuevos libros y conectar con otros lectores en un entorno visualmente atractivo y facil de usar
+                                Nuestra mayor meta es tener su confianza al momento de cualquier compra, cada centavo vale la pena.
                             </p>
                         </div>
                         <div class="box-preguntas">
                             <h1 class="pregunta">
-                                ¿Tengo que pagar para usar Plotpoint?
+                                Pregunta #3
                             </h1>
                             <p class="respuesta">
-                               No, Plotpoint es completamente gratuita. Solo necesitas crear una cuenta para empezar a reseñar y conectar con otros lectores.
+                                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Accusantium minus totam sunt iure ducimus beatae voluptas error est maxime laboriosam?
                             </p>
                         </div>
                         <div class="box-preguntas">
                             <h1 class="pregunta">
-                                ¿Que puedo hacer en mi perfil?
+                                Pregunta #4
                             </h1>
                             <p class="respuesta">
-                                En tu perfil podes ver tus libros favoritos y tus reseñas, editar tu informacion, y ver tus seguidores o personas a las que seguis. ¡Tu rincon personal dentro de la comunidad lectora!
+                                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Accusantium minus totam sunt iure ducimus beatae voluptas error est maxime laboriosam?
                             </p>
                         </div>
                         <div class="box-preguntas">
                             <h1 class="pregunta">
-                                ¿Puedo usar Plotpoint desde el celular?
+                                Pregunta #5
                             </h1>
                             <p class="respuesta">
-                               ¡Si! Plotpoint es una aplicacion web responsiva por lo que podes usarla tanto desde tu celular como desde tu comupadora sin perder calidad ni funcionalidad.
+                                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Accusantium minus totam sunt iure ducimus beatae voluptas error est maxime laboriosam?
                             </p>
                         </div>
 
@@ -99,7 +99,7 @@ const SobreNosotros = () => {
                             <div class="developer-info">
                                 <img src="/src/img/perfil.webp" alt=""></img>
                                 <h3>Aranda Cristian David</h3>
-                                <p>Nacido en Ushuaia, Tierra del Fuego, David es un joven de 19 años que estudia en el Colegio Tecnico Provincial Olga B. de Arko, arranco a programar a partir de 4to año (2022) al escoger la especialidad de Programacion, desde ese entonces no paro y siguio aprendiendo los lenguajes que le requeria la educacion publica, siendo este su ultimo trabajo en la institucion.
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Earum, perspiciatis eaque nisi placeat a nam assumenda tempore adipisci dolore molestiae?
                                 </p>
 
                             </div>
@@ -109,7 +109,7 @@ const SobreNosotros = () => {
                             <div class="developer-info">
                                 <img src="/src/img/perfil.webp" alt=""></img>
                                 <h3>Henry Nehuen Mesias Rios </h3>
-                                <p>Nacido en Ushuaia, Tierra del Fuego, Nehuen es un joven de 19 años que estudia en el Colegio Tecnico Provincial Olga B. de Arko, arranco a programar a partir de 4to año (2022) al escoger la especialidad de Programacion, desde ese entonces no paro y siguio aprendiendo los lenguajes que le requeria la educacion publica, siendo este su ultimo trabajo en la institucion.
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Earum, perspiciatis eaque nisi placeat a nam assumenda tempore adipisci dolore molestiae?
                                 </p>
 
                             </div>

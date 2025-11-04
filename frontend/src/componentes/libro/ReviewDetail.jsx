@@ -1,67 +1,89 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import '/src/componentes/libro/ReviewDetail.css';
 import Rating from "react-rating";
 
 export default function BookReviewApp() {
+  const [manualId, setManualId] = useState(14);
   const [comment, setComment] = useState('');
+  const [reviewData, setReviewData] = useState(null)
+  const [reviews, setReviews] = useState([])
 
-  const reviewData = {
-    id: 101,
-    nombreUsuario: 'Maria_Jose_Rodriguez2006',
-    urlAvatar: '/src/img/perfil.webp',
-    titulo: 'Harry Potter and the Deathly Hallows',
-    anioPublicacion: 2022,
-    puntuacion: 4,
-    urlPortada: '/src/img/libro.webp',
-    contenido: `An unforgettable experience that blends emotion, tension, and beauty in perfect harmony. 
-    The characters feel alive, their choices meaningful, and the world richly detailed. Every twist adds 
-    weight to the story, creating a rhythm that never loses momentum. It’s the kind of book that leaves you 
-    quiet afterward, lost in thought, replaying moments and lines long after the final page is turned.`
-  };
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const BACKEND_URL = "http://localhost:3000";
+  const token = localStorage.getItem('token');
 
 
-  //simulamos comentarios de usuarios referentes a la reseña de un usuario
-  const [reviews, setReviews] = useState([
-    {
-      id: 1,
-      nombreUsuario: 'Beck',
-      urlAvatar:"/src/img/perfil.webp",
-      contenido: 'this is my favourite review'
-    },
-    {
-      id: 2,
-      nombreUsuario: 'Beck',
-      urlAvatar: "/src/img/perfil.webp",
-      contenido: 'Desde mi sincera opinion tu perspectiva me resulto bastante elocuente y blablablablablablablabla'
-    },
-    {
-      id: 3,
-      nombreUsuario:'Beck',
-      urlAvatar: "/src/img/perfil.webp",
-      contenido: 'this is my favourite review'
-    },
-    {
-      id: 4,
-      nombreUsuario: 'Beck',
-      urlAvatar: "/src/img/perfil.webp",
-      contenido: 'Borra la cuenta'
-    }
-  ]);
-
+  
   //simulamos que hacemos un comentario reaccionando a la reseña
 
-  const handleSubmit = () => {
+  const handleSubmit = async (id) => {
+    console.log(id)
     if (comment.trim()) {
-      const newReview = {
-        id: Date.now(),
-        user: 'Beck',
-        perfil: "/src/img/perfil.webp",
-        text: comment
-      };
-      setReviews([newReview, ...reviews]);
-      setComment('');
+      console.log(comment.trim())
+      try {
+
+        const response = await axios.post(
+          `${BACKEND_URL}/api/comentarios`,
+          {
+            resena_id: parseInt(id),
+            contenido: comment.trim()
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json"
+            }
+          }
+        );
+        console.log(response)
+        setComment('')
+      } catch {
+        console.log("comentario error")
+      }
+
+      
     }
   };
+ 
+  useEffect(() => {
+    const fetchReviewData = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+
+        const [reviewData, review] = await Promise.all([
+          axios.get(`${BACKEND_URL}/api/resenas/${manualId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          }),
+          axios.get(`${BACKEND_URL}/api/comentarios/resena/${manualId}`)
+
+        ]);
+
+        console.log(review.data.comentarios)
+
+
+        setReviews(review.data.comentarios)
+        console.log(reviewData.data)
+        setReviewData(reviewData.data)
+        
+      } catch (err) {
+        console.error('Error fetching review:', err);
+        setError(err.response?.data?.message || 'Error al cargar la reseña');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReviewData();
+  }, [manualId, token]);
+
+  if (loading) return <div className="container">Cargando...</div>;
+  if (error) return <div className="container">Error: {error}</div>;
+  if (!reviewData) return <div className="container">No se encontró la reseña</div>;
+
 
   return (
 
@@ -71,30 +93,30 @@ export default function BookReviewApp() {
       <div className="main-card">
         <div className="usuario-reseña">
           <a className="usuario-reseña" href='/usuario/'>
-            <img className="foto-perfil" src={reviewData.urlAvatar}></img>
+            <img className="foto-perfil" src={reviewData.url_avatar ? `${BACKEND_URL}${reviewData.url_avatar}` : ''} alt={reviewData.nombre_usuario} ></img>
 
-            <h2 className="user-name">{reviewData.nombreUsuario}</h2>
+            <h2 className="user-name">{reviewData.nombre_usuario || ''}</h2>
           </a>
         </div>
 
         <div className="content">
           <div className="book-info">
-            <h1 className="book-titulo">{reviewData.titulo} {reviewData.anioPublicacion}</h1>
+            <h1 className="book-titulo">{reviewData.libro_titulo || ''}</h1>
             <div className="estrellas">
               <Rating
-                initialRating={reviewData.puntuacion}
+                initialRating={reviewData.puntuacion || ''}
                 readonly
                 emptySymbol={<span className="star empty">☆</span>}
                 fullSymbol={<span className="star full">★</span>}
               />
             </div>
             <p className="review">
-              {reviewData.contenido}
+              {reviewData.contenido || ''}
             </p>
           </div>
           <img
-            src={reviewData.urlPortada}
-            alt={reviewData.titulo}
+            src={reviewData.url_portada || ''}
+            alt={reviewData.libro_titulo || ''}
             className="book-portada"
           />
         </div>
@@ -102,16 +124,16 @@ export default function BookReviewApp() {
 
       </div>
       {/* seccion para agregar tu comentario*/}
-      <div className="input-section">
+      <div className="input-section" >
         <input
           type="text"
           placeholder="Agregar comentario"
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           className="input"
-          onKeyPress={(e) => e.key === 'Enter' && handleSubmit()}
+          
         />
-        <button onClick={handleSubmit} className="send-button">
+        <button onClick={handleSubmit(reviewData.id)} className="send-button">
           Enviar
         </button>
       </div>
@@ -124,10 +146,10 @@ export default function BookReviewApp() {
 
 
             <a className="review-usuario" href='/usuario/'>
-              <img src={review.urlAvatar} alt="" className="foto-perfil" />
+              <img className='foto-perfil' src={reviewData.url_avatar ? `${BACKEND_URL}${reviewData.url_avatar}` : ''} alt={reviewData.nombre_usuario}/>
 
 
-              <h2 className="review-usuario">{review.nombreUsuario}</h2>
+              <h2 className="review-usuario">{review.nombre_usuario}</h2>
             </a>
 
 

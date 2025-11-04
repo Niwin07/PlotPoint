@@ -253,3 +253,37 @@ exports.misFavoritos = async function(req, res, next) {
         });
     }
 };
+
+exports.obtenerMasGustados = async function (req, res, next){
+    try{
+        const sql = `
+        SELECT
+            L.titulo, L.id, L.url_portada,
+            COUNT(lk.libro_id) AS total_likes
+            FROM
+            Likes AS lk
+            JOIN Libro AS L ON lk.libro_id = L.id
+            GROUP BY
+            L.id, L.titulo, L.url_portada
+            ORDER BY
+            total_likes DESC
+            LIMIT 6;
+        `;
+        
+        const [libros] = await db.query(sql);
+
+        res.json({ 
+            status: 'ok', 
+            libros: libros,
+            total: libros.length 
+        });
+
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ 
+            error: 'Error del servidor',
+            message: 'Error al obtener los mas gustados' 
+        });
+    }
+}

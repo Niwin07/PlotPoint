@@ -69,12 +69,17 @@
 }
 
 /* Nombre de usuario */
-.username {
+.nombre {
   font-size: x-large;
   font-weight: bold;
   color: #333;
-  margin-top: 20px;
-  margin-bottom: 20px;
+ 
+}
+.username{
+      font-size: medium;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
 }
 
 /* Botón seguir */
