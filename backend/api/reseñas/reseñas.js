@@ -90,6 +90,20 @@ exports.crear = async function(req, res, next) {
     const usuario_id = req.usuario.id; // Del token JWT
 
     // Validaciones
+
+    // Verificar que el usuario no haya reseñado este libro antes
+        const [reseñaExistente] = await db.query(
+            "SELECT id FROM Resena WHERE usuario_id = ? AND libro_id = ?", 
+            [usuario_id, libro_id]
+        );
+        
+        if (reseñaExistente.length > 0) {
+            return res.status(409).json({ 
+                error: 'Reseña duplicada',
+                message: 'Ya has reseñado este libro' 
+            });
+        }
+
     if (!libro_id || !puntuacion) {
         return res.status(400).json({ 
             error: 'Datos incompletos',
@@ -98,7 +112,7 @@ exports.crear = async function(req, res, next) {
     }
 
     // Validar puntuación (solo valores: 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5)
-    const puntuacionesValidas = [1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
+    const puntuacionesValidas = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
     if (!puntuacionesValidas.includes(Number(puntuacion))) {
         return res.status(400).json({ 
             error: 'Puntuación inválida',
@@ -131,18 +145,7 @@ exports.crear = async function(req, res, next) {
             });
         }
 
-        // Verificar que el usuario no haya reseñado este libro antes
-        const [reseñaExistente] = await db.query(
-            "SELECT id FROM Resena WHERE usuario_id = ? AND libro_id = ?", 
-            [usuario_id, libro_id]
-        );
         
-        if (reseñaExistente.length > 0) {
-            return res.status(409).json({ 
-                error: 'Reseña duplicada',
-                message: 'Ya has reseñado este libro' 
-            });
-        }
 
         const sql = `
             INSERT INTO Resena 
@@ -251,6 +254,41 @@ exports.obtenerPromedio = async function(req, res, next) {
         res.status(500).json({ 
             error: 'Error del servidor',
             message: 'Error al calcular el promedio' 
+        });
+    }
+};
+
+// GET /api/resenas/mias - Listar reseñas del usuario autenticado
+exports.listarMias = async function(req, res, next) {
+    
+    // El ID se obtiene del token verificado
+    const usuario_id = req.usuario.id; 
+
+    try {
+        const sql = `
+            SELECT 
+                r.id, r.puntuacion, r.contenido, r.fecha_creacion,
+                r.usuario_id, u.nombre_usuario, u.nombre as usuario_nombre, u.url_avatar,
+                r.libro_id, l.titulo as libro_titulo, l.url_portada
+            FROM Resena r
+            INNER JOIN Usuario u ON r.usuario_id = u.id
+            INNER JOIN Libro l ON r.libro_id = l.id
+            WHERE r.usuario_id = ?
+            ORDER BY r.fecha_creacion DESC
+        `;
+        
+        const [resenas] = await db.query(sql, [usuario_id]);
+        
+        res.json({ 
+            status: 'ok', 
+            resenas: resenas,
+            total: resenas.length 
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ 
+            error: 'Error del servidor',
+            message: 'Error al obtener mis reseñas' 
         });
     }
 };

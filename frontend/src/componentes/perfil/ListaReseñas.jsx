@@ -1,43 +1,56 @@
-import React from "react";
-import ReseñaCard from "../home/ReseñaCard";
-import ReseñaCardUs from "./ReseñaCardUs";
-import portadaHP from "/src/img/libro.webp"; 
+import React, { useState, useEffect } from "react";
+import axios from 'axios';
+import ReseñaCard from "../home/ReseñaCard"; // Asegúrate de que ReseñaCard use <Link>
 
-const ListaReseñas = () => {
+const BACKEND_URL = 'http://localhost:3000';
 
-  //simulamos las reseñas de UN USUARIO (para ver tus reseñas o las de un usuario en particular) 
-  const reseñas = [
-    {
-      titulo: "Harry Potter and the Deathly Hallows",
-      urlPortada: "/src/img/libro.webp",
-      contenido: "An unforgettable experience that blends emotion, tension, and beauty in perfect harmony. The characters feel alive, their choices meaningful, and the world richly detailed. Every twist adds weight to the story, creating a rhythm that never loses momentum. It’s the kind of book that leaves you quiet afterward, lost in thought, replaying moments and lines long after the final page is turned.",
-      puntuacion: 2,
-    },
-    {
-      titulo: "Harry Potter and the Deathly Hallows",
-      urlPortada:"/src/img/libro.webp",
-      contenido: "so heartbreaking i lowkey started to feel bad for watching sitting down",
-      puntuacion: 3,
-    },
-    {
-      titulo: "Harry Potter and the Deathly Hallows",
-      urlPortada: "/src/img/libro.webp",
-      contenido: "so heartbreaking i lowkey started to feel bad for watching sitting down",
-      puntuacion: 4,
-    },
-    {
-      titulo: "Harry Potter and the Deathly Hallows",
-      urlPortada: "/src/img/libro.webp",
-      contenido: "so heartbreaking i lowkey started to feel bad for watching sitting down",
-      puntuacion: 5,
-    },
-  ];
+const ListaReseñas = ({ usuarioId }) => { // Solo necesita el ID del usuario a mostrar
+  
+  const [reseñas, setReseñas] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchReseñas = async () => {
+        setLoading(true);
+        if (!usuarioId) return; // No hacer nada si no hay ID
+
+        try {
+            // Siempre usa el endpoint público para obtener reseñas de un usuario específico
+            const url = `${BACKEND_URL}/api/resenas?usuario_id=${usuarioId}`;
+            const res = await axios.get(url);
+            setReseñas(res.data.resenas);
+
+        } catch (error) {
+            console.error("Error cargando reseñas:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    fetchReseñas();
+  }, [usuarioId]); // Se actualiza solo si el usuarioId cambia
+
+  if (loading) {
+    return <div style={{ padding: '20px', color: 'white' }}>Cargando reseñas...</div>;
+  }
+
+  if (reseñas.length === 0) {
+    return <div style={{ padding: '20px', color: 'white' }}>Este usuario aún no tiene reseñas.</div>;
+  }
 
   return (
     <div className="lista-reseñas">
-      {/* se imprime el array de reseñas referente a UN USUARIO*/}
-      {reseñas.map((r, i) => (
-        <ReseñaCardUs key={i} {...r} />
+      {reseñas.map((r) => (
+        <ReseñaCard 
+          key={r.id} 
+          id={r.id} // ID de la reseña para el link
+          titulo={r.libro_titulo}
+          nombreUsuario={r.nombre_usuario}
+          urlPortada={`${BACKEND_URL}${r.url_portada}`}
+          contenido={r.contenido}
+          puntuacion={r.puntuacion}
+          urlAvatar={`${BACKEND_URL}${r.url_avatar}`}
+        />
       ))}
     </div>
   );

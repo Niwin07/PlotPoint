@@ -1,82 +1,75 @@
-
-import React,  { useState } from 'react';
+import React from 'react';
 import '/src/componentes/perfil/PerfilPag.css';
+import { Link } from 'wouter'; // Importamos Link para el botón "Editar Perfil"
 
-export default function ProfilePage() {
-   const user = {
-    id: 1,
-    nombreUsuario: "usuario_diferente",
-    nombre: 'juancito',
-    urlAvatar: "/src/img/perfil.webp",
-    biografia:
-      "Hola me llamo Gustavos, me fascinan los libros de fantasía y mi mayor sueño es poder realizar mi propio libro que trate del medio ambiente!",
-    reseñas: 8,
-    seguidores: 7,
-    seguidos: 4,
-    siguiendo: true, // por si después querés alternar el botón de seguir
-  };
+const BACKEND_URL = 'http://localhost:3000';
 
-   const [isFollowing, setIsFollowing] = useState(user.siguiendo);
+export default function PerfilPag({ perfil, esMiPerfil, siguiendo, onFollowToggle, token }) {
 
-  // Al apretar el botón
-  const handleFollow = () => {
-    setIsFollowing((prev) => !prev);
-  };
-
-  // (opcional) función que podría simular seguir/dejar de seguir
-  
+  if (!perfil) {
+    return <div>Cargando...</div>;
+  }
 
   return (
     <div className="containerperfil">
-      
-      
-
-      {/* contenedor de usuario*/}
       <div className="profile-content">
        
-       
-
         {/* Profile Avatar */}
         <div className="avatar-container">
-          <img className="perfil-foto" src={user.urlAvatar}></img>
+          <img 
+            className="perfil-foto" 
+            src={perfil.url_avatar ? `${BACKEND_URL}${perfil.url_avatar}` : '/src/img/perfil.webp'} 
+            alt={perfil.nombre_usuario}
+          />
           <div className="dot-decoration"></div>
         </div>
 
         {/* nombre de usuario */}
-        <h2 className="nombre">{user.nombre}</h2>
-        <h2 className='username'>{user.nombreUsuario}</h2>
+        <h2 className="nombre">{perfil.nombre}</h2>
+        <h2 className='username'>{perfil.nombre_usuario}</h2>
 
-
-         <button
-          className="follow-button"
-          onClick={handleFollow}
-          style={{
-            backgroundColor: isFollowing ? "var(--secundario2)" : "var(--secundario1)",
-          }}
-        >
-          {isFollowing ? "Seguido" : "Seguir"}
-        </button>
-
-        {/* biografia */}
-        <p className="bio">
-         {user.biografia}
-        </p>
+        {/* Lógica de botones */}
+        {token && ( // Solo muestra botones si el usuario está logueado
+          esMiPerfil ? (
+            // Si es mi perfil, muestro "Editar Perfil"
+            <Link href="/editar-perfil" className="follow-button">
+              Editar Perfil
+            </Link>
+          ) : (
+            // Si es otro perfil, muestro "Seguir/Dejar de seguir"
+            <button
+              className="follow-button"
+              onClick={onFollowToggle}
+              style={{
+                backgroundColor: siguiendo ? "var(--secundario2)" : "var(--secundario1)",
+              }}
+            >
+              {siguiendo ? "Seguido" : "Seguir"}
+            </button>
+          )
+        )}
 
         {/* cantidad de seguidores, seguidos y reseñas del usuario */}
         <div className="stats">
           <div className="stat-item">
-            <div className="stat-number">{user.reseñas}</div>
+            <div className="stat-number">{perfil.reseñas}</div>
             <div className="stat-label">Reseñas</div>
           </div>
           <div className="stat-item">
-            <div className="stat-number">{user.seguidores}</div>
+            <div className="stat-number">{perfil.seguidores}</div>
             <div className="stat-label">Seguidores</div>
           </div>
           <div className="stat-item">
-            <div className="stat-number">{user.seguidos}</div>
+            <div className="stat-number">{perfil.seguidos}</div>
             <div className="stat-label">Seguidos</div>
           </div>
         </div>
+
+                {/* biografia */}
+        <p className="bio">
+         {perfil.biografia || "Este usuario no tiene biografía."}
+        </p>
+        
       </div>
     </div>
   );

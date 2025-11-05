@@ -57,11 +57,11 @@ function App() {
           <Route path="/reseñasinicio" component={ListaReseñasInicio} />
 
           {/*  Libros y reseñas */}
-          <Route path="/libro" component={Libro} />
-          <Route path="/reseñalibro" component={ReviewDetail} />
+          <Route path="/libro/:id" component={Libro} />
+          <Route path="/reseñalibro/:id" component={ReviewDetail} />
 
           {/*  Usuario / Perfil */}
-          <Route path="/usuario/*" component={Usuario} />
+          <Route path="/usuario/:id" component={Usuario} />
           <Route path="/perfil/*" component={Perfil} />
 
           {/*  Autenticación */}

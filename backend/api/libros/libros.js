@@ -9,9 +9,31 @@ if (!fs.existsSync(directorio)){
 
 // GET /api/libros - Listar todos los libros con información completa
 exports.listar = async function(req, res, next) {
-    const { promedio, busqueda, autor_id, editorial_id, genero_id } = req.query;
+    const { random, promedio, busqueda, autor_id, editorial_id, genero_id } = req.query;
 
     try {
+
+        if (random){
+            const sqlRandom= `
+            SELECT
+                id,
+                titulo,
+                url_portada
+            FROM
+                Libro
+            ORDER BY
+                RAND()
+            LIMIT 6;
+            `
+            const [libros] = await db.query(sqlRandom);
+            
+            return res.json({ 
+                status: 'ok', 
+                libros: libros,
+                total: libros.length 
+            });
+        }
+
         if (promedio) {
             
             const sqlPromedio = `
