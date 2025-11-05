@@ -1,37 +1,27 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios'; 
 import '/src/componentes/home/inicio.css';
-
 
 const Inicio = () => {
 
-    //simulacion de datos
-    const populares = [
-        {
-            titulo: "Harry Potter and the Deathly Hallows",
-            id: 1,
-            urlPortada: "https://books.google.com/books/content?id=mnf9mixwzBAC&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api",
-        },
-        {
-            titulo: "Harry Potter and the Deathly Hallows",
-            id: 2,
-            urlPortada: "/src/img/libro.webp",
-        },
-        {
-            titulo: "Harry Potter and the Deathly Hallows",
-            id: 3,
-            urlPortada: "/src/img/libro.webp",
-        },
-        {
-            titulo: "Harry Potter and the Deathly Hallows",
-            id: 4,
-            urlPortada: "/src/img/libro.webp",
-        },
-        {
-            titulo: "Harry Potter and the Deathly Hallows",
-            id: 5,
-            urlPortada: "/src/img/libro.webp",
-        },
-    ];
+    const [mejoresCalificados, setMejoresCalificados] = useState([]);
+
+    useEffect(() => {
+        const fetchMejoresCalificados = async () => {
+            try {
+                const response = await axios.get('http://localhost:3000/api/libros?promedio=true');
+                
+                if (response.data.status === 'ok') {
+                    console.log(response.data.libros)
+                    setMejoresCalificados(response.data.libros); 
+                }
+            } catch (error) {
+                console.error('Error al cargar libros más gustados:', error);
+            }
+        };
+
+        fetchMejoresCalificados();
+    }, []); 
 
     const gustados = [
         {
@@ -39,26 +29,6 @@ const Inicio = () => {
             id: 1,
             urlPortada: "/src/img/libro.webp",
         },
-        {
-            titulo: "Harry Potter and the Deathly Hallows",
-            id: 2,
-            urlPortada: "/src/img/libro.webp",
-        },
-        {
-            titulo: "Harry Potter and the Deathly Hallows",
-            id: 3,
-            urlPortada: "/src/img/libro.webp",
-        },
-        {
-            titulo: "Harry Potter and the Deathly Hallows",
-            id: 4,
-            urlPortada: "/src/img/libro.webp",
-        },
-        {
-            titulo: "Harry Potter and the Deathly Hallows",
-            id: 5,
-            urlPortada: "/src/img/libro.webp",
-        }
     ];
 
     const favoritos = [
@@ -67,52 +37,27 @@ const Inicio = () => {
             id: 1,
             urlPortada: "/src/img/libro.webp",
         },
-        {
-            titulo: "Harry Potter and the Deathly Hallows",
-            id: 2,
-            urlPortada: "/src/img/libro.webp",
-        },
-        {
-            titulo: "Harry Potter and the Deathly Hallows",
-            id: 3,
-            urlPortada: "/src/img/libro.webp",
-        },
-        {
-            titulo: "Harry Potter and the Deathly Hallows",
-            id: 4,
-            urlPortada: "/src/img/libro.webp",
-        },
-        {
-            titulo: "Harry Potter and the Deathly Hallows",
-            id: 5,
-            urlPortada: "/src/img/libro.webp",
-        },
     ];
+
     return (
         <div class="container">
             <section class="section">
                 <h1>Los mejores calificados </h1>
                 <div class="book-grid">
-
-                    {/*imprimimos el array de libros mas populares */}
-                    {populares.map((popular) => (
-                        <div key={popular.id} className="book-item">
+                    {mejoresCalificados.map((libro) => (
+                        <div key={libro.id} className="book-item">
                             <a href='/libro'>
-                                <img src={popular.urlPortada} alt={popular.titulo}></img>
+                                <img src={libro.url_portada} alt={libro.titulo}></img>
                             </a>
                         </div>
                     ))}
 
                 </div>
-
-
             </section >
 
             <section class="section">
                 <h1>Mas gustados</h1>
                 <div class="book-grid">
-
-                    {/*imprimimos el array de libros mas leidos */}
                     {gustados.map((gustado) => (
                         <div key={gustado.id} className="book-item">
                             <a href='/libro'>
@@ -126,8 +71,6 @@ const Inicio = () => {
             <section class="section">
                 <h1>Favoritos de tus amigos</h1>
                 <div class="book-grid">
-
-                    {/*imprimimos el array de los libros favoritos de tus amigos (gente que sigues)*/}
                     {favoritos.map((favorito) => (
                         <div key={favorito.id} className="book-item">
                             <a href='/libro'>
@@ -138,9 +81,6 @@ const Inicio = () => {
                 </div>
             </section>
         </div >
-
-
-
     );
 };
 export default Inicio;
