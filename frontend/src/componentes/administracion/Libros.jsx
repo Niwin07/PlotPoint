@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react'; 
 import '/src/componentes/administracion/admin.css';
-import ModalEditarLibro from '/src/componentes/modals/ModalEditarLibro.jsx';
-import ModalCrearLibro from '/src/componentes/modals/ModalCrearLibro.jsx';
+import ModalEditarLibro from '/src/componentes/modals/libro/ModalEditarLibro.jsx';
+import ModalCrearLibro from '/src/componentes/modals/libro/ModalCrearLibro.jsx';
 import axios from 'axios';
 
 const ITEMS_POR_PAGINA = 10;

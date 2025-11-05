@@ -46,12 +46,14 @@ img {
     border-radius: 10px;
     background-color: var(--secundario1);
 }
+/*
 
 section {
     padding: 3rem 2rem;
     margin: 0 auto;
     max-width: 1200ps;
 }
+
 
 
 section h1 {
@@ -77,6 +79,8 @@ section h1 {
     /*background: linear-gradient(to right, #373B44, #4286f4);
     /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
     background: var(--fondo);
+    z-index:100;
+    
 
 
 }
@@ -119,6 +123,7 @@ section h1 {
 
 .header .flex .navbar a:hover {
     color: var(--secundario2);
+    transition: .3s ease-in;
 
 }
 

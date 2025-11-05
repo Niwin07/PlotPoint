@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import axios from 'axios';
 import '/src/componentes/perfil/EditarPerfil.css';
-import ModalContraseña from '/src/componentes/modals/ModalContraseña.jsx'
+import ModalContraseña from '/src/componentes/modals/usuario/ModalContraseña.jsx'
 
 export default function EditProfilePage() {
 

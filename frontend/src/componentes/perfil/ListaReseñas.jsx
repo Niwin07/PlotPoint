@@ -1,9 +1,36 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from 'axios';
 import ReseñaCard from "../home/ReseñaCard";
 import ReseñaCardUs from "./ReseñaCardUs";
-import portadaHP from "/src/img/libro.webp"; 
+import portadaHP from "/src/img/libro.webp";
 
 const ListaReseñas = () => {
+  const [reviews, setReviews] = useState ([]);
+   const token = localStorage.getItem('token');
+  const BACKEND_URL = 'http://localhost:3000';
+
+  useEffect(() => {
+    const fetchUserReviews = async () => {
+      try {
+        const response = await axios.get(`${BACKEND_URL}/api/resenas`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+            
+          }
+        });
+        console.log(response.data.resenas)
+
+        const data = response.data.resenas;
+        setReviews(data)
+       
+      } catch (err) {
+        
+        console.error(err);
+      }
+    };
+
+    fetchUserReviews();
+  }, []);
 
   //simulamos las reseñas de UN USUARIO (para ver tus reseñas o las de un usuario en particular) 
   const reseñas = [
@@ -36,7 +63,7 @@ const ListaReseñas = () => {
   return (
     <div className="lista-reseñas">
       {/* se imprime el array de reseñas referente a UN USUARIO*/}
-      {reseñas.map((r, i) => (
+      {reviews.map((r, i) => (
         <ReseñaCardUs key={i} {...r} />
       ))}
     </div>

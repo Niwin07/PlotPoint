@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '/src/componentes/administracion/admin.css';
-import ModalEditarGenero from '/src/componentes/modals/ModalEditarGenero.jsx';
-import ModalCrearGenero from '/src/componentes/modals/ModalCrearGenero.jsx';
+import ModalEditarGenero from '/src/componentes/modals/genero/ModalEditarGenero.jsx';
+import ModalCrearGenero from '/src/componentes/modals/genero/ModalCrearGenero.jsx';
 
 const Generos = () => {
     const [mostrarModalEditar, setMostrarModalEditar] = useState(false);

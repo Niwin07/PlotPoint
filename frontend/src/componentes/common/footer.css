@@ -36,6 +36,7 @@
 
 .footer .box-footer .box-info a:hover i {
     padding-right: 2rem;
+    transition: .3s ease-in;
 }
 
 .footer .redes {
@@ -57,6 +58,7 @@
 .footer .redes a:hover {
    
     background-color: var(--texto);
+    transition: .2s ease-in;
 }
 
 .footer .credito {
