@@ -277,5 +277,54 @@ router.put('/cambiar-password', async function(req, res, next) {
     }
 });
 
+// GET /api/usuarios/publico/:id - Obtener perfil público de un usuario
+router.obtenerPublico = async function(req, res, next) {
+    const { id } = req.params;
+
+    try {
+        // 1. Consulta principal del perfil
+        const sqlPerfil = `SELECT id, nombre, nombre_usuario, biografia, url_avatar 
+                           FROM Usuario WHERE id = ?`;
+        
+        // 2. Consultas para las estadísticas
+        const sqlResenas = `SELECT COUNT(*) as total_reseñas FROM Resena WHERE usuario_id = ?`;
+        const sqlSeguidores = `SELECT COUNT(*) as total_seguidores FROM Seguidores WHERE seguido_id = ?`;
+        const sqlSeguidos = `SELECT COUNT(*) as total_seguidos FROM Seguidores WHERE seguidor_id = ?`;
+
+        // Ejecutar todas las consultas en paralelo
+        const [
+            [perfilRows],
+            [reseñasRows],
+            [seguidoresRows],
+            [seguidosRows]
+        ] = await Promise.all([
+            db.query(sqlPerfil, [id]),
+            db.query(sqlResenas, [id]),
+            db.query(sqlSeguidores, [id]),
+            db.query(sqlSeguidos, [id])
+        ]);
+
+        if (perfilRows.length === 0) {
+            return res.status(404).json({ 
+                error: 'Usuario no encontrado' 
+            });
+        }
+        
+        // Combinar todos los resultados
+        const perfil = perfilRows[0];
+        perfil.reseñas = reseñasRows[0].total_reseñas;
+        perfil.seguidores = seguidoresRows[0].total_seguidores;
+        perfil.seguidos = seguidosRows[0].total_seguidos;
+
+        res.json(perfil);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ 
+            error: 'Error al obtener perfil público' 
+        });
+    }
+};
+
 
 module.exports = router;
