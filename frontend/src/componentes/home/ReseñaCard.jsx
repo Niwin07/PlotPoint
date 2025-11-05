@@ -1,13 +1,15 @@
 import React from "react";
 import "/src/componentes/home/ReseñaCard.css";
 import Rating from "react-rating";
+import { Link } from "wouter"; // 1. Importar Link
 
 //tarjeta de las reseñsa de VARIOS USUARIOS (para el la seccion "reseñas" del inicio)
 
 const ReseñaCard = ({ id, libro_titulo, nombre_usuario, url_portada, contenido, puntuacion, url_avatar }) => {
   const BACKEND_URL = 'http://localhost:3000';
   return (
-    <a className="link-reseña" href="/reseñalibro">
+    // 2. Cambiar <a> por <Link> y usar el 'id' para la ruta dinámica
+    <Link className="link-reseña" href={`/resenalibro/${id}`}>
       <div className="reseña-card">
         <div className="reseña-header">
           <h3 className="titulo">{libro_titulo}</h3>
@@ -33,7 +35,7 @@ const ReseñaCard = ({ id, libro_titulo, nombre_usuario, url_portada, contenido,
           <p className="texto">{contenido}</p>
         </div>
       </div>
-    </a>
+    </Link>
   );
 };
 

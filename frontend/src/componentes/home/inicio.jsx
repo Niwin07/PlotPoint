@@ -1,43 +1,50 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'; 
+import { Link } from "wouter";
 import '/src/componentes/home/inicio.css';
+
 
 const Inicio = () => {
 
     const [mejoresCalificados, setMejoresCalificados] = useState([]);
-
+    const [masGustados, setMasGustados] = useState([]);
+    const [seleccionParaTi, setSeleccion] = useState([]);
     useEffect(() => {
-        const fetchMejoresCalificados = async () => {
+        
+        const fetchDatosInicio = async () => {
             try {
-                const response = await axios.get('http://localhost:3000/api/libros?promedio=true');
-                
-                if (response.data.status === 'ok') {
-                    console.log(response.data.libros)
-                    setMejoresCalificados(response.data.libros); 
+                const peticionMejores = axios.get('http://localhost:3000/api/libros?promedio=true');
+                const peticionGustados = axios.get('http://localhost:3000/api/likes/libro/gustados');
+                const peticionSeleccion = axios.get('http://localhost:3000/api/libros?random=true')
+                const [resMejores, resGustados, resSeleccion] = await Promise.all([
+                    peticionMejores,
+                    peticionGustados,
+                    peticionSeleccion
+                ]);
+
+                if (resMejores.data.status === 'ok') {
+                    console.log(resMejores.data.libros);
+                    setMejoresCalificados(resMejores.data.libros);
                 }
+
+                if (resGustados.data.status === 'ok') {
+                    console.log(resGustados.data.libros);
+                    setMasGustados(resGustados.data.libros);
+                }
+
+                if (resSeleccion.data.status === 'ok'){
+                    console.log(resSeleccion.data.libros);
+                    setSeleccion(resSeleccion.data.libros);
+                }
+
             } catch (error) {
-                console.error('Error al cargar libros más gustados:', error);
+                console.error('Error al cargar datos de inicio:', error);
             }
         };
 
-        fetchMejoresCalificados();
-    }, []); 
+        fetchDatosInicio();
+    }, []);
 
-    const gustados = [
-        {
-            titulo: "Harry Potter and the Deathly Hallows",
-            id: 1,
-            urlPortada: "/src/img/libro.webp",
-        },
-    ];
-
-    const favoritos = [
-        {
-            titulo: "Harry Potter and the Deathly Hallows",
-            id: 1,
-            urlPortada: "/src/img/libro.webp",
-        },
-    ];
 
     return (
         <div class="container">
@@ -46,36 +53,35 @@ const Inicio = () => {
                 <div class="book-grid">
                     {mejoresCalificados.map((libro) => (
                         <div key={libro.id} className="book-item">
-                            <a href='/libro'>
+                            <Link href={`/libro/${libro.id}`}>
                                 <img src={libro.url_portada} alt={libro.titulo}></img>
-                            </a>
+                            </Link>
                         </div>
                     ))}
-
                 </div>
             </section >
 
             <section class="section">
                 <h1>Mas gustados</h1>
                 <div class="book-grid">
-                    {gustados.map((gustado) => (
+                    {masGustados.map((gustado) => (
                         <div key={gustado.id} className="book-item">
-                            <a href='/libro'>
-                                <img src={gustado.urlPortada} alt={gustado.titulo}></img>
-                            </a>
+                            <Link href={`/libro/${gustado.id}`}>
+                                <img src={gustado.url_portada} alt={gustado.titulo}></img>
+                            </Link>
                         </div>
                     ))}
                 </div>
             </section>
 
             <section class="section">
-                <h1>Favoritos de tus amigos</h1>
+                <h1>Nuestra seleccion para ti</h1>
                 <div class="book-grid">
-                    {favoritos.map((favorito) => (
+                    {seleccionParaTi.map((favorito) => (
                         <div key={favorito.id} className="book-item">
-                            <a href='/libro'>
-                                <img src={favorito.urlPortada} alt={favorito.titulo}></img>
-                            </a>
+                            <Link href={`/libro/${favorito.id}`}>
+                                <img src={favorito.url_portada} alt={favorito.titulo}></img>
+                            </Link>
                         </div>
                     ))}
                 </div>

@@ -2,11 +2,15 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "/src/componentes/libro/libro.css";
 import Rating from "react-rating";
+import { useRoute } from "wouter";
+import { Link } from "wouter";
 
 export default function BookPage() {
   const BACKEND_URL = "http://localhost:3000";
 
-  const [manualId, setManualId] = useState("2"); // id para probar manualmente
+  const [match, params] = useRoute("/libro/:id");
+  const libroId = params ? params.id : null;
+
   const [book, setBook] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -15,7 +19,6 @@ export default function BookPage() {
   const [isFavorite, setIsFavorite] = useState(false);
   const [Calificado, setCalificado] = useState(false);
   
-
   const [showModal, setShowModal] = useState(false);
   const [newRating, setNewRating] = useState(0);
   const [newOpinion, setNewOpinion] = useState("");
@@ -23,7 +26,7 @@ export default function BookPage() {
   const token = localStorage.getItem("token");
 
   const fetchBookAndReviews = async (idToFetch) => {
-    setLoading(true);
+    setLoading(false);
     setError(null);
     setBook(null);
     setReviews([]);
@@ -39,16 +42,11 @@ export default function BookPage() {
         }));
       }
 
-
-
-      // intentar cargar reseñas en endpoint "resenas" (sin ñ)
       try {
         const reviewsRes = await axios.get(`${BACKEND_URL}/api/resenas?libro_id=${idToFetch}`);
-       
         setReviews(reviewsRes.data.resenas)
         console.log(reviewsRes.data.resenas)
       } catch (errReviews) {
-        // no hay endpoint de reseñas o falla: no crítico para probar libro
         console.warn("No se cargaron reseñas:", errReviews.message);
       }
 
@@ -60,18 +58,13 @@ export default function BookPage() {
     }
   };
 
-  //carga el libro segun id que ingresaste (prueba)
-
-  const handleLoadClick = () => {
-    const id = manualId?.toString().trim();
-    if (!id) {
-      setError("Ingresa un id de libro válido");
-      return;
+  useEffect(() => {
+    if (libroId) {
+      fetchBookAndReviews(libroId);
+    } else {
+      setError("No se especificó un ID de libro en la URL.");
     }
-    fetchBookAndReviews(id);
-  };
-
-  //correspondiente al modal para calificar libro (review/reseña)
+  }, [libroId]); 
 
   const openModal = () => {
     setNewRating(0);
@@ -81,10 +74,10 @@ export default function BookPage() {
 
   const closeModal = () => setShowModal(false);
 
-  const addReview = async (idToFetch) => {
-    const id = manualId;
+  const addReview = async () => {
+    const id = libroId;
     if (!book || !id) {
-      alert("Carga primero un libro válido");
+      alert("No se ha cargado un libro válido");
       return;
     }
     if (newRating === 0 || newOpinion.trim().length < 10) {
@@ -93,11 +86,10 @@ export default function BookPage() {
     }
 
     try {
-      // Crear la reseña
       const response = await axios.post(
         `${BACKEND_URL}/api/resenas`,
         {
-          libro_id: parseInt(id),
+          libro_id: parseInt(id), 
           puntuacion: newRating,
           contenido: newOpinion.trim()
         },
@@ -108,16 +100,13 @@ export default function BookPage() {
           }
         }
       );
-      // Actualizar el promedio
-
-
-      setRefreshReviews(prev => !prev)
+      
+      setRefreshReviews(prev => !prev) 
       closeModal();
       alert("Reseña publicada exitosamente");
     } catch (err) {
       console.error("Error:", err);
-
-      if (err.response?.status === 401) {
+       if (err.response?.status === 401) {
         alert("Debes iniciar sesión para publicar una reseña");
       } else if (err.response?.status === 409) {
         alert("Ya has reseñado este libro");
@@ -130,31 +119,24 @@ export default function BookPage() {
   };
 
   useEffect(() => {
-
-    //se encargara de actualizar los datos "favorito", "reseñas" y "promedio" del libro en especifico
     const checkFavoriteAndLoadData = async () => {
-      if (!manualId || !token) return;
+      if (!libroId || !token) return;
 
       try {
-        // Carga si le diste o no favorito anteriormente, carga promedio y las reseñas en paralelo
         const [favoriteRes, reviewsRes, avgRes] = await Promise.all([
-          axios.get(`${BACKEND_URL}/api/likes/check/${manualId}`, {
+          axios.get(`${BACKEND_URL}/api/likes/check/${libroId}`, { 
             headers: { Authorization: `Bearer ${token}` }
           }),
-          axios.get(`${BACKEND_URL}/api/resenas?libro_id=${manualId}`),
-          axios.get(`${BACKEND_URL}/api/resenas/libro/${manualId}/promedio`)
+          axios.get(`${BACKEND_URL}/api/resenas?libro_id=${libroId}`),
+          axios.get(`${BACKEND_URL}/api/resenas/libro/${libroId}/promedio`) 
         ]);
 
-        // actualiza favorito
         console.log(favoriteRes)
         setIsFavorite(favoriteRes.data.es_favorito);
        
-
-        // actualiza las reseñas
         setReviews(reviewsRes.data.resenas);
 
-        // actualiza el promedio
-        if (avgRes.data.promedio && book) {
+        if (avgRes.data.promedio) { 
           setBook(prev => ({
             ...prev,
             promedio: avgRes.data.promedio
@@ -166,12 +148,12 @@ export default function BookPage() {
       }
     };
 
-    if (book) {
+    if (book) { 
       checkFavoriteAndLoadData();
     }
-  }, [refreshReviews, manualId, token, book?.id]);
 
-  //toggleFavorite se encarga de eliminar o agregar favorito de un libro
+  }, [refreshReviews, libroId, token, book?.id]); 
+
   const toggleFavorite = async () => {
     if (!token) {
       alert("Debes iniciar sesión para marcar favoritos");
@@ -180,7 +162,7 @@ export default function BookPage() {
 
     try {
       if (isFavorite) {
-        await axios.delete(`${BACKEND_URL}/api/likes/${manualId}`, {
+        await axios.delete(`${BACKEND_URL}/api/likes/${libroId}`, { 
           headers: { Authorization: `Bearer ${token}` }
         });
         setIsFavorite(false);
@@ -189,7 +171,7 @@ export default function BookPage() {
       } else {
         const response = await axios.post(
           `${BACKEND_URL}/api/likes`,
-          { libro_id: parseInt(manualId) },
+          { libro_id: parseInt(libroId) }, 
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -211,24 +193,10 @@ export default function BookPage() {
 
   return (
     <div className="book-container">
-      {/*unicamente para explorar los libros (temporal) */}
-      <div style={{ marginBottom: 16 }}>
-        <label style={{ marginRight: 8 }}>ID de libro:</label>
-        <input
-          type="text"
-          value={manualId}
-          onChange={(e) => setManualId(e.target.value)}
-          style={{ marginRight: 8 }}
-        />
-        <button onClick={handleLoadClick}>Cargar libro</button>
-      </div>
 
       {loading && <div>Cargando...</div>}
       {error && <div style={{ color: "red" }}>Error: {error}</div>}
 
-      {!loading && !error && !book && (
-        <div>Utiliza el campo ID para cargar un libro de prueba.</div>
-      )}
 
       {book && (
         <>
@@ -239,9 +207,6 @@ export default function BookPage() {
                 alt={book.titulo}
                 className="book-cover"
               />
-
-              {/*marca si de diste favorito o desmarca si no */}
-
               <span
                 className={`heart-${isFavorite ? 'active' : ''}`}
                 onClick={toggleFavorite}
@@ -283,7 +248,7 @@ export default function BookPage() {
             {reviews.length === 0 && <p>No hay reseñas aún</p>}
             {reviews.map((review) => (
               <div className="review-card" key={review.id || review._id || Math.random()}>
-                <a href={`/resenalibro/${review.id || review._id}`}>
+                <Link href={`/reseñalibro/${review.id || review._id}`}>
                   <div className="review-header">
                     <div className="avatar-foto">
                       <img src={review.url_avatar ? `${BACKEND_URL}${review.url_avatar}` : ''} alt={review.nombre_usuario} />
@@ -300,7 +265,7 @@ export default function BookPage() {
                     </div>
                   </div>
                   <p className="review-text">{review.opinion ?? review.contenido}</p>
-                </a>
+                </Link>
               </div>
             ))}
           </div>

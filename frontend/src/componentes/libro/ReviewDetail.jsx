@@ -1,160 +1,170 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import '/src/componentes/libro/ReviewDetail.css';
-import Rating from "react-rating";
+import { useRoute } from 'wouter';
+import Rating from 'react-rating';
+import './ReviewDetail.css';
+import { Link } from "wouter"; 
 
-export default function BookReviewApp() {
-  const [manualId, setManualId] = useState(14);
-  const [comment, setComment] = useState('');
-  const [reviewData, setReviewData] = useState(null)
-  const [reviews, setReviews] = useState([])
+export default function ReviewDetail() {
+  const BACKEND_URL = 'http://localhost:3000';
 
+  const [match, params] = useRoute("/reseñalibro/:id");
+  const resenaId = params ? params.id : null;
+
+  const [review, setReview] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
+  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const BACKEND_URL = "http://localhost:3000";
-  const token = localStorage.getItem('token');
-
-
+  const [refreshComments, setRefreshComments] = useState(false);
   
-  //simulamos que hacemos un comentario reaccionando a la reseña
+  const token = localStorage.getItem("token");
 
-  const handleSubmit = async (id) => {
-    console.log(id)
-    if (comment.trim()) {
-      console.log(comment.trim())
-      try {
-
-        const response = await axios.post(
-          `${BACKEND_URL}/api/comentarios`,
-          {
-            resena_id: parseInt(id),
-            contenido: comment.trim()
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json"
-            }
-          }
-        );
-        console.log(response)
-        setComment('')
-      } catch {
-        console.log("comentario error")
-      }
-
-      
-    }
-  };
- 
   useEffect(() => {
-    const fetchReviewData = async () => {
+    const fetchReviewAndComments = async () => {
+      if (!resenaId) {
+        setError("No se especificó un ID de reseña.");
+        setLoading(false);
+        return;
+      }
+      
       setLoading(true);
       setError(null);
 
       try {
-
-        const [reviewData, review] = await Promise.all([
-          axios.get(`${BACKEND_URL}/api/resenas/${manualId}`, {
-            headers: { Authorization: `Bearer ${token}` }
-          }),
-          axios.get(`${BACKEND_URL}/api/comentarios/resena/${manualId}`)
-
-        ]);
-
-        console.log(review.data.comentarios)
-
-
-        setReviews(review.data.comentarios)
-        console.log(reviewData.data)
-        setReviewData(reviewData.data)
+        const reviewPromise = axios.get(`${BACKEND_URL}/api/resenas/${resenaId}`);
+        const commentsPromise = axios.get(`${BACKEND_URL}/api/comentarios/resena/${resenaId}`);
         
+        const [reviewRes, commentsRes] = await Promise.all([reviewPromise, commentsPromise]);
+
+        setReview(reviewRes.data);
+        setComments(commentsRes.data.comentarios);
+        console.log('reseña:', reviewRes.data);
+        console.log('comentarios:', commentsRes.data.comentarios);
+
       } catch (err) {
-        console.error('Error fetching review:', err);
-        setError(err.response?.data?.message || 'Error al cargar la reseña');
+        console.error("Error al cargar datos:", err);
+        setError(err.response?.data?.message || "Error al cargar la reseña y los comentarios");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchReviewData();
-  }, [manualId, token]);
+    fetchReviewAndComments();
+  }, [resenaId, refreshComments]);
 
-  if (loading) return <div className="container">Cargando...</div>;
-  if (error) return <div className="container">Error: {error}</div>;
-  if (!reviewData) return <div className="container">No se encontró la reseña</div>;
+  const handlePostComment = async () => {
+    if (!token) {
+      alert("Debes iniciar sesión para comentar");
+      return;
+    }
+    if (newComment.trim().length < 1) {
+      alert("El comentario no puede estar vacío");
+      return;
+    }
 
+    try {
+      await axios.post(
+        `${BACKEND_URL}/api/comentarios`,
+        {
+          resena_id: parseInt(resenaId),
+          contenido: newComment.trim()
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+      
+      setNewComment("");
+      setRefreshComments(prev => !prev); 
+    } catch (err) {
+      console.error("Error al publicar comentario:", err);
+      alert(err.response?.data?.message || "Error al enviar el comentario");
+    }
+  };
 
-  return (
+  if (loading) {
+    return <div className="container">Cargando...</div>;
+  }
 
+  if (error) {
+    return <div className="container" style={{ color: "red" }}>Error: {error}</div>;
+  }
 
+  if (!review) {
+    return <div className="container">Reseña no encontrada.</div>;
+  }
+
+  return (  
     <div className="container">
-      {/* tarjeta detallada de una reseña en espefico */}
       <div className="main-card">
         <div className="usuario-reseña">
-          <a className="usuario-reseña" href='/usuario/'>
-            <img className="foto-perfil" src={reviewData.url_avatar ? `${BACKEND_URL}${reviewData.url_avatar}` : ''} alt={reviewData.nombre_usuario} ></img>
+          <Link href={`/usuario/${review.usuario_id}`}>
+          <img 
+            src={review.url_avatar ? `${BACKEND_URL}${review.url_avatar}` : '/path/to/default/avatar.png'} 
+            alt={review.nombre_usuario} 
+            className="foto-perfil" 
+          />
+          </Link>
+          <p className="user-name">{review.nombre_usuario}</p>
+          
 
-            <h2 className="user-name">{reviewData.nombre_usuario || ''}</h2>
-          </a>
         </div>
-
+        
         <div className="content">
           <div className="book-info">
-            <h1 className="book-titulo">{reviewData.libro_titulo || ''}</h1>
+            <p className="book-titulo">{review.libro_titulo}</p>
             <div className="estrellas">
               <Rating
-                initialRating={reviewData.puntuacion || ''}
+                initialRating={review.puntuacion}
                 readonly
                 emptySymbol={<span className="star empty">☆</span>}
                 fullSymbol={<span className="star full">★</span>}
               />
             </div>
-            <p className="review">
-              {reviewData.contenido || ''}
-            </p>
+            <p className="review">{review.contenido}</p>
           </div>
-          <img
-            src={reviewData.url_portada || ''}
-            alt={reviewData.libro_titulo || ''}
-            className="book-portada"
+          <img 
+            src={review.url_portada || ''} 
+            alt={review.libro_titulo} 
+            className="book-portada" 
           />
         </div>
-
-
       </div>
-      {/* seccion para agregar tu comentario*/}
-      <div className="input-section" >
-        <input
-          type="text"
-          placeholder="Agregar comentario"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          className="input"
-          
+
+      <div className="input-section">
+        <input 
+          type="text" 
+          className="input" 
+          placeholder="Escribe un comentario..."
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
         />
-        <button onClick={handleSubmit(reviewData.id)} className="send-button">
+        <button className="send-button" onClick={handlePostComment}>
           Enviar
         </button>
       </div>
 
       <div className="reviews-list">
-
-        {/* imprimimos los comentarios */}
-        {reviews.map((review) => (
-          <div key={review.id} className="comentario-card">
-
-
-            <a className="review-usuario" href='/usuario/'>
-              <img className='foto-perfil' src={reviewData.url_avatar ? `${BACKEND_URL}${reviewData.url_avatar}` : ''} alt={reviewData.nombre_usuario}/>
-
-
-              <h2 className="review-usuario">{review.nombre_usuario}</h2>
-            </a>
-
-
-
-            <p className="review-text">{review.contenido}</p>
+        {comments.length === 0 && (
+          <p>No hay comentarios aún. ¡Sé el primero!</p>
+        )}
+        
+        {comments.map((comment) => (
+          <div className="comentario-card" key={comment.id}>
+            <div className="review-header">
+              <img 
+                src={comment.url_avatar ? `${BACKEND_URL}${comment.url_avatar}` : '/path/to/default/avatar.png'} 
+                alt={comment.nombre_usuario} 
+                className="foto-perfil" 
+              />
+              <p className="review-usuario">{comment.nombre_usuario}</p>
+            </div>
+            <p className="review-text">{comment.contenido}</p>
           </div>
         ))}
       </div>
