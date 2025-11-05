@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '/src/componentes/administracion/admin.css';
-import ModalEditarAutor from '/src/componentes/modals/ModalEditarAutor.jsx';
-import ModalCrearAutor from '/src/componentes/modals/ModalCrearAutor.jsx';
+import ModalEditarAutor from '/src/componentes/modals/autor/ModalEditarAutor.jsx';
+import ModalCrearAutor from '/src/componentes/modals/autor/ModalCrearAutor.jsx';
 
 const Autores = () => {
     const [mostrarModalEditar, setMostrarModalEditar] = useState(false);

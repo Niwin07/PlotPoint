@@ -1,8 +1,36 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
-import ReseñaCard from "../home/ReseñaCard"; // Asegúrate de que ReseñaCard use <Link>
+import ReseñaCard from "../home/ReseñaCard";
+import ReseñaCardUs from "./ReseñaCardUs";
+import portadaHP from "/src/img/libro.webp";
 
-const BACKEND_URL = 'http://localhost:3000';
+const ListaReseñas = () => {
+  const [reviews, setReviews] = useState ([]);
+   const token = localStorage.getItem('token');
+  const BACKEND_URL = 'http://localhost:3000';
+
+  useEffect(() => {
+    const fetchUserReviews = async () => {
+      try {
+        const response = await axios.get(`${BACKEND_URL}/api/resenas`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+            
+          }
+        });
+        console.log(response.data.resenas)
+
+        const data = response.data.resenas;
+        setReviews(data)
+       
+      } catch (err) {
+        
+        console.error(err);
+      }
+    };
+
+    fetchUserReviews();
+  }, []);
 
 const ListaReseñas = ({ usuarioId }) => { // Solo necesita el ID del usuario a mostrar
   
@@ -55,5 +83,5 @@ const ListaReseñas = ({ usuarioId }) => { // Solo necesita el ID del usuario a 
     </div>
   );
 };
-
+}
 export default ListaReseñas;
