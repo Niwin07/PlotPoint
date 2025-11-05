@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "/src/componentes/modals/ModalContraseña.css";
+import "/src/componentes/modals/usuario/ModalContraseña.css";
 
 export default function ChangePasswordModal({ onClose, onCambiarContraseña }) {
   const [oldPassword, setOldPassword] = useState("");

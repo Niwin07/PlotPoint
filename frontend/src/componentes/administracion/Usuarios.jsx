@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '/src/componentes/administracion/admin.css';
-import ModalEditarUsuario from '/src/componentes/modals/ModalEditarUsuario.jsx';
-import ModalCrearUsuario from '/src/componentes/modals/ModalCrearUsuario.jsx';
+import ModalEditarUsuario from '/src/componentes/modals/usuario/ModalEditarUsuario.jsx';
+import ModalCrearUsuario from '/src/componentes/modals/usuario/ModalCrearUsuario.jsx';
 import axios from 'axios'; 
 
 const Usuarios = () => {

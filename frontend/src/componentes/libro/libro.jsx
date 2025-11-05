@@ -17,6 +17,7 @@ export default function BookPage() {
   const [error, setError] = useState(null);
 
   const [isFavorite, setIsFavorite] = useState(false);
+  const [Calificado, setCalificado] = useState(false);
   
   const [showModal, setShowModal] = useState(false);
   const [newRating, setNewRating] = useState(0);
