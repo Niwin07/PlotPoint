@@ -17,8 +17,8 @@ export default function BookPage() {
   const [error, setError] = useState(null);
 
   const [isFavorite, setIsFavorite] = useState(false);
-  const [Calificado, setCalificado] = useState(false);
-  
+  const [pendiente, setPendiente] = useState(false);
+
   const [showModal, setShowModal] = useState(false);
   const [newRating, setNewRating] = useState(0);
   const [newOpinion, setNewOpinion] = useState("");
@@ -64,7 +64,7 @@ export default function BookPage() {
     } else {
       setError("No se especificó un ID de libro en la URL.");
     }
-  }, [libroId]); 
+  }, [libroId]);
 
   const openModal = () => {
     setNewRating(0);
@@ -75,6 +75,7 @@ export default function BookPage() {
   const closeModal = () => setShowModal(false);
 
   const addReview = async () => {
+    if (pendiente) return;
     const id = libroId;
     if (!book || !id) {
       alert("No se ha cargado un libro válido");
@@ -85,11 +86,13 @@ export default function BookPage() {
       return;
     }
 
+    setPendiente(true);
+
     try {
       const response = await axios.post(
         `${BACKEND_URL}/api/resenas`,
         {
-          libro_id: parseInt(id), 
+          libro_id: parseInt(id),
           puntuacion: newRating,
           contenido: newOpinion.trim()
         },
@@ -100,13 +103,13 @@ export default function BookPage() {
           }
         }
       );
-      
-      setRefreshReviews(prev => !prev) 
+
+      setRefreshReviews(prev => !prev)
       closeModal();
       alert("Reseña publicada exitosamente");
     } catch (err) {
       console.error("Error:", err);
-       if (err.response?.status === 401) {
+      if (err.response?.status === 401) {
         alert("Debes iniciar sesión para publicar una reseña");
       } else if (err.response?.status === 409) {
         alert("Ya has reseñado este libro");
@@ -115,6 +118,8 @@ export default function BookPage() {
       } else {
         alert("Error al publicar la reseña");
       }
+    } finally {
+      setPendiente(false);
     }
   };
 
@@ -124,19 +129,19 @@ export default function BookPage() {
 
       try {
         const [favoriteRes, reviewsRes, avgRes] = await Promise.all([
-          axios.get(`${BACKEND_URL}/api/likes/check/${libroId}`, { 
+          axios.get(`${BACKEND_URL}/api/likes/check/${libroId}`, {
             headers: { Authorization: `Bearer ${token}` }
           }),
           axios.get(`${BACKEND_URL}/api/resenas?libro_id=${libroId}`),
-          axios.get(`${BACKEND_URL}/api/resenas/libro/${libroId}/promedio`) 
+          axios.get(`${BACKEND_URL}/api/resenas/libro/${libroId}/promedio`)
         ]);
 
         console.log(favoriteRes)
         setIsFavorite(favoriteRes.data.es_favorito);
-       
+
         setReviews(reviewsRes.data.resenas);
 
-        if (avgRes.data.promedio) { 
+        if (avgRes.data.promedio) {
           setBook(prev => ({
             ...prev,
             promedio: avgRes.data.promedio
@@ -148,11 +153,11 @@ export default function BookPage() {
       }
     };
 
-    if (book) { 
+    if (book) {
       checkFavoriteAndLoadData();
     }
 
-  }, [refreshReviews, libroId, token, book?.id]); 
+  }, [refreshReviews, libroId, token, book?.id]);
 
   const toggleFavorite = async () => {
     if (!token) {
@@ -162,16 +167,16 @@ export default function BookPage() {
 
     try {
       if (isFavorite) {
-        await axios.delete(`${BACKEND_URL}/api/likes/${libroId}`, { 
+        await axios.delete(`${BACKEND_URL}/api/likes/${libroId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setIsFavorite(false);
-        
+
         alert(`Haz eliminado "${book.titulo}" de tus favoritos`)
       } else {
         const response = await axios.post(
           `${BACKEND_URL}/api/likes`,
-          { libro_id: parseInt(libroId) }, 
+          { libro_id: parseInt(libroId) },
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -180,7 +185,7 @@ export default function BookPage() {
           }
         );
         setIsFavorite(true);
-        
+
         alert(`Haz agregado "${book.titulo}" a tus favoritos`)
       }
     } catch (err) {
@@ -286,7 +291,7 @@ export default function BookPage() {
             />
             <textarea value={newOpinion} onChange={(e) => setNewOpinion(e.target.value)} placeholder="Explica tu reseña..."></textarea>
             <div className="modal-buttons">
-              <button onClick={addReview} className="save-btn">Calificar</button>
+              <button onClick={addReview} disabled={pendiente} className="save-btn">{pendiente ? "Enviando..." : "Calificar"}</button>
             </div>
           </div>
         </div>

@@ -1,38 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import ReseñaCard from "../home/ReseñaCard";
-import ReseñaCardUs from "./ReseñaCardUs";
-import portadaHP from "/src/img/libro.webp";
 
-const ListaReseñas = () => {
-  const [reviews, setReviews] = useState ([]);
-   const token = localStorage.getItem('token');
-  const BACKEND_URL = 'http://localhost:3000';
 
-  useEffect(() => {
-    const fetchUserReviews = async () => {
-      try {
-        const response = await axios.get(`${BACKEND_URL}/api/resenas`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-            
-          }
-        });
-        console.log(response.data.resenas)
-
-        const data = response.data.resenas;
-        setReviews(data)
-       
-      } catch (err) {
-        
-        console.error(err);
-      }
-    };
-
-    fetchUserReviews();
-  }, []);
 
 const ListaReseñas = ({ usuarioId }) => { // Solo necesita el ID del usuario a mostrar
+   const BACKEND_URL = 'http://localhost:3000';
+   const miId = JSON.parse(localStorage.getItem("usuario"))?.id;
   
   const [reseñas, setReseñas] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -72,16 +46,19 @@ const ListaReseñas = ({ usuarioId }) => { // Solo necesita el ID del usuario a 
         <ReseñaCard 
           key={r.id} 
           id={r.id} // ID de la reseña para el link
-          titulo={r.libro_titulo}
-          nombreUsuario={r.nombre_usuario}
-          urlPortada={`${BACKEND_URL}${r.url_portada}`}
+          libro_titulo={r.libro_titulo}
+          nombre_usuario={r.nombre_usuario}
+          url_portada={r.url_portada}
           contenido={r.contenido}
           puntuacion={r.puntuacion}
-          urlAvatar={`${BACKEND_URL}${r.url_avatar}`}
+          url_avatar={r.url_avatar}
+
+          miId={miId}
+          usuario_id={r.usuario_id}
         />
       ))}
     </div>
   );
 };
-}
+
 export default ListaReseñas;

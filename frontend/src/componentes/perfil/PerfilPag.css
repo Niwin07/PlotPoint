@@ -93,7 +93,7 @@
   cursor: pointer;
   font-weight: bold;
   margin-bottom: 30px;
-  box-shadow: 0 4px 6px rgba(255, 107, 107, 0.3);
+  
   transition: all 0.3s ease;
 }
 .editar{
@@ -110,7 +110,7 @@
 
 .follow-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 8px rgba(255, 107, 107, 0.4);
+ 
 }
 
 /* Biografía */

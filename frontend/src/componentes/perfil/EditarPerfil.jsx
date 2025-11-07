@@ -20,6 +20,10 @@ export default function EditProfilePage() {
     previewUrl: null
   });
 
+  const handleBack = () => {
+    window.history.back();
+  }
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -49,26 +53,26 @@ export default function EditProfilePage() {
   //luego de realizar una breve verificacion en el modal, se enviara la consulta para confirmar el cambio o avisar que los datos son incorrectos
   const cambiarContraseña = async (contrasenaActual, contrasenaNueva) => {
     try {
-    await axios.put(
-      `${BACKEND_URL}/api/usuarios/perfil/cambiar-password`,
-      {
-        contrasenaActual,
-        contrasenaNueva
-      },
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+      await axios.put(
+        `${BACKEND_URL}/api/usuarios/perfil/cambiar-password`,
+        {
+          contrasenaActual,
+          contrasenaNueva
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
         }
-      }
-    );
-    
-    setShowModal(false);
-    alert('Contraseña actualizada exitosamente');
-  } catch (err) {
-    console.error('Error:', err);
-    throw new Error(err.response?.data?.error || 'Error al cambiar la contraseña');
-  }
+      );
+
+      setShowModal(false);
+      alert('Contraseña actualizada exitosamente');
+    } catch (err) {
+      console.error('Error:', err);
+      throw new Error(err.response?.data?.error || 'Error al cambiar la contraseña');
+    }
 
   }
   //actualizamos la foto de perfil del usuario por separado
@@ -146,7 +150,7 @@ export default function EditProfilePage() {
       );
 
       alert('Perfil actualizado exitosamente!');
-      window.location.href = '/perfil/'
+      window.history.back();
 
 
     } catch (err) {
@@ -172,7 +176,7 @@ export default function EditProfilePage() {
         localStorage.removeItem('token');
 
       } catch (err) {
-        setError(err.response?.data?.error || 'Error al eliminar cuenta');
+        
         alert('Error al eliminar cuenta');
       }
     }
@@ -188,7 +192,10 @@ export default function EditProfilePage() {
   }, [formData.previewUrl]);
 
   return (
+    <>
+    <button className='atrasperfil' onClick={handleBack}>VOLVER</button>
     <div className="edit-page-container">
+      
       {/*imprimimos los datos del usuario */}
       {error && <div className="error-message">{error}</div>}
 
@@ -289,5 +296,6 @@ export default function EditProfilePage() {
           onCambiarContraseña={cambiarContraseña}
         />}
     </div>
+    </>
   );
 }

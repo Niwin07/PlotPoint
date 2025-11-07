@@ -4,16 +4,25 @@ import '/src/componentes/perfil/PerfilPag.css';
 import MeGustas from '/src/componentes/perfil/MeGustas.jsx';
 import PerfilPag from '/src/componentes/perfil/PerfilPag.jsx';
 import ListaReseñas from '/src/componentes/perfil/ListaReseñas.jsx';
-import { Route, Link, useRoute } from "wouter";
+import { Route, Link, useRoute, useLocation } from "wouter";
 
 export default function Usuario() {
+    const [, setLocation] = useLocation();
     const BACKEND_URL = 'http://localhost:3000';
     const token = localStorage.getItem("token"); // Necesario para saber si "sigues" al usuario
-    const miId = localStorage.getItem("usuario_id"); // Para no mostrar "seguir" en tu propio perfil
+    //const miId = localStorage.getItem("usuario_id"); // Para no mostrar "seguir" en tu propio perfil
+    const [miId, setMiId] = useState(null);
 
     // 1. Obtener el ID del usuario de la URL
+    /*
     const [match, params] = useRoute("/usuario/:id");
     const usuarioId = params ? params.id : null;
+    */
+    const [, paramsBase] = useRoute("/usuario/:id");
+    const [, paramsMeGustas] = useRoute("/usuario/:id/megustas");
+    const [, paramsResenas] = useRoute("/usuario/:id/reseñas");
+
+    const usuarioId = parseInt(paramsBase?.id || paramsMeGustas?.id || paramsResenas?.id);
 
     // 2. Estados para los datos del perfil y seguimiento
     const [perfil, setPerfil] = useState(null);
@@ -22,16 +31,26 @@ export default function Usuario() {
     const [error, setError] = useState(null);
 
     // 3. Comprobar si el perfil que vemos es nuestro propio perfil
-    const esMiPerfil = (miId === usuarioId);
+    //const esMiPerfil = (miId === usuarioId);
 
     // 4. Cargar datos del perfil (info + stats + estado de seguimiento)
     useEffect(() => {
+
+        const usuario = JSON.parse(localStorage.getItem("usuario"));
+        const miId = parseInt(usuario?.id);
+        const esMiPerfil = (miId === usuarioId);
+
         if (!usuarioId) {
             setError("No se especificó un ID de usuario.");
             setLoading(false);
             return;
         }
-        
+        if(esMiPerfil){
+            setMiId(usuario.id);
+            setLocation(`/perfil/${miId}`);
+        }
+       
+
         // Resetear estados al cambiar de perfil
         setLoading(true);
         setError(null);
@@ -39,6 +58,9 @@ export default function Usuario() {
 
         const fetchDatosPerfil = async () => {
             try {
+                console.log(miId)
+                console.log(usuarioId)
+                console.log(esMiPerfil)
                 // Preparamos las peticiones
                 const perfilPromise = axios.get(`${BACKEND_URL}/api/usuarios/publico/${usuarioId}`);
                 const promesas = [perfilPromise];
@@ -55,7 +77,7 @@ export default function Usuario() {
 
                 // Asignamos datos del perfil (esto siempre se ejecuta)
                 setPerfil(perfilRes.data);
-                
+
                 // Asignamos estado de seguimiento (si aplica)
                 if (sigueRes) {
                     setSiguiendo(sigueRes.data.siguiendo);
@@ -70,7 +92,7 @@ export default function Usuario() {
         };
 
         fetchDatosPerfil();
-    }, [usuarioId, token, esMiPerfil]); // Recargar si el ID de la URL cambia
+    }, [usuarioId, token, ]); // Recargar si el ID de la URL cambia
 
     // 5. Función para Seguir / Dejar de Seguir
     const handleFollowToggle = async () => {
@@ -79,7 +101,7 @@ export default function Usuario() {
             return;
         }
         // No permitir seguirse a uno mismo (aunque la API ya lo impide)
-        if (esMiPerfil) return; 
+        if (esMiPerfil) return;
 
         try {
             if (siguiendo) {
@@ -91,7 +113,7 @@ export default function Usuario() {
                 setPerfil(p => ({ ...p, seguidores: p.seguidores - 1 })); // Actualización optimista
             } else {
                 // Empezar a seguir
-                await axios.post(`${BACKEND_URL}/api/seguidores`, 
+                await axios.post(`${BACKEND_URL}/api/seguidores`,
                     { seguido_id: parseInt(usuarioId) },
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
@@ -145,11 +167,11 @@ export default function Usuario() {
             </nav>
 
             {/* 8. Rutas actualizadas que pasan los datos como props */}
-            
+
             <Route path="/usuario/:id">
-                <PerfilPag 
+                <PerfilPag
                     perfil={perfil}
-                    esMiPerfil={esMiPerfil} // Lo pasamos para saber si mostrar "Editar" o "Seguir"
+                    //esMiPerfil={esMiPerfil} // Lo pasamos para saber si mostrar "Editar" o "Seguir"
                     siguiendo={siguiendo}
                     onFollowToggle={handleFollowToggle}
                     token={token} // Pasamos el token para saber si mostrar el botón seguir (si no está logueado)
@@ -158,15 +180,15 @@ export default function Usuario() {
 
             <Route path="/usuario/:id/reseñas">
                 {/* Este componente solo necesita el ID del perfil que está viendo */}
-                <ListaReseñas 
-                    usuarioId={usuarioId} 
+                <ListaReseñas
+                    usuarioId={usuarioId}
                 />
             </Route>
 
             <Route path="/usuario/:id/megustas">
-                 {/* Este componente solo necesita el ID del perfil que está viendo */}
-                <MeGustas 
-                    usuarioId={usuarioId} 
+                {/* Este componente solo necesita el ID del perfil que está viendo */}
+                <MeGustas
+                    usuarioId={usuarioId}
                 />
             </Route>
         </>

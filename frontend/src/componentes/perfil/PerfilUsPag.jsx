@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '/src/componentes/perfil/PerfilPag.css';
+import { Link } from "wouter";
 
 export default function ProfilePageUs() {
   const [user, setUser] = useState(null);
@@ -39,7 +40,7 @@ export default function ProfilePageUs() {
   if (!user) return <div className="containerperfil">No se encontró el perfil</div>;
 
   return (
-    
+
     <div className="containerperfil">
       {/*imprimimos los datos recibidos*/}
       <div className="profile-content">
@@ -55,14 +56,13 @@ export default function ProfilePageUs() {
 
         <div className="editar">
           <h2 className="nombre">{user.nombre ?? user.nombre_real ?? ''}</h2>
-          <a href="editarperfil">
+          <Link href={`/perfil/${user.id}/editarperfil`}>
             <img src="/src/img/editar.webp" alt="Editar Perfil" />
-          </a>
+          </Link>
         </div>
 
         <h2 className="username">{user.nombre_usuario ?? user.nombreUsuario ?? ''}</h2>
 
-        <p className="bio">{user.biografia ?? user.bio ?? ''}</p>
 
         <div className="stats">
           <div className="stat-item">
@@ -78,6 +78,9 @@ export default function ProfilePageUs() {
             <div className="stat-label">Seguidos</div>
           </div>
         </div>
+
+        <p className="bio">{user.biografia ?? user.bio ?? ''}</p>
+
       </div>
     </div>
   );

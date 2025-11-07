@@ -54,34 +54,34 @@ const SobreNosotros = () => {
                         </div>
                         <div class="box-preguntas">
                             <h1 class="pregunta">
-                                Pregunta #2
+                                ¿Puedo usar PlotPoint desde el celular?
                             </h1>
                             <p class="respuesta">
-                                Nuestra mayor meta es tener su confianza al momento de cualquier compra, cada centavo vale la pena.
+                                ¡Si! PlotPoint es uan aplicacion web responsiva, por lo que podés usarla tanto desde tu celular como desde tu computadora sin perder calidad ni funcionalidad.
                             </p>
                         </div>
                         <div class="box-preguntas">
                             <h1 class="pregunta">
-                                Pregunta #3
+                                ¿Qué tecnologías usan para PlotPoint?
                             </h1>
                             <p class="respuesta">
-                                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Accusantium minus totam sunt iure ducimus beatae voluptas error est maxime laboriosam?
+                                Nuestro stack es MERN, que incluye MySQL, Express, React y Node.js. Esto nos permite ofrecer una experiencia rápida, moderna y segura.
                             </p>
                         </div>
                         <div class="box-preguntas">
                             <h1 class="pregunta">
-                                Pregunta #4
+                                ¿Qué diferencia a PlotPoint de otras apps como Goodreads?
                             </h1>
                             <p class="respuesta">
-                                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Accusantium minus totam sunt iure ducimus beatae voluptas error est maxime laboriosam?
+                                PlotPoint se centra en la experiencia social y visual: diseño moderno, navegacion simple y una comunidad activa de lectores que disfrutan compartir sus opiniones. No es una base de datos de libros, ¡es una red social para amantes de la lectura!
                             </p>
                         </div>
                         <div class="box-preguntas">
                             <h1 class="pregunta">
-                                Pregunta #5
+                                ¿Cómo manejan la seguridad del sistema?
                             </h1>
                             <p class="respuesta">
-                                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Accusantium minus totam sunt iure ducimus beatae voluptas error est maxime laboriosam?
+                                Implementamos autenticación segura, cifrado de contraseñas y validacion de datos. Además, el panel de administración está restringido solo a usuarios con rol de administrador.
                             </p>
                         </div>
 
@@ -99,8 +99,7 @@ const SobreNosotros = () => {
                             <div class="developer-info">
                                 <img src="/src/img/perfil.webp" alt=""></img>
                                 <h3>Aranda Cristian David</h3>
-                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Earum, perspiciatis eaque nisi placeat a nam assumenda tempore adipisci dolore molestiae?
-                                </p>
+                                <p>Oriundo de Ushuaia, Aranda Cristian David se encargo del desarrollo del frontend, componentes de React y diseño responsivo .                               </p>
 
                             </div>
 
@@ -109,7 +108,7 @@ const SobreNosotros = () => {
                             <div class="developer-info">
                                 <img src="/src/img/perfil.webp" alt=""></img>
                                 <h3>Henry Nehuen Mesias Rios </h3>
-                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Earum, perspiciatis eaque nisi placeat a nam assumenda tempore adipisci dolore molestiae?
+                                <p>Oriunda de Ushuaia, Mesias Henry Nehuen se encargo del desarrollo del backend, APIs, base de datos y seguridad.
                                 </p>
 
                             </div>

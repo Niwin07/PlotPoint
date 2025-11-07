@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import '/src/componentes/common/header.css';
+import { Route, Link, useRoute } from "wouter";
+import Usuario from '../perfil/Usuario';
 
 
 const Header = () => {
     const [isAdmin, setIsAdmin] = useState(false);
     const [isLogged, setIsLogged] = useState(false);
+    const [miId, setMiId] = useState(null);
+    
 
 
     const cerrarSesion = () => {
@@ -25,11 +29,15 @@ const Header = () => {
         // Leer usuario del localStorage
 
         const usuario = JSON.parse(localStorage.getItem("usuario"));
+        const miId = usuario?.id;
 
         if (usuario) {
             setIsLogged(true);
             if (usuario.rol === "admin") {
                 setIsAdmin(true);
+                setMiId(usuario.id);
+            }else{
+                setMiId(usuario.id);
             }
         }
 
@@ -70,7 +78,7 @@ const Header = () => {
                     <a href="/inicio">Inicio</a>
                     <a href="/reseñasinicio">Reseñas</a>
                     <a href="/busqueda">Busqueda</a>
-                    <a href="/perfil/">Perfil</a>
+                    <Link href={`/perfil/${miId}`}>Perfil</Link>
                     {isAdmin && <a href="/admin/">Admin</a>}
 
                     {isLogged ? (

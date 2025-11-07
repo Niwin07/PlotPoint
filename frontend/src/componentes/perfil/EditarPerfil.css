@@ -2,7 +2,7 @@
 .edit-page-container {
   width: 100%;
   min-height: 100vh;
- 
+
   padding: 40px 20px;
   position: relative;
   overflow: hidden;
@@ -15,6 +15,19 @@
   margin: 0 auto;
   position: relative;
   z-index: 2;
+}
+
+.atrasperfil {
+  position: unset;
+  margin: 15px;
+  background-color: var(--texto);
+  color: var(--white);
+  border: none;
+  padding: 10px 20px;
+  font-size: 1.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 /* Campos de formulario */
@@ -39,7 +52,7 @@
   color: var(--light-color);
   border: none;
   border-radius: 8px;
- 
+
   box-sizing: border-box;
 }
 
@@ -117,7 +130,7 @@
   cursor: pointer;
   font-weight: 600;
   transition: all 0.3s ease;
-  
+
 }
 
 .save-button {
