@@ -4,12 +4,15 @@ import "/src/componentes/libro/libro.css";
 import Rating from "react-rating";
 import { useRoute } from "wouter";
 import { Link } from "wouter";
+import useReseña from "/src/hooks/useReseña";
 
 export default function BookPage() {
   const BACKEND_URL = "http://localhost:3000";
 
   const [match, params] = useRoute("/libro/:id");
   const libroId = params ? params.id : null;
+
+ const [reseña,setReseña] = useReseña();
 
   const [book, setBook] = useState(null);
   const [reviews, setReviews] = useState([]);
@@ -20,8 +23,7 @@ export default function BookPage() {
   const [pendiente, setPendiente] = useState(false);
 
   const [showModal, setShowModal] = useState(false);
-  const [newRating, setNewRating] = useState(0);
-  const [newOpinion, setNewOpinion] = useState("");
+
   const [refreshReviews, setRefreshReviews] = useState(false);
   const token = localStorage.getItem("token");
 
@@ -67,8 +69,6 @@ export default function BookPage() {
   }, [libroId]);
 
   const openModal = () => {
-    setNewRating(0);
-    setNewOpinion("");
     setShowModal(true);
   };
 
@@ -81,8 +81,14 @@ export default function BookPage() {
       alert("No se ha cargado un libro válido");
       return;
     }
-    if (newRating === 0 || newOpinion.trim().length < 10) {
+    
+    if(reseña.contenido.trim().length > 1000){
+      alert("La reseña no puede exceder los 1000 caracteres");
+      return;
+    }
+    if (reseña.puntuacion === 0 || reseña.contenido.trim().length < 10) {
       alert("La puntuación es requerida y el contenido debe tener al menos 10 caracteres");
+      console.log(reseña)
       return;
     }
 
@@ -93,8 +99,8 @@ export default function BookPage() {
         `${BACKEND_URL}/api/resenas`,
         {
           libro_id: parseInt(id),
-          puntuacion: newRating,
-          contenido: newOpinion.trim()
+          puntuacion: reseña.puntuacion,
+          contenido: reseña.contenido.trim()
         },
         {
           headers: {
@@ -119,6 +125,8 @@ export default function BookPage() {
         alert("Error al publicar la reseña");
       }
     } finally {
+      setReseña("puntuacion", 0);
+      setReseña("contenido", '');
       setPendiente(false);
     }
   };
@@ -283,13 +291,18 @@ export default function BookPage() {
             <button onClick={closeModal} className="cancel-btn">VOLVER</button>
             <h2>Calificar libro</h2>
             <Rating
-              initialRating={newRating}
-              onChange={setNewRating}
+              initialRating={reseña.puntuacion}
+              onChange={(valor) => setReseña("puntuacion", valor)}
               fractions={2}
               emptySymbol={<span className="star empty big">☆</span>}
               fullSymbol={<span className="star full big">★</span>}
             />
-            <textarea value={newOpinion} onChange={(e) => setNewOpinion(e.target.value)} placeholder="Explica tu reseña..."></textarea>
+            <textarea 
+            value={reseña.contenido} 
+            onChange={(e) => setReseña("contenido", e.target.value)}
+            placeholder="Explica tu reseña...">
+
+            </textarea>
             <div className="modal-buttons">
               <button onClick={addReview} disabled={pendiente} className="save-btn">{pendiente ? "Enviando..." : "Calificar"}</button>
             </div>

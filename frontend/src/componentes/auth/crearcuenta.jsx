@@ -24,6 +24,9 @@ const Signup = () => {
         if (!usuario.nombreUsuario.trim() || usuario.nombreUsuario.length < 6) {
             erroresTemp.nombreUsuario = 'El nombre de usuario debe tener al menos 6 caracteres';
         }
+        if(usuario.nombreUsuario.length > 20){
+            erroresTemp.nombreUsuario = 'El nombre de usuario no puede exceder los 20 caracteres';
+        }
         if (!usuario.correo.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,4})+$/)) {
             erroresTemp.correo = 'Correo electrónico inválido';
         }
@@ -78,7 +81,6 @@ const Signup = () => {
                                 placeholder="Nombre de usuario"
                                 className="input"
                                 value={usuario.nombreUsuario}
-                                //onChange={handleChange}
                                 onChange={(e) => setUsuario('nombreUsuario', e.target.value)}
                                 required
                             />
@@ -90,7 +92,6 @@ const Signup = () => {
                                 placeholder="Correo electronico"
                                 className="input"
                                 value={usuario.correo}
-                                //onChange={handleChange}
                                 onChange={(e) => setUsuario('correo', e.target.value)}
                                 required
                             />
@@ -102,7 +103,6 @@ const Signup = () => {
                                 placeholder="Contraseña"
                                 className="input"
                                 value={usuario.contrasenaHash}
-                                //onChange={handleChange}
                                 onChange={(e) => setUsuario('contrasenaHash', e.target.value)}
                                 required
                             />

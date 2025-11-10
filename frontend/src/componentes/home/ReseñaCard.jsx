@@ -6,7 +6,7 @@ import axios from 'axios';
 
 //tarjeta de las reseñsa de VARIOS USUARIOS (para el la seccion "reseñas" del inicio)
 
-const ReseñaCard = ({ id, libro_titulo, nombre_usuario, url_portada, contenido, puntuacion, url_avatar, miId, usuario_id }) => {
+const ReseñaCard = ({ id, libro_titulo, nombre_usuario, url_portada, contenido, puntuacion, url_avatar, miId, usuario_id, onReseñaEliminada }) => {
   const BACKEND_URL = 'http://localhost:3000';
   const token = localStorage.getItem('token');
   const miIdNum = Number(miId);
@@ -27,13 +27,14 @@ const ReseñaCard = ({ id, libro_titulo, nombre_usuario, url_portada, contenido,
       });
       console.log(response)
 
-      window.location.reload(); // refrescar lista
+      if (onReseñaEliminada) {
+        onReseñaEliminada(); 
+      }
     } catch (error) {
       alert(error);
     }
   };
   return (
-    // 2. Cambiar <a> por <Link> y usar el 'id' para la ruta dinámica
     <Link className="link-reseña" href={`/reseñalibro/${id}`}>
       <div className="reseña-card">
         {puedeEliminar && (

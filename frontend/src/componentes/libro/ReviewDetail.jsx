@@ -4,6 +4,7 @@ import { useRoute } from 'wouter';
 import Rating from 'react-rating';
 import './ReviewDetail.css';
 import { Link } from "wouter";
+import useComentario from '../../hooks/useComentario.jsx';
 
 export default function ReviewDetail() {
   const BACKEND_URL = 'http://localhost:3000';
@@ -14,9 +15,10 @@ export default function ReviewDetail() {
   const [match, params] = useRoute("/reseñalibro/:id");
   const resenaId = params ? params.id : null;
 
+  const [ comentario, setDato ] = useComentario();
+
   const [review, setReview] = useState(null);
   const [comments, setComments] = useState([]);
-  const [newComment, setNewComment] = useState("");
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -62,7 +64,7 @@ export default function ReviewDetail() {
       alert("Debes iniciar sesión para comentar");
       return;
     }
-    if (newComment.trim().length < 1) {
+    if (comentario.contenido.trim().length < 1) {
       alert("El comentario no puede estar vacío");
       return;
     }
@@ -72,7 +74,7 @@ export default function ReviewDetail() {
         `${BACKEND_URL}/api/comentarios`,
         {
           resena_id: parseInt(resenaId),
-          contenido: newComment.trim()
+          contenido: comentario.contenido.trim()
         },
         {
           headers: {
@@ -82,7 +84,7 @@ export default function ReviewDetail() {
         }
       );
 
-      setNewComment("");
+      setDato('contenido', '');
       setRefreshComments(prev => !prev);
     } catch (err) {
       console.error("Error al publicar comentario:", err);
@@ -174,8 +176,8 @@ export default function ReviewDetail() {
           type="text"
           className="input"
           placeholder="Escribe un comentario..."
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
+          value={comentario.contenido}
+          onChange={(e) => setDato('contenido', e.target.value)}
         />
         <button className="send-button" onClick={handlePostComment}>
           Enviar

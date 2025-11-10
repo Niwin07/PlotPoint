@@ -12,26 +12,26 @@ const ListaReseñasInicio = () => {
   const usuario = JSON.parse(localStorage.getItem("usuario"));
   const miId = usuario?.id;
 
+  const fetchFeedReviews = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/resenas`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+
+        }
+      });
+      console.log(response.data.resenas)
+
+      const data = response.data.resenas;
+      setReviews(data)
+
+    } catch (err) {
+
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
-    const fetchFeedReviews = async () => {
-      try {
-        const response = await axios.get(`${BACKEND_URL}/api/resenas`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-
-          }
-        });
-        console.log(response.data.resenas)
-
-        const data = response.data.resenas;
-        setReviews(data)
-
-      } catch (err) {
-
-        console.error(err);
-      }
-    };
-
     fetchFeedReviews();
   }, [reviews.id]);
 
@@ -55,6 +55,8 @@ const ListaReseñasInicio = () => {
 
           miId={miId}
           usuario_id={r.usuario_id}
+
+          onReseñaEliminada={fetchFeedReviews}
 
         />
       ))}
