@@ -28,45 +28,48 @@ const ReseñaCard = ({ id, libro_titulo, nombre_usuario, url_portada, contenido,
       console.log(response)
 
       if (onReseñaEliminada) {
-        onReseñaEliminada(); 
+        onReseñaEliminada();
       }
     } catch (error) {
       alert(error);
     }
   };
   return (
-    <Link className="link-reseña" href={`/reseñalibro/${id}`}>
-      <div className="reseña-card">
-        {puedeEliminar && (
-          <button className="eliminar-btn" onClick={eliminarReseña}>
-            Eliminar
-          </button>
-        )}
-        <div className="reseña-header">
-          <h3 className="titulo">{libro_titulo}</h3>
-          <div className="autor">
-            <span>{nombre_usuario}</span>
 
-            <img src={url_avatar ? `${BACKEND_URL}${url_avatar}` : '/src/img/perfil.webp'} alt={nombre_usuario} />
+    <div className="reseña-card">
+      <Link className="link-reseña" href={`/reseñalibro/${id}`}>
+      {puedeEliminar && (
+        <button className="eliminar-btn" onClick={eliminarReseña}>
+          Eliminar
+        </button>
+      )}
+      <div className="reseña-header">
+        <h3 className="titulo">{libro_titulo}</h3>
+        <div className="autor">
+          <span>{nombre_usuario}</span>
 
-          </div>
-        </div>
+          <img src={url_avatar ? `${BACKEND_URL}${url_avatar}` : '/src/img/perfil.webp'} alt={nombre_usuario} />
 
-        <div className="reseña-estrellas">
-          <Rating
-            initialRating={puntuacion}
-            readonly
-            emptySymbol={<span className="star empty">☆</span>}
-            fullSymbol={<span className="star full">★</span>}
-          />
-        </div>
-
-        <div className="reseña-contenido">
-          <img src={url_portada} alt={libro_titulo} className="portada" />
-          <p className="texto">{contenido}</p>
         </div>
       </div>
-    </Link>
+
+      <div className="reseña-estrellas">
+        <Rating
+          initialRating={puntuacion}
+          readonly
+          emptySymbol={<span className="star empty">☆</span>}
+          fullSymbol={<span className="star full">★</span>}
+        />
+      </div>
+
+      <div className="reseña-contenido">
+        <img src={url_portada} alt={libro_titulo} className="portada" />
+        <p className="texto">{contenido}</p>
+      </div>
+      </Link>
+      </div>
+  
+    
   );
 };
 
