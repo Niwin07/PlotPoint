@@ -3,22 +3,21 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '/src/componentes/perfil/EditarPerfil.css';
 import ModalContraseña from '/src/componentes/modals/usuario/ModalContraseña.jsx'
+import useUsuario from '/src/hooks/useUsuario';
 
 export default function EditProfilePage() {
-
+  const [usuario, setUsuario] = useUsuario();
+  const [previewUrl, setPreviewUrl] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const token = localStorage.getItem('token');
   const BACKEND_URL = 'http://localhost:3000';
 
-  const [formData, setFormData] = useState({
-    nombre: '',
-    correo: '',
-    biografia: '',
-    urlAvatar: '',
-    previewUrl: null
-  });
+
+  const atras = () => {
+    window.history.back();
+  }
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -30,13 +29,12 @@ export default function EditProfilePage() {
         });
 
         const data = response.data;
-        setFormData({
-          nombre: data.nombre || '',
-          correo: data.correo || '',
-          biografia: data.biografia || '',
-          urlAvatar: data.url_avatar || '',
-          previewUrl: null
-        });
+        
+        setUsuario('id', data.id || '');
+        setUsuario('nombre', data.nombre || '');
+        setUsuario('correo', data.correo || '');
+        setUsuario('biografia', data.biografia || '');
+        setUsuario('urlAvatar', data.url_avatar || '');
       } catch (err) {
         setError('Error al cargar perfil');
         console.error(err);
@@ -49,26 +47,26 @@ export default function EditProfilePage() {
   //luego de realizar una breve verificacion en el modal, se enviara la consulta para confirmar el cambio o avisar que los datos son incorrectos
   const cambiarContraseña = async (contrasenaActual, contrasenaNueva) => {
     try {
-    await axios.put(
-      `${BACKEND_URL}/api/usuarios/perfil/cambiar-password`,
-      {
-        contrasenaActual,
-        contrasenaNueva
-      },
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+      await axios.put(
+        `${BACKEND_URL}/api/usuarios/perfil/cambiar-password`,
+        {
+          contrasenaActual,
+          contrasenaNueva
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
         }
-      }
-    );
-    
-    setShowModal(false);
-    alert('Contraseña actualizada exitosamente');
-  } catch (err) {
-    console.error('Error:', err);
-    throw new Error(err.response?.data?.error || 'Error al cambiar la contraseña');
-  }
+      );
+
+      setShowModal(false);
+      alert('Contraseña actualizada exitosamente');
+    } catch (err) {
+      console.error('Error:', err);
+      throw new Error(err.response?.data?.error || 'Error al cambiar la contraseña');
+    }
 
   }
   //actualizamos la foto de perfil del usuario por separado
@@ -91,50 +89,58 @@ export default function EditProfilePage() {
     }
   };
 
-  //setea los valores que cambiemos
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
 
   //setea la imagen que cambiemos
 
-  const handleFileChange = (e) => {
+  const cambiarPerfil = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData(prev => ({
-        ...prev,
-        urlAvatar: file,
-        photoName: file.name,
-        previewUrl: URL.createObjectURL(file)
-      }));
+      setUsuario('urlAvatar', file);
+      setPreviewUrl(URL.createObjectURL(file));
     }
   };
 
   //al apretar guardar se enviara la peticion con la foto de perfil, nombre y biografia 
 
-  const handleSave = async () => {
+  const Guardar = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      let avatarUrl = formData.urlAvatar;
+      let avatarUrl = usuario.urlAvatar;
+
+      if(!usuario.nombre.trim()){
+        alert('El nombre no puede estar vacío');
+        setLoading(false);
+        return;
+      }
+      if (usuario.biografia.length > 500) {
+        alert('La biografía no puede exceder los 500 caracteres');
+        setLoading(false);
+        return;
+      }
+      if (usuario.nombre.length < 3) {
+        alert('El nombre debe tener al menos 3 caracteres');
+        setLoading(false);
+        return;
+      }
+      if(usuario.nombre.length > 50){
+        alert('El nombre no puede exceder los 50 caracteres');
+        setLoading(false);
+        return;
+      }
 
       // Si hay un nuevo archivo de avatar, súbelo primero
-      if (formData.urlAvatar instanceof File) {
-        avatarUrl = await uploadAvatar(formData.urlAvatar);
+      if (usuario.urlAvatar instanceof File) {
+        avatarUrl = await uploadAvatar(usuario.urlAvatar);
       }
 
       // Actualiza el perfil con JSON
       await axios.put(
         `${BACKEND_URL}/api/usuarios/perfil/actualizar`,
         {
-          nombre: formData.nombre,
-          biografia: formData.biografia,
+          nombre: usuario.nombre,
+          biografia: usuario.biografia,
           url_avatar: avatarUrl
         },
         {
@@ -146,8 +152,7 @@ export default function EditProfilePage() {
       );
 
       alert('Perfil actualizado exitosamente!');
-      window.location.href = '/perfil/'
-
+      window.history.back();
 
     } catch (err) {
       console.error('Error:', err);
@@ -172,7 +177,7 @@ export default function EditProfilePage() {
         localStorage.removeItem('token');
 
       } catch (err) {
-        setError(err.response?.data?.error || 'Error al eliminar cuenta');
+
         alert('Error al eliminar cuenta');
       }
     }
@@ -181,113 +186,115 @@ export default function EditProfilePage() {
   // Limpia las URLs de preview cuando el componente se desmonta
   useEffect(() => {
     return () => {
-      if (formData.previewUrl) {
-        URL.revokeObjectURL(formData.previewUrl);
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
       }
     };
-  }, [formData.previewUrl]);
+  }, [previewUrl]);
 
   return (
-    <div className="edit-page-container">
-      {/*imprimimos los datos del usuario */}
-      {error && <div className="error-message">{error}</div>}
+    <>
+      <button className='atrasperfil' onClick={atras}>VOLVER</button>
+      <div className="edit-page-container">
 
-      <div className="edit-main-content">
-        <div className="field-container">
-          <label className="field-label">Nombre</label>
-          <input
-            type="text"
-            name="nombre"
-            value={formData.nombre}
-            onChange={handleChange}
-            className="field-input"
-          />
-        </div>
+        {error && <div className="error-message">{error}</div>}
+        {/*imprimimos los datos del usuario */}
 
-        <div className="field-container">
-          <label className="field-label">Correo electronico</label>
-          <input
-            type="email"
-            name="correo"
-            value={formData.correo}
-            className="field-input field-disabled"
-            disabled
-          />
-        </div>
-
-        <div className="photo-container">
-          <input
-            type="file"
-            id="photoInput"
-            accept="image/*"
-            onChange={handleFileChange}
-            style={{ display: 'none' }}
-          />
-          <label htmlFor="photoInput" className="photo-button">
-            Cambiar foto de perfil
-          </label>
-          <span className="photo-filename">
-            {formData.photoName || 'Seleccionar archivo...'}
-          </span>
-          {/*preview de la foto de perfil */}
-          {(formData.previewUrl || formData.urlAvatar) && (
-            <img
-              src={formData.previewUrl || `${BACKEND_URL}${formData.urlAvatar}`}
-              alt="Preview"
-              style={{
-                width: '100px',
-                height: '100px',
-                objectFit: 'cover',
-                marginTop: '10px',
-                borderRadius: '50%'
-              }}
+        <div className="edit-main-content">
+          <div className="field-container">
+            <label className="field-label">Nombre</label>
+            <input
+              type="text"
+              name="nombre"
+              value={usuario.nombre}
+              onChange={(e) => setUsuario('nombre', e.target.value)}
+              className="field-input"
             />
-          )}
-        </div>
+          </div>
 
-        <div className="field-container">
-          <label className="field-label">Biografia</label>
-          <textarea
-            name="biografia"
-            value={formData.biografia}
-            onChange={handleChange}
-            className="field-textarea"
-            rows="8"
-          />
-        </div>
+          <div className="field-container">
+            <label className="field-label">Correo electronico</label>
+            <input
+              type="email"
+              name="correo"
+              value={usuario.correo}
+              className="field-input field-disabled"
+              disabled
+            />
+          </div>
 
-        <div className="button-container">
-          <button
-            onClick={handleSave}
-            className="save-button"
-            disabled={loading}
-          >
-            {loading ? 'Guardando...' : 'Guardar'}
-          </button>
-          <button
-            className="password-button"
-            onClick={() => setShowModal(true)}
-          >
-            Cambiar contraseña
-          </button>
-        </div>
+          <div className="photo-container">
+            <input
+              type="file"
+              id="photoInput"
+              accept="image/*"
+              onChange={cambiarPerfil}
+              style={{ display: 'none' }}
+            />
+            <label htmlFor="photoInput" className="photo-button">
+              Cambiar foto de perfil
+            </label>
+            
+          {/*preview de la foto de perfil */}
+            {(previewUrl || usuario.urlAvatar) && (
+              <img
+                src={previewUrl || `${BACKEND_URL}${usuario.urlAvatar}`}
+                alt="Preview"
+                style={{
+                  width: '100px',
+                  height: '100px',
+                  objectFit: 'cover',
+                  marginTop: '10px',
+                  borderRadius: '50%'
+                }}
+              />
+            )}
+          </div>
 
-        <div className="logout-container">
-          <button
-            onClick={eliminarCuenta}
-            className="logout-button"
-            disabled={loading}
-          >
-            Eliminar cuenta
-          </button>
+          <div className="field-container">
+            <label className="field-label">Biografia</label>
+            <textarea
+              name="biografia"
+              value={usuario.biografia}
+              onChange={(e) => setUsuario('biografia', e.target.value)}
+              className="field-textarea"
+              rows="8"
+            />
+          </div>
+
+          <div className="button-container">
+            <button
+              onClick={Guardar}
+              className="save-button"
+              disabled={loading}
+            >
+              {loading ? 'Guardando...' : 'Guardar'}
+            </button>
+            <button
+              className="password-button"
+              onClick={() => setShowModal(true)}
+            >
+              Cambiar contraseña
+            </button>
+          </div>
+
+          <div className="logout-container">
+            <button
+              onClick={eliminarCuenta}
+              className="logout-button"
+              disabled={loading}
+            >
+              Eliminar cuenta
+            </button>
+          </div>
         </div>
+        {showModal &&
+          <ModalContraseña
+            onClose={() => setShowModal(false)}
+            //decimos que la funcion onCambiarContraseña llamara a la funcion cambiarContraseña del componente perfil
+            onCambiarContraseña={cambiarContraseña}
+          />}
       </div>
-      {showModal &&
-        <ModalContraseña
-          onClose={() => setShowModal(false)}
-          //decimos que la funcion onCambiarContraseña llamara a la funcion cambiarContraseña del componente perfil
-          onCambiarContraseña={cambiarContraseña}
-        />}
-    </div>
+    </>
   );
 }

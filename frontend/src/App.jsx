@@ -21,6 +21,7 @@ import ReviewDetail from './componentes/libro/ReviewDetail';
 
 //  Usuario / Perfil
 import Perfil from './componentes/perfil/Perfil';
+import EditarPerfil from './componentes/perfil/EditarPerfil'
 import Usuario from './componentes/perfil/Usuario';
 
 //  Autenticación
@@ -62,7 +63,12 @@ function App() {
 
           {/*  Usuario / Perfil */}
           <Route path="/usuario/:id" component={Usuario} />
-          <Route path="/perfil/*" component={Perfil} />
+          <Route path="/usuario/:id/megustas" component={Usuario} />
+          <Route path="/usuario/:id/reseñas" component={Usuario} />
+          <Route path="/perfil/:id" component={Perfil} />
+          <Route path="/perfil/:id/megustas" component={Perfil} />
+          <Route path="/perfil/:id/reseñas" component={Perfil} />
+          <Route path="/perfil/:id/editarperfil" component={EditarPerfil} />
 
           {/*  Autenticación */}
           <Route path="/iniciarsesion" component={Iniciarsesion} />

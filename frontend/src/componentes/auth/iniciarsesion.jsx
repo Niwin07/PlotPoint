@@ -4,7 +4,7 @@ import '/src/componentes/auth/iniciarsesion.css';
 import axios from 'axios';
 
 const IniciarSesion = () => {
-  const [usuario, setDato] = useUsuario();
+  const [usuario, setUsuario] = useUsuario();
   const [errores, setErrores] = useState({});
   const [mensaje, setMensaje] = useState('');
 
@@ -72,10 +72,10 @@ const IniciarSesion = () => {
               <input
                 type="text"
                 name="nombreUsuario"
-                placeholder="Usuario o correo"
+                placeholder="Nombre de usuario"
                 className="input"
                 value={usuario.nombreUsuario}
-                onChange={handleChange}
+                onChange={(e) => setUsuario('nombreUsuario', e.target.value)}
               />
               {errores.nombreUsuario && <span className="error">{errores.nombreUsuario}</span>}
 
@@ -85,7 +85,7 @@ const IniciarSesion = () => {
                 placeholder="Contraseña"
                 className="input"
                 value={usuario.contrasenaHash}
-                onChange={handleChange}
+                onChange={(e) => setUsuario('contrasenaHash', e.target.value)}
               />
               {errores.contrasenaHash && <span className="error">{errores.contrasenaHash}</span>}
             </div>

@@ -1,15 +1,28 @@
 .reseña-card {
   background: #fff;
   border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   margin: 1.5rem auto;
   padding: 1rem;
   max-width: 600px;
   transition: transform 0.2s;
   border: 1px solid var(--texto);
 }
+
 .lista-reseñas {
   padding: 0rem 1rem;
+}
+
+.eliminar-btn {
+  border-radius: 3px;
+  padding: 3px;
+  color: white;
+  background-color: var(--secundario1);
+  cursor: pointer;
+}
+.eliminar-btn:hover{
+  background-color: rgb(102, 0, 0);
+  transition: .3s ease;
 }
 
 .reseña-card:hover {
@@ -26,7 +39,7 @@
   font-size: medium;
   margin: 0;
   overflow-wrap: anywhere;
-    width: 60%;
+  width: 60%;
 }
 
 .autor {
@@ -43,10 +56,11 @@
   height: 30px;
   border-radius: 50%;
 }
+
 .autor img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
 }
 
 
@@ -66,16 +80,18 @@
   align-items: flex-start;
   overflow-wrap: anywhere;
 }
+
 .link-reseña {
-  color:var(--texto);
+  color: var(--texto);
 
 }
+
 .portada {
-  
-      width: 100px;
-    height: 150px;
-    /* border-radius: 5px; */
-    object-fit: cover;
+
+  width: 100px;
+  height: 150px;
+  /* border-radius: 5px; */
+  object-fit: cover;
 }
 
 .texto {
@@ -87,11 +103,4 @@
 }
 
 /* RESPONSIVE */
-@media (max-width: 600px) {
-  
-
-  
-
-  
-  
-}
+@media (max-width: 600px) {}

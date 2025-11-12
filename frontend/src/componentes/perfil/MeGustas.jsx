@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '/src/componentes/home/inicio.css';
-import { Link } from 'wouter'; // Importar Link
+import { Link } from 'wouter';
 
 const MeGustas = ({ usuarioId }) => { // Solo necesita el ID del usuario a mostrar
     const BACKEND_URL = "http://localhost:3000";

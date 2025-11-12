@@ -1,4 +1,3 @@
-
 /* Container principal */
 .container {
   max-width: 600px;
@@ -19,34 +18,36 @@
 
 /* Header con avatar y nombre */
 .usuario-reseña {
-  
+
   display: flex;
 
-    /* width: auto; */
-    align-items: center;
-    /* margin-bottom: 20px;*/
-    color:var(--texto);
+  /* width: auto; */
+  align-items: center;
+  /* margin-bottom: 20px;*/
+  color: var(--texto);
 }
 
 .foto-perfil {
-      width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    margin-right: 10px;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  margin-right: 10px;
 }
 
 .user-name {
-      margin: 0;
-    /* font-size: 20px; */
-    font-weight: bold;
+  margin: 0;
+  /* font-size: 20px; */
+  font-weight: bold;
+  font-size: 12px;
+
 }
 
 /* Contenido del libro */
 .content {
   display: flex;
   gap: 20px;
-  
-  
+
+
 }
 
 .book-info {
@@ -57,14 +58,14 @@
 .book-titulo {
   /*
   font-size: 24px; */
-    font-size: medium;
-    font-weight: bold;
-    /* margin-bottom: 10px; */
-    line-height: 1.2;
+  font-size: medium;
+  font-weight: bold;
+  /* margin-bottom: 10px; */
+  line-height: 1.2;
 }
 
 .estrellas {
-      font-size: x-small;
+  font-size: x-small;
   margin-bottom: 5px;
   margin-top: 5px;
 }
@@ -73,19 +74,19 @@
   /*
 
   font-size: 16px; */
-    font-size: small;
-    /* line-height: 1.5; */
-    color: #333;
+  font-size: small;
+  /* line-height: 1.5; */
+  color: #333;
 }
 
 .book-portada {
-      width: 110px;
-    /* display: flex
+  width: 110px;
+  /* display: flex
 ; */
-    height: auto;
-    /* border-radius: 10px; */
-    
-    object-fit: contain;
+  height: auto;
+  /* border-radius: 10px; */
+
+  object-fit: contain;
 }
 
 /* Sección de input */
@@ -93,18 +94,18 @@
   display: flex;
   margin-bottom: 20px;
   margin-top: 20px;
- 
+
 }
 
 .input {
   flex: 1;
   padding: 15px 20px;
- 
+
   border: none;
   background-color: #2d2d2d;
   color: white;
   font-size: 16px;
-  border-radius:5px;
+  border-radius: 5px;
   outline: none;
 }
 
@@ -114,7 +115,7 @@
 
 .send-button {
   padding: 15px 30px;
-  
+
   border: none;
   background-color: var(--secundario1);
   color: white;
@@ -137,7 +138,7 @@
 .reviews-list {
   display: flex;
   flex-direction: column;
-  
+
 }
 
 .comentario-card {
@@ -156,13 +157,30 @@
 }
 
 .review-usuario {
-  
+
   margin: 0;
-    font-weight: bold;
-    color: var(--texto);
-    display: flex
-;
-    align-items: center;
+  width:100%;
+  font-weight: bold;
+  color: var(--texto);
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+
+}
+
+.eliminar-comentario-btn {
+  display: flex;
+  
+  border-radius: 3px;
+  padding: 3px;
+  color: white;
+  background-color: var(--secundario1);
+  cursor: pointer;
+}
+
+.eliminar-comentario-btn:hover {
+  background-color: rgb(102, 0, 0);
+  transition: .3s ease;
 }
 
 .review-text {
@@ -192,7 +210,7 @@
     width: 120px;
   }
 
-  
+
 
   .send-button {
     width: 100%;
