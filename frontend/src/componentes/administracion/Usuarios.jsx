@@ -120,28 +120,6 @@ const Usuarios = () => {
 
   const guardarUsuario = async (datos) => {
     try {
-<<<<<<< HEAD
-        const res = await fetch(`http://localhost:3000/api/usuarios/admin/${usuarioSeleccionado.id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-            nombre: datos.nombre,
-            nombre_usuario: datos.nombre_usuario,
-            correo: datos.correo
-        })
-        });
-
-        const data = await res.json();
-        if (!res.ok || data.status !== 'ok') throw new Error(data.message);
-
-        alert('✅ Usuario actualizado correctamente');
-        cerrarModalEditar(); // Se actualiza la tabla automáticamente
-    } catch (err) {
-        alert(`Error actualizando usuario: ${err.message}`);
-=======
       const body = {
           nombre: datos.nombre,
           nombre_usuario: datos.nombre_usuario,
@@ -168,16 +146,11 @@ const Usuarios = () => {
         errorMsg = err.message;
       }
       alert(errorMsg);
->>>>>>> origin/develop_mesias
     }
   };
 
 
   const Buscar = () => {
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/develop_mesias
     const text = buscador.toLowerCase();
     const filtrados = usuarios.filter(u =>
       (u.nombre_usuario || '').toLowerCase().includes(text) ||
@@ -255,8 +228,4 @@ const Usuarios = () => {
   );
 };
 
-<<<<<<< HEAD
 export default Usuarios;
-=======
-export default Usuarios;
->>>>>>> origin/develop_mesias

@@ -58,10 +58,7 @@
 .footer .redes a:hover {
    
     background-color: var(--texto);
-<<<<<<< HEAD
-=======
     transition: .2s ease-in;
->>>>>>> origin/develop_mesias
 }
 
 .footer .credito {

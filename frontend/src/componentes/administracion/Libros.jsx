@@ -169,44 +169,6 @@ const Libros = () => {
             <div className='acciones'>
                 <input
                     type="text"
-<<<<<<< HEAD
-                    placeholder="Buscar libro por nombre"
-                    value={buscador}
-                    onChange={(e) => setBuscador(e.target.value)}
-                    className='InputAdmin'
-                />
-                <select
-                    value={buscarFecha}
-                    onChange={(e) => setBuscarFecha(e.target.value)}
-                    className='InputAdmin'
-                >
-                    <option value="">Fecha de creación</option>
-                    <option value="1">Mas Recientes</option>
-                    <option value="2">Mas Antiguos</option>
-                </select>
-                <select
-                    value={buscarCategoria}
-                    onChange={(e) => setBuscarCategoria(e.target.value)}
-                    className='InputAdmin'
-                >
-                    <option value="">Categoría</option>
-                    <option value="ficcion">Ficción</option>
-                    <option value="terror">Terror</option>
-                    <option value="humor">Humor</option>
-                    <option value="romance">Romance</option>
-                </select>
-                <select
-                    value={buscarLetra}
-                    onChange={(e) => setBuscarLetra(e.target.value)}
-                    className='InputAdmin'
-                >
-                    <option value="">A - Z</option>
-                    <option value="a-z">A - Z</option>
-                    <option value="z-a">Z - A</option>
-                </select>
-                <button className='Buscar' onClick={Buscar}>
-                    Buscar
-=======
                     placeholder="Buscar libro por nombre..."
                     value={buscador}
                     onChange={(e) => setBuscador(e.target.value)} 
@@ -242,7 +204,6 @@ const Libros = () => {
                 </select>
                 <button className='Nuevo' onClick={Refrescar}>
                     Refrescar Datos
->>>>>>> origin/develop_mesias
                 </button>
                 <button className='Nuevo' onClick={Nuevo}>
                     Nuevo
@@ -254,22 +215,13 @@ const Libros = () => {
                     <tr>
                         <th>ID</th>
                         <th>LIBRO</th>
-<<<<<<< HEAD
-                        <th>GENEROS</th>
-                        <th>RESEÑAS</th>
-                        <th>CALIFICACION</th>
-=======
                         <th>GÉNEROS</th>
                         <th>ISBN</th>
                         <th>PUBLICADO</th>
->>>>>>> origin/develop_mesias
                         <th>ACCIONES</th>
                     </tr>
                 </thead>
                 <tbody>
-<<<<<<< HEAD
-                    {libros.map((libro) => (
-=======
                     {loading && (
                         <tr><td colSpan="6">Cargando libros...</td></tr>
                     )}
@@ -282,19 +234,10 @@ const Libros = () => {
                     
 
                     {!loading && librosPaginaActual.map((libro) => (
->>>>>>> origin/develop_mesias
                         <tr key={libro.id}>
                             <td>{libro.id}</td>
                             <td>
                                 <p style={{ margin: 0, fontWeight: 'bold' }}>{libro.titulo}</p>
-<<<<<<< HEAD
-                                <span style={{ fontSize: '13px', color: '#666' }}>{libro.autorNombre}</span>
-                            </td>
-                            <td>
-                                {libro.generos.map((genero, index) => (
-                                    <span key={index}>
-                                        {genero}
-=======
                                 <span style={{ fontSize: '13px', color: '#666' }}>
                                     {libro.autor_nombre} {libro.autor_apellido}
                                 </span>
@@ -303,18 +246,12 @@ const Libros = () => {
                                 {libro.generos && libro.generos.map((g, index) => (
                                     <span key={g.id}>
                                         {g.nombre}
->>>>>>> origin/develop_mesias
                                         {index < libro.generos.length - 1 ? ', ' : ''}
                                     </span>
                                 ))}
                             </td>
-<<<<<<< HEAD
-                            <td>{libro.resenas}</td>
-                            <td>{libro.calificacion}</td>
-=======
                             <td>{libro.isbn}</td>
                             <td>{libro.anio_publicacion}</td>
->>>>>>> origin/develop_mesias
                             <td>
                                 <button className='Borrar' onClick={() => Borrar(libro.id)}>
                                     Borrar
@@ -328,29 +265,6 @@ const Libros = () => {
                 </tbody>
             </table>
 
-<<<<<<< HEAD
-            {mostrarModalEditar && (
-                <ModalEditarLibro
-                    libro={{
-                        id: libroSeleccionado.id,
-                        titulo: libroSeleccionado.titulo,
-                        isbn: libroSeleccionado.isbn,
-                        sinopsis: libroSeleccionado.sinopsis,
-                        urlPortada: libroSeleccionado.urlPortada,
-                        paginas: libroSeleccionado.paginas.toString(),
-                        anioPublicacion: libroSeleccionado.anioPublicacion.toString(),
-                        editorialId: libroSeleccionado.editorialId,
-                        autorId: libroSeleccionado.autorId,
-                        generos: libroSeleccionado.generos
-                    }}
-                    alCerrar={cerrarModalEditar}
-                    alGuardar={guardarLibro}
-                />
-            )}
-
-            {mostrarModalCrear && (
-                <ModalCrearLibro
-=======
             <div className="paginacion-controles" style={{ textAlign: 'center', margin: '20px 0' }}>
                 <button 
                     className="Editar"
@@ -393,7 +307,6 @@ const Libros = () => {
                     autores={autores}
                     editoriales={editoriales}
                     generosDisponibles={generos}
->>>>>>> origin/develop_mesias
                     alCerrar={cerrarModalCrear}
                     alGuardar={crearLibro}
                 />

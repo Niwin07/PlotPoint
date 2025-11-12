@@ -33,11 +33,7 @@ import Soporte from './componentes/info/soporte';
 import Tyc from './componentes/info/terminosycondiciones';
 
 //  Modales
-<<<<<<< HEAD
-import ModalNoCuenta from './componentes/modals/ModalNoCuenta';
-=======
 import ModalNoCuenta from './componentes/modals/usuario/ModalNoCuenta';
->>>>>>> origin/develop_mesias
 
 
 function App() {
