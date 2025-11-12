@@ -30,7 +30,7 @@ exports.listar = async function(req, res, next) {
         sql += " WHERE " + conditions.join(" AND ");
     }
     
-    sql += " ORDER BY c.fecha_creacion ASC";
+    sql += " ORDER BY c.fecha_creacion DESC";
 
     try {
         const [comentarios] = await db.query(sql, params);
@@ -103,7 +103,7 @@ exports.obtenerPorResena = async function(req, res, next) {
             FROM Comentario c
             INNER JOIN Usuario u ON c.usuario_id = u.id
             WHERE c.resena_id = ?
-            ORDER BY c.fecha_creacion ASC
+            ORDER BY c.fecha_creacion DESC
         `;
         
         const [comentarios] = await db.query(sql, [resena_id]);

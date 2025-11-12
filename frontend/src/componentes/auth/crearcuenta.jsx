@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import useUsuario from '../../hooks/useUsuario';
 import '/src/componentes/auth/crearcuenta.css';
+import axios from 'axios'; 
 
 const Signup = () => {
     const [usuario, setDato] = useUsuario();
@@ -37,7 +38,6 @@ const Signup = () => {
 
         setErrores(erroresTemp);
 
-        // Si hay errores, cancelar
         if (Object.keys(erroresTemp).length > 0) return;
 
         try {
@@ -50,25 +50,20 @@ const Signup = () => {
                 url_avatar: "" 
             };
 
-            const response = await fetch('http://localhost:3000/api/usuarios/registro', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(datosAEnviar)
-            });
+            const response = await axios.post('http://localhost:3000/api/usuarios/registro', datosAEnviar);
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                setMensaje(data.message || 'Error al registrar usuario');
-                return;
-            }
-
-            alert('✅ Registro exitoso. Ahora puedes iniciar sesión.');
+            alert(' Registro exitoso. Ahora puedes iniciar sesión.');
             window.location.href = '/iniciarsesion';
 
         } catch (error) {
             console.error('Error en registro:', error);
-            setMensaje('Error de conexión con el servidor');
+            if (error.response) {
+                setMensaje(error.response.data.message || 'Error al registrar usuario');
+            } else if (error.request) {
+                setMensaje('Error de conexión con el servidor');
+            } else {
+                setMensaje('Error inesperado al preparar la solicitud');
+            }
         }
     };
 

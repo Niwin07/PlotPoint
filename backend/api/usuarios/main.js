@@ -11,6 +11,7 @@ const verificarToken = require('../middlewares/auth');
 // ========== RUTAS PÚBLICAS ==========
 router.use("/login", loginRouter);
 
+
 // Registro público de usuario
 router.post('/registro', async function (req, res, next) {
     const { nombre, nombre_usuario, correo, contrasena, biografia, url_avatar } = req.body;
@@ -117,5 +118,6 @@ router.post('/registro', async function (req, res, next) {
 // ========== RUTAS PROTEGIDAS ==========
 router.use('/perfil', verificarToken, perfilRouter);
 router.use('/admin', verificarToken, adminRouter);
+router.get('/publico/:id', perfilRouter.obtenerPublico);
 
 module.exports = router;

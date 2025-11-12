@@ -33,7 +33,11 @@ import Soporte from './componentes/info/soporte';
 import Tyc from './componentes/info/terminosycondiciones';
 
 //  Modales
+<<<<<<< HEAD
 import ModalNoCuenta from './componentes/modals/ModalNoCuenta';
+=======
+import ModalNoCuenta from './componentes/modals/usuario/ModalNoCuenta';
+>>>>>>> origin/develop_mesias
 
 
 function App() {
@@ -57,11 +61,11 @@ function App() {
           <Route path="/reseñasinicio" component={ListaReseñasInicio} />
 
           {/*  Libros y reseñas */}
-          <Route path="/libro" component={Libro} />
-          <Route path="/reseñalibro" component={ReviewDetail} />
+          <Route path="/libro/:id" component={Libro} />
+          <Route path="/reseñalibro/:id" component={ReviewDetail} />
 
           {/*  Usuario / Perfil */}
-          <Route path="/usuario/*" component={Usuario} />
+          <Route path="/usuario/:id" component={Usuario} />
           <Route path="/perfil/*" component={Perfil} />
 
           {/*  Autenticación */}

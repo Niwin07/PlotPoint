@@ -21,7 +21,7 @@ router.get('/', function(req, res, next) {
     const userId = req.usuario.id;
     
     // Solo campos que el usuario debería ver/editar en su perfil
-    let sql = `SELECT id, nombre, nombre_usuario, biografia, url_avatar
+    let sql = `SELECT id, nombre, nombre_usuario, correo, biografia, url_avatar
                FROM Usuario WHERE id = ?`;
     
     db.query(sql, [userId])
@@ -44,10 +44,10 @@ router.get('/', function(req, res, next) {
 // PUT /api/usuarios/perfil/actualizar - Actualizar datos del perfil
 router.put('/actualizar', function(req, res, next) {
     // El usuario solo puede editar estos campos
-    const { nombre, nombre_usuario, biografia, url_avatar } = req.body;
+    const { nombre, biografia, url_avatar } = req.body;
     const userId = req.usuario.id;
     
-    if (!nombre && !nombre_usuario && !biografia && !url_avatar) {
+    if (!nombre && !biografia && !url_avatar) {
         return res.status(400).json({ 
             error: 'Debe proporcionar al menos un campo para actualizar' 
         });
@@ -61,17 +61,6 @@ router.put('/actualizar', function(req, res, next) {
         params.push(nombre.trim());
     }
     
-    if (nombre_usuario) {
-        const userRegex = /^[a-zA-Z0-9_]+$/;
-        if (!userRegex.test(nombre_usuario.trim())) {
-            return res.status(400).json({ 
-                error: 'Usuario inválido',
-                message: 'El usuario solo puede contener letras, números y guiones bajos' 
-            });
-        }
-        updates.push("nombre_usuario = ?");
-        params.push(nombre_usuario.trim());
-    }
     
     if (biografia !== undefined) {
         updates.push("biografia = ?");
@@ -287,6 +276,55 @@ router.put('/cambiar-password', async function(req, res, next) {
         });
     }
 });
+
+// GET /api/usuarios/publico/:id - Obtener perfil público de un usuario
+router.obtenerPublico = async function(req, res, next) {
+    const { id } = req.params;
+
+    try {
+        // 1. Consulta principal del perfil
+        const sqlPerfil = `SELECT id, nombre, nombre_usuario, biografia, url_avatar 
+                           FROM Usuario WHERE id = ?`;
+        
+        // 2. Consultas para las estadísticas
+        const sqlResenas = `SELECT COUNT(*) as total_reseñas FROM Resena WHERE usuario_id = ?`;
+        const sqlSeguidores = `SELECT COUNT(*) as total_seguidores FROM Seguidores WHERE seguido_id = ?`;
+        const sqlSeguidos = `SELECT COUNT(*) as total_seguidos FROM Seguidores WHERE seguidor_id = ?`;
+
+        // Ejecutar todas las consultas en paralelo
+        const [
+            [perfilRows],
+            [reseñasRows],
+            [seguidoresRows],
+            [seguidosRows]
+        ] = await Promise.all([
+            db.query(sqlPerfil, [id]),
+            db.query(sqlResenas, [id]),
+            db.query(sqlSeguidores, [id]),
+            db.query(sqlSeguidos, [id])
+        ]);
+
+        if (perfilRows.length === 0) {
+            return res.status(404).json({ 
+                error: 'Usuario no encontrado' 
+            });
+        }
+        
+        // Combinar todos los resultados
+        const perfil = perfilRows[0];
+        perfil.reseñas = reseñasRows[0].total_reseñas;
+        perfil.seguidores = seguidoresRows[0].total_seguidores;
+        perfil.seguidos = seguidosRows[0].total_seguidos;
+
+        res.json(perfil);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ 
+            error: 'Error al obtener perfil público' 
+        });
+    }
+};
 
 
 module.exports = router;

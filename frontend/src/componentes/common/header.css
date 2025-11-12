@@ -24,11 +24,9 @@ img {
     margin: 0;
     padding: 0;
 
-    /*esencial en la animacion del footer y del header (no hablo del sandwich)*/
-    
-    transition: all .2s linear;
-    
+   
 }
+/*
 
 ::selection {
     background-color: var(--black);
@@ -37,6 +35,10 @@ img {
 
 ::-webkit-scrollbar {
     width: 1rem;
+<<<<<<< HEAD
+=======
+    z-index: 1000;
+>>>>>>> origin/develop_mesias
 }
 
 ::-webkit-scrollbar-track {
@@ -48,20 +50,35 @@ img {
     background-color: var(--secundario1);
 }
 /*
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/develop_mesias
 section {
     padding: 3rem 2rem;
     margin: 0 auto;
     max-width: 1200ps;
 }
+<<<<<<< HEAD
 */
 /*
+=======
+
+
+
+>>>>>>> origin/develop_mesias
 section h1 {
     text-align: center;
     font-size: 3rem;
     
     color: var(--texto);
    
+<<<<<<< HEAD
 }*/
+=======
+}
+    */
+>>>>>>> origin/develop_mesias
 
 
 
@@ -70,7 +87,10 @@ section h1 {
     top: 0;
     left: 0;
     right: 0;
+<<<<<<< HEAD
     z-index: 1000;
+=======
+>>>>>>> origin/develop_mesias
     /*background: #373B44;*/
     /* fallback for old browsers */
     /*background: -webkit-linear-gradient(to right, #373B44, #4286f4);
@@ -78,6 +98,11 @@ section h1 {
     /*background: linear-gradient(to right, #373B44, #4286f4);
     /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
     background: var(--fondo);
+<<<<<<< HEAD
+=======
+    z-index:100;
+    
+>>>>>>> origin/develop_mesias
 
 
 }
@@ -120,6 +145,10 @@ section h1 {
 
 .header .flex .navbar a:hover {
     color: var(--secundario2);
+<<<<<<< HEAD
+=======
+    transition: .3s ease-in;
+>>>>>>> origin/develop_mesias
 
 }
 

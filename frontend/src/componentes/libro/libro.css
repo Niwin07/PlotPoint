@@ -23,14 +23,22 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.heart {
+.heart- {
   position: absolute;
-  top: 10px;
   right: -25px;
-  font-size: 1.6rem;
+  font-size: 2.6rem;
+  color: #0000004e;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.heart-active{
   color: #e63946;
   cursor: pointer;
   transition: transform 0.2s ease;
+  position: absolute;
+  right: -25px;
+  font-size: 2.6rem;
+
 }
 
 .heart:hover {

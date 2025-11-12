@@ -2,74 +2,116 @@ const db = require('../../conexion');
 const fileUpload = require("express-fileupload");
 const path = require('path');
 const fs = require("fs");
-
-// Directorio para guardar las portadas
 const directorio = path.join(__dirname, "..", "..", "uploads", "portadas");
-
-// Crear directorio si no existe
 if (!fs.existsSync(directorio)){
     fs.mkdirSync(directorio, { recursive: true });
 }
 
 // GET /api/libros - Listar todos los libros con información completa
 exports.listar = async function(req, res, next) {
-    const { busqueda, autor_id, editorial_id, genero_id } = req.query;
-
-    // Sólo admins pueden usar los filtros por autor/editorial/genero
-    const isAdmin = req.usuario && req.usuario.rol === 'admin';
-    if ((autor_id || editorial_id || genero_id) && !isAdmin) {
-        return res.status(403).json({
-            error: 'Acceso denegado',
-            message: 'Los filtros por autor, editorial y género están disponibles solo para administradores'
-        });
-    }
-
-    let sql = `
-        SELECT 
-            l.id, l.titulo, l.isbn, l.sinopsis, l.url_portada, 
-            l.paginas, l.anio_publicacion,
-            a.id as autor_id, a.nombre as autor_nombre, a.apellido as autor_apellido,
-            e.id as editorial_id, e.nombre as editorial_nombre
-        FROM Libro l
-        LEFT JOIN Autor a ON l.autor_id = a.id
-        LEFT JOIN Editorial e ON l.editorial_id = e.id
-    `;
-    
-    let conditions = [];
-    let params = [];
-    
-    if (busqueda) {
-        conditions.push("(l.titulo LIKE ? OR l.isbn LIKE ? OR a.nombre LIKE ? OR a.apellido LIKE ?)");
-        const busquedaParcial = `%${busqueda}%`;
-        params.push(busquedaParcial, busquedaParcial, busquedaParcial, busquedaParcial);
-    }
-    
-    // Sólo agregar estos filtros si es admin (ya validado arriba)
-    if (isAdmin && autor_id) {
-        conditions.push("l.autor_id = ?");
-        params.push(autor_id);
-    }
-    
-    if (isAdmin && editorial_id) {
-        conditions.push("l.editorial_id = ?");
-        params.push(editorial_id);
-    }
-    
-    if (isAdmin && genero_id) {
-        conditions.push("l.id IN (SELECT libro_id FROM LibroGenero WHERE genero_id = ?)");
-        params.push(genero_id);
-    }
-    
-    if (conditions.length > 0) {
-        sql += " WHERE " + conditions.join(" AND ");
-    }
-    
-    sql += " ORDER BY l.titulo";
+    const { random, promedio, busqueda, autor_id, editorial_id, genero_id } = req.query;
 
     try {
-        const [libros] = await db.query(sql, params);
+
+        if (random){
+            const sqlRandom= `
+            SELECT
+                id,
+                titulo,
+                url_portada
+            FROM
+                Libro
+            ORDER BY
+                RAND()
+            LIMIT 6;
+            `
+            const [libros] = await db.query(sqlRandom);
+            
+            return res.json({ 
+                status: 'ok', 
+                libros: libros,
+                total: libros.length 
+            });
+        }
+
+        if (promedio) {
+            
+            const sqlPromedio = `
+                SELECT
+                    L.id,
+                    L.titulo,
+                    L.url_portada,
+                    AVG(R.puntuacion) AS promedio_puntuacion
+                FROM
+                    Resena AS R
+                    JOIN Libro AS L ON R.libro_id = L.id
+                GROUP BY
+                    L.id, L.titulo, L.url_portada
+                ORDER BY
+                    promedio_puntuacion DESC
+                LIMIT 6;
+            `;
+            
+            const [libros] = await db.query(sqlPromedio);
+            
+            return res.json({ 
+                status: 'ok', 
+                libros: libros,
+                total: libros.length 
+            });
+        } 
         
-        // Obtener géneros para cada libro
+        const isAdmin = req.usuario && req.usuario.rol === 'admin';
+        if ((autor_id || editorial_id || genero_id) && !isAdmin) {
+            return res.status(403).json({
+                error: 'Acceso denegado',
+                message: 'Los filtros por autor, editorial y género están disponibles solo para administradores'
+            });
+        }
+
+        let sql = `
+            SELECT 
+                l.id, l.titulo, l.isbn, l.sinopsis, l.url_portada, 
+                l.paginas, l.anio_publicacion,
+                a.id as autor_id, a.nombre as autor_nombre, a.apellido as autor_apellido,
+                e.id as editorial_id, e.nombre as editorial_nombre
+            FROM Libro l
+            LEFT JOIN Autor a ON l.autor_id = a.id
+            LEFT JOIN Editorial e ON l.editorial_id = e.id
+        `;
+        
+        let conditions = [];
+        let params = [];
+        
+        if (busqueda) {
+            conditions.push("(l.titulo LIKE ? OR l.isbn LIKE ? OR a.nombre LIKE ? OR a.apellido LIKE ?)");
+            const busquedaParcial = `%${busqueda}%`;
+            params.push(busquedaParcial, busquedaParcial, busquedaParcial, busquedaParcial);
+        }
+        
+        if (isAdmin && autor_id) {
+            conditions.push("l.autor_id = ?");
+            params.push(autor_id);
+        }
+        
+        if (isAdmin && editorial_id) {
+            conditions.push("l.editorial_id = ?");
+            params.push(editorial_id);
+        }
+        
+        if (isAdmin && genero_id) {
+            conditions.push("l.id IN (SELECT libro_id FROM LibroGenero WHERE genero_id = ?)");
+            params.push(genero_id);
+        }
+        
+        if (conditions.length > 0) {
+            sql += " WHERE " + conditions.join(" AND ");
+        }
+        
+        sql += " ORDER BY l.titulo";
+
+        const [libros] = await db.query(sql, params);
+            
         for (let libro of libros) {
             const [generos] = await db.query(`
                 SELECT g.id, g.nombre 
@@ -79,12 +121,13 @@ exports.listar = async function(req, res, next) {
             `, [libro.id]);
             libro.generos = generos;
         }
-        
+            
         res.json({ 
             status: 'ok', 
             libros: libros,
             total: libros.length 
         });
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ 
@@ -93,7 +136,6 @@ exports.listar = async function(req, res, next) {
         });
     }
 };
-
 
 // GET /api/libros/:id - Obtener un libro específico con toda su información
 exports.obtener = async function(req, res, next) {
