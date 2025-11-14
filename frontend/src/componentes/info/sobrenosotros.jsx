@@ -4,7 +4,8 @@ import '/src/componentes/info/sobrenosotros.css';
 
 const SobreNosotros = () => {
     useEffect(() => {
-        //este useEffect se encargara accionar una clase dependiedo de la pregunta que quieras conocer de nosotros y de ocultar las otras que no
+        //este useEffect se encargara accionar una clase dependiedo de la pregunta que quieras conocer de nosotros y 
+        // de ocultar las otras que no
         //seleccionaste
         const preguntas = document.querySelectorAll('.pregunta');
         preguntas.forEach(pregunta => {

@@ -18,8 +18,6 @@ const Header = () => {
         window.location.href = "/iniciarsesion";
     };
     useEffect(() => {
-
-
         //este useEffect se encarga de que el menu desplegable se active y funcione al estar en tamaño de un dispositivo movil
         //activa una clase del css que se encargara de mostrar el menu desplegado si tocas el menu 
         let header = document.querySelector('.header');
@@ -40,8 +38,6 @@ const Header = () => {
                 setMiId(usuario.id);
             }
         }
-
-
         const handleMenuClick = () => {
             navbar.classList.toggle('active');
             menuBtn.classList.toggle('fa-times');
