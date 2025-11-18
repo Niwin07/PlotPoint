@@ -1,5 +1,6 @@
 import React from 'react';
 import '/src/componentes/common/footer.css';
+import { Link } from 'wouter';
 
 
 const Footer = () => {
@@ -11,9 +12,9 @@ const Footer = () => {
 
                     <div class="box-info">
                         <h3>Links Extras</h3>
-                        <a href="/sobrenosotros"><i class="fas fa-arrow-right"></i>Sobre Nosotros</a>
-                        <a href="/soporte"><i class="fas fa-arrow-right"></i>Soporte </a>
-                        <a href="/terminosycondiciones"><i class="fas fa-arrow-right"></i>Terminos y Condiciones</a>
+                        <Link href={"/sobrenosotros"}><i class="fas fa-arrow-right"></i>Sobre Nosotros</Link>
+                        <Link href={"/soporte"}><i class="fas fa-arrow-right"></i>Soporte </Link>
+                        <Link href={"/terminosycondiciones"}><i class="fas fa-arrow-right"></i>Terminos y Condiciones</Link>
                     </div>
 
 

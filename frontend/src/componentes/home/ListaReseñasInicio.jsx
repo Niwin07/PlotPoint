@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import ReseñaCard from "./ReseñaCard";
-import ReseñaCardUs from "../perfil/ReseñaCardUs";
 import axios from 'axios';
 
 

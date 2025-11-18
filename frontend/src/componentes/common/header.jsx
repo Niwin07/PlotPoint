@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '/src/componentes/common/header.css';
 import { Route, Link, useRoute } from "wouter";
-import Usuario from '../perfil/Usuario';
+//import Usuario from '../perfil/Usuario';
 
 
 const Header = () => {
@@ -78,9 +78,9 @@ const Header = () => {
                     {isAdmin && <a href="/admin/">Admin</a>}
 
                     {isLogged ? (
-                        <a href="#" onClick={cerrarSesion}>Cerrar sesión</a>
+                        <Link href="#" onClick={cerrarSesion}>Cerrar sesión</Link>
                     ) : (
-                        <a href="/iniciarsesion">Iniciar sesión</a>
+                        <Link href="/iniciarsesion">Iniciar sesión</Link>
                     )}
                 </nav>
 
