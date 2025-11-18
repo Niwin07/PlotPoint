@@ -1,6 +1,15 @@
 const router = require('express').Router();
 const db = require('../../conexion');
 
+const BASE_URL = 'http://localhost:3000'; 
+
+const transformarLibro = (libro) => {
+    if (libro.url_portada && !libro.url_portada.startsWith('http')) {
+        libro.url_portada = `${BASE_URL}${libro.url_portada}`;
+    }
+    return libro;
+};
+
 // GET /api/busqueda/libros?q=termino&genero=ficcion&autor=nombre&ordenar=titulo
 router.get('/', async function(req, res, next) {
     const { q, genero, autor, ordenar = 'titulo', limite = '20' } = req.query;
@@ -49,7 +58,6 @@ router.get('/', async function(req, res, next) {
             params.push(autorBusqueda, autorBusqueda);
         }
 
-        // Ordenamiento (sin GROUP BY porque ya usamos DISTINCT)
         sql += ` ORDER BY l.titulo ASC`;
 
         // Límite de resultados
@@ -63,9 +71,11 @@ router.get('/', async function(req, res, next) {
 
         const [libros] = await db.query(sql, params);
 
+        const librosTransformados = libros.map(transformarLibro);
+
         res.json({
             status: 'ok',
-            libros: libros
+            libros: librosTransformados 
         });
 
     } catch (error) {
@@ -78,7 +88,7 @@ router.get('/', async function(req, res, next) {
     }
 });
 
-// GET /api/busqueda/libros/generos - Obtener lista de géneros disponibles
+// GET /api/busqueda/libros/generos - (Sin cambios, no devuelve imágenes)
 router.get('/generos', async function(req, res, next) {
     try {
         const [generos] = await db.query(`
@@ -109,7 +119,7 @@ router.get('/generos', async function(req, res, next) {
     }
 });
 
-// GET /api/busqueda/libros/autores - Obtener lista de autores disponibles
+// GET /api/busqueda/libros/autores - (Sin cambios, no devuelve imágenes)
 router.get('/autores', async function(req, res, next) {
     const { q } = req.query;
 
@@ -153,7 +163,7 @@ router.get('/autores', async function(req, res, next) {
     }
 });
 
-// GET /api/busqueda/libros/:id/generos - Obtener géneros de un libro específico
+// GET /api/busqueda/libros/:id/generos - (Sin cambios, no devuelve imágenes)
 router.get('/:id/generos', async function(req, res, next) {
     const { id } = req.params;
 

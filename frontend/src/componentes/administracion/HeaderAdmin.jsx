@@ -1,111 +1,339 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import '/src/componentes/common/header.css';
-import '/src/componentes/administracion/admin.css'
-//para reutilizar el navegador de perfil
+import '/src/componentes/administracion/admin.css';
 import '/src/componentes/perfil/PerfilPag.css';
 
-//tablas y acciones
-import Libros from '/src/componentes/administracion/Libros.jsx'
-import Autores from '/src/componentes/administracion/Autores.jsx'
-import Usuarios from '/src/componentes/administracion/Usuarios.jsx'
-import Editoriales from '/src/componentes/administracion/Editoriales.jsx'
-import Generos from '/src/componentes/administracion/Generos.jsx'
-import { Route, Link, useRoute } from "wouter";
+import Libros from '/src/componentes/administracion/Libros.jsx';
+import Autores from '/src/componentes/administracion/Autores.jsx';
+import Usuarios from '/src/componentes/administracion/Usuarios.jsx';
+import Editoriales from '/src/componentes/administracion/Editoriales.jsx';
+import Generos from '/src/componentes/administracion/Generos.jsx';
 
+import { Router, Route, Link, useLocation } from "wouter";
+import axios from 'axios';
 
 const HeaderAdmin = () => {
-    const [matchLibros] = useRoute("/admin/");
-    const [matchUsuarios] = useRoute("/admin/usuarios");
-    const [matchAutores] = useRoute("/admin/autores");
-    const [matchGeneros] = useRoute("/admin/generos");
-    const [matchEditoriales] = useRoute("/admin/editoriales");
-    
+    const [libros, setLibros] = useState([]);
+    const [autores, setAutores] = useState([]);
+    const [editoriales, setEditoriales] = useState([]);
+    const [generos, setGeneros] = useState([]);
+    const [usuarios, setUsuarios] = useState([]);
+
+    const [loading, setLoading] = useState({
+        libros: false,
+        autores: false,
+        editoriales: false,
+        generos: false,
+        usuarios: false,
+    });
+
+    const token = localStorage.getItem('token');
+    const api = axios.create({
+        baseURL: 'http://localhost:3000/api',
+        headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    const setLoadingState = (key, value) => {
+        setLoading(prev => ({ ...prev, [key]: value }));
+    };
+
+    const fetchLibros = async () => {
+        setLoadingState('libros', true);
+        try {
+            const res = await api.get('/libros');
+            if (res.data.status === 'ok') setLibros(res.data.libros);
+        } finally { setLoadingState('libros', false); }
+    };
+
+    const fetchAutores = async () => {
+        setLoadingState('autores', true);
+        try {
+            const res = await api.get('/autores');
+            if (res.data.status === 'ok') setAutores(res.data.autores);
+        } finally { setLoadingState('autores', false); }
+    };
+
+    const fetchEditoriales = async () => {
+        setLoadingState('editoriales', true);
+        try {
+            const res = await api.get('/editoriales');
+            if (res.data.status === 'ok') setEditoriales(res.data.editoriales);
+        } finally { setLoadingState('editoriales', false); }
+    };
+
+    const fetchGeneros = async () => {
+        setLoadingState('generos', true);
+        try {
+            const res = await api.get('/generos');
+            if (res.data.status === 'ok') setGeneros(res.data.generos);
+        } finally { setLoadingState('generos', false); }
+    };
+
+    const fetchUsuarios = async () => {
+        setLoadingState('usuarios', true);
+        try {
+            const res = await api.get('/usuarios/admin');
+            if (res.data.status === 'ok') setUsuarios(res.data.usuarios);
+        } finally { setLoadingState('usuarios', false); }
+    };
+
+    const crearLibro = async (formData) => {
+        try {
+            const res = await api.post('/libros', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            if (res.data.status === 'ok') {
+                await fetchLibros();
+                return { success: true };
+            }
+        } catch { return { success: false }; }
+    };
+
+    const actualizarLibro = async (id, datos) => {
+        try {
+            const res = await api.put(`/libros/${id}`, datos);
+            if (res.data.status === 'ok') {
+                await fetchLibros();
+                return { success: true };
+            }
+        } catch { return { success: false }; }
+    };
+
+    const eliminarLibro = async (id) => {
+        try {
+            const res = await api.delete(`/libros/${id}`);
+            if (res.data.status === 'ok') {
+                await fetchLibros();
+                return { success: true };
+            }
+        } catch { return { success: false }; }
+    };
+
+    const crearAutor = async (datos) => {
+        try {
+            const res = await api.post('/autores', datos);
+            if (res.data.status === 'ok') {
+                await fetchAutores();
+                return { success: true };
+            }
+        } catch { return { success: false }; }
+    };
+
+    const actualizarAutor = async (id, datos) => {
+        try {
+            const res = await api.put(`/autores/${id}`, datos);
+            if (res.data.status === 'ok') {
+                await fetchAutores();
+                return { success: true };
+            }
+        } catch { return { success: false }; }
+    };
+
+    const eliminarAutor = async (id) => {
+        try {
+            const res = await api.delete(`/autores/${id}`);
+            if (res.data.status === 'ok') {
+                await fetchAutores();
+                return { success: true };
+            }
+        } catch { return { success: false }; }
+    };
+
+    const crearEditorial = async (datos) => {
+        try {
+            const res = await api.post('/editoriales', datos);
+            if (res.data.status === 'ok') {
+                await fetchEditoriales();
+                return { success: true };
+            }
+        } catch { return { success: false }; }
+    };
+
+    const actualizarEditorial = async (id, datos) => {
+        try {
+            const res = await api.put(`/editoriales/${id}`, datos);
+            if (res.data.status === 'ok') {
+                await fetchEditoriales();
+                return { success: true };
+            }
+        } catch { return { success: false }; }
+    };
+
+    const eliminarEditorial = async (id) => {
+        try {
+            const res = await api.delete(`/editoriales/${id}`);
+            if (res.data.status === 'ok') {
+                await fetchEditoriales();
+                return { success: true };
+            }
+        } catch { return { success: false }; }
+    };
+
+    const crearGenero = async (datos) => {
+        try {
+            const res = await api.post('/generos', datos);
+            if (res.data.status === 'ok') {
+                await fetchGeneros();
+                return { success: true };
+            }
+        } catch { return { success: false }; }
+    };
+
+    const actualizarGenero = async (id, datos) => {
+        try {
+            const res = await api.put(`/generos/${id}`, datos);
+            if (res.data.status === 'ok') {
+                await fetchGeneros();
+                return { success: true };
+            }
+        } catch { return { success: false }; }
+    };
+
+    const eliminarGenero = async (id) => {
+        try {
+            const res = await api.delete(`/generos/${id}`);
+            if (res.data.status === 'ok') {
+                await fetchGeneros();
+                return { success: true };
+            }
+        } catch { return { success: false }; }
+    };
+
+    // ---------- Usuarios ----------
+    const crearUsuario = async (datos) => {
+        try {
+            const res = await axios.post('http://localhost:3000/api/usuarios/registro', datos);
+            if (res.data.status === 'ok') {
+                await fetchUsuarios();
+                return { success: true };
+            }
+        } catch { return { success: false }; }
+    };
+
+    const actualizarUsuario = async (id, datos) => {
+        try {
+            const res = await api.put(`/usuarios/admin/${id}`, datos);
+            if (res.data.status === 'ok') {
+                await fetchUsuarios();
+                return { success: true };
+            }
+        } catch { return { success: false }; }
+    };
+
+    const eliminarUsuario = async (id) => {
+        try {
+            const res = await api.delete(`/usuarios/admin/${id}`);
+            if (res.data.status === 'ok') {
+                await fetchUsuarios();
+                return { success: true };
+            }
+        } catch { return { success: false }; }
+    };
 
 
+    // ============= CARGA INICIAL =============
+    useEffect(() => {
+        fetchLibros();
+        fetchAutores();
+        fetchEditoriales();
+        fetchGeneros();
+        fetchUsuarios();
+    }, []);
+
+    // ===================== NAV ACTIVA =====================
+    const [location] = useLocation();
+    const isActive = (path) => {
+        if (path === "/admin/") return location === "/admin" || location === "/admin/";
+        return location === path;
+    };
 
 
     return (
-        <>
-            {/*
-            <header class="header">
-                <section class="flex">
-                    <h1>Plotpoint</h1>
-
-
-                    <nav class="navbar">
-                        <Link href="/admin/">Libros</Link>
-                        <Link href="/admin/usuarios">Usuarios</Link>
-                        <Link href="/admin/autores">Autores</Link>
-                        <Link href="/admin/editoriales">Editoriales</Link>
-                        <Link href="/admin/generos">Generos</Link>
-                        <a href="/iniciarsesion">Cerrar sesion</a>
-                    </nav>
-
-                    <div id="menu-btn" class="fas fa-bars-staggered"></div>
-                </section>
-
-            </header>
-         */}
-
+        <Router>
             <nav className="nav">
                 <Link href="/admin/">
-
-                    {/* activa la clase */}
-
-
-                    <div className={`nav-item ${matchLibros ? "nav-item-active" : ""}`}>
-                        Libros
-                    </div>
+                    <div className={`nav-item ${isActive("/admin/") ? "nav-item-active" : ""}`}>Libros</div>
                 </Link>
 
                 <Link href="/admin/usuarios">
-                    <div className={`nav-item ${matchUsuarios ? "nav-item-active" : ""}`}>
-                        Usuarios
-                    </div>
+                    <div className={`nav-item ${isActive("/admin/usuarios") ? "nav-item-active" : ""}`}>Usuarios</div>
                 </Link>
 
                 <Link href="/admin/autores">
-                    <div className={`nav-item ${matchAutores ? "nav-item-active" : ""}`}>
-                        Autores
-                    </div>
-                </Link>
-                <Link href="/admin/generos">
-                    <div className={`nav-item ${matchGeneros ? "nav-item-active" : ""}`}>
-                        Generos
-                    </div>
-                </Link>
-                <Link href="/admin/editoriales">
-                    <div className={`nav-item ${matchEditoriales ? "nav-item-active" : ""}`}>
-                        Editoriales
-                    </div>
+                    <div className={`nav-item ${isActive("/admin/autores") ? "nav-item-active" : ""}`}>Autores</div>
                 </Link>
 
+                <Link href="/admin/generos">
+                    <div className={`nav-item ${isActive("/admin/generos") ? "nav-item-active" : ""}`}>Géneros</div>
+                </Link>
+
+                <Link href="/admin/editoriales">
+                    <div className={`nav-item ${isActive("/admin/editoriales") ? "nav-item-active" : ""}`}>Editoriales</div>
+                </Link>
             </nav>
 
-            {/* renderiza el componente seleccionado en el navegador de perfil */}
+            {/* Rutas */}
+            <Route path="/admin/" component={() =>
+                <Libros
+                    libros={libros}
+                    autores={autores}
+                    editoriales={editoriales}
+                    generos={generos}
+                    loading={loading.libros}
+                    fetchLibros={fetchLibros}
+                    crearLibro={crearLibro}
+                    actualizarLibro={actualizarLibro}
+                    eliminarLibro={eliminarLibro}
+                    api={api}
+                />
+            }/>
 
-            <Route path="/admin/">
-                <Libros />
-            </Route>
+            <Route path="/admin/autores" component={() =>
+                <Autores
+                    autores={autores}
+                    loading={loading.autores}
+                    fetchAutores={fetchAutores}
+                    crearAutor={crearAutor}
+                    actualizarAutor={actualizarAutor}
+                    eliminarAutor={eliminarAutor}
+                />
+            } />
+
+            <Route path="/admin/editoriales" component={() =>
+                <Editoriales
+                    editoriales={editoriales}
+                    loading={loading.editoriales}
+                    fetchEditoriales={fetchEditoriales}
+                    crearEditorial={crearEditorial}
+                    actualizarEditorial={actualizarEditorial}
+                    eliminarEditorial={eliminarEditorial}
+                />
+            } />
+
+            <Route path="/admin/generos" component={() =>
+                <Generos
+                    generos={generos}
+                    loading={loading.generos}
+                    fetchGeneros={fetchGeneros}
+                    crearGenero={crearGenero}
+                    actualizarGenero={actualizarGenero}
+                    eliminarGenero={eliminarGenero}
+                />
+            } />
 
             <Route path="/admin/usuarios">
-                <Usuarios />
+                <Usuarios
+                    usuarios={usuarios}
+                    loading={loading.usuarios}
+                    fetchUsuarios={fetchUsuarios}
+                    crearUsuario={crearUsuario}
+                    actualizarUsuario={actualizarUsuario}
+                    eliminarUsuario={eliminarUsuario}
+                />
             </Route>
 
-            <Route path="/admin/autores">
-                <Autores />
-            </Route>
-
-            <Route path="/admin/editoriales">
-                <Editoriales />
-            </Route>
-
-            <Route path="/admin/generos">
-                <Generos />
-            </Route>
-
-        </>
-
+        </Router>
     );
 };
+
 export default HeaderAdmin;

@@ -1,143 +1,89 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '/src/componentes/administracion/admin.css';
+
 import ModalEditarGenero from '/src/componentes/modals/genero/ModalEditarGenero.jsx';
 import ModalCrearGenero from '/src/componentes/modals/genero/ModalCrearGenero.jsx';
 
-const Generos = () => {
+import usePaginacion from "/src/hooks/usePaginacion.jsx";
+
+export default function Generos({
+    generos,
+    loading,
+    crearGenero,
+    actualizarGenero,
+    eliminarGenero,
+    fetchGeneros
+}) {
+
+    const [buscador, setBuscador] = useState("");
+    const [listaProcesada, setListaProcesada] = useState([]);
+
+    const pag = usePaginacion(listaProcesada, 10);
+
+    const Buscar = () => {
+        const q = buscador.toLowerCase();
+
+        const filtrados = generos.filter(g =>
+            (g.nombre || "").toLowerCase().includes(q) ||
+            (g.descripcion || "").toLowerCase().includes(q)
+        );
+
+        setListaProcesada(filtrados);
+        pag.setPaginaActual(0);
+    };
+
+    useEffect(() => {
+        if (buscador.trim() === "") {
+            setListaProcesada(generos);
+            pag.setPaginaActual(0);
+        }
+    }, [buscador]);
+
+    useEffect(() => {
+        setListaProcesada(generos);
+        pag.setPaginaActual(0);
+    }, [generos]);
+
     const [mostrarModalEditar, setMostrarModalEditar] = useState(false);
     const [mostrarModalCrear, setMostrarModalCrear] = useState(false);
     const [generoSeleccionado, setGeneroSeleccionado] = useState(null);
-    const [buscador, setBuscador] = useState('');
-    const [generos, setGeneros] = useState([
-        {
-            id: 1,
-            nombre: "Ficción",
-            descripcion: "Donde la acción y el suspenso se roban el escenario",
-        },
-        {
-            id: 2,
-            nombre: "Terror",
-            descripcion: "Donde el miedo y el suspendo unen fuerzas para auyentar a los mas valientes",
-        },
-        {
-            id: 3,
-            nombre: "Romance",
-            descripcion: "Historias de amor que conquistan corazones",
-        },
-        {
-            id: 4,
-            nombre: "Fantasía",
-            descripcion: "Mundos mágicos y criaturas extraordinarias cobran vida",
-        },
-    ]);
-
-    const Borrar = (id) => {
-        if (window.confirm('¿Estás seguro de que deseas eliminar este género?')) {
-            setGeneros(generos.filter(genero => genero.id !== id));
-            
-            // Aquí deberías hacer la petición DELETE a tu API
-            // fetch('/api/generos/' + id, { method: 'DELETE' })
-        }
-    };
 
     const Editar = (genero) => {
         setGeneroSeleccionado(genero);
         setMostrarModalEditar(true);
     };
 
-    const cerrarModalEditar = () => {
-        setMostrarModalEditar(false);
-        setGeneroSeleccionado(null);
-    };
+    const cerrarModalEditar = () => setMostrarModalEditar(false);
+    const cerrarModalCrear = () => setMostrarModalCrear(false);
 
-    const cerrarModalCrear = () => {
-        setMostrarModalCrear(false);
-    };
+    const Nuevo = () => setMostrarModalCrear(true);
 
-    const guardarGenero = (datosActualizados) => {
-        setGeneros(prevGeneros =>
-            prevGeneros.map(genero =>
-                genero.id === generoSeleccionado.id
-                    ? {
-                        ...genero,
-                        nombre: datosActualizados.nombre,
-                        descripcion: datosActualizados.descripcion
-                    }
-                    : genero
-            )
-        );
+    const Borrar = async (id) => {
+        if (!confirm("¿Seguro deseas eliminar este género?")) return;
 
-        setMostrarModalEditar(false);
-        setGeneroSeleccionado(null);
-        alert('Género actualizado correctamente');
-
-        // Aquí deberías hacer la petición PUT a tu API
-        // fetch('/api/generos/' + generoSeleccionado.id, {
-        //     method: 'PUT',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify({
-        //         nombre: datosActualizados.nombre,
-        //         descripcion: datosActualizados.descripcion
-        //     })
-        // })
-    };
-
-    const crearGenero = (datosNuevoGenero) => {
-        // Generar nuevo ID
-        const nuevoId = Math.max(...generos.map(g => g.id)) + 1;
-
-        const nuevoGenero = {
-            id: nuevoId,
-            nombre: datosNuevoGenero.nombre,
-            descripcion: datosNuevoGenero.descripcion
-        };
-
-        setGeneros([...generos, nuevoGenero]);
-        setMostrarModalCrear(false);
-        alert('Género creado correctamente');
-
-        // Aquí deberías hacer la petición POST a tu API
-        // fetch('/api/generos', {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify({
-        //         nombre: datosNuevoGenero.nombre,
-        //         descripcion: datosNuevoGenero.descripcion
-        //     })
-        // })
-    };
-
-    const Buscar = () => {
-        const resultados = generos.filter(genero => 
-            genero.nombre.toLowerCase().includes(buscador.toLowerCase()) ||
-            genero.descripcion.toLowerCase().includes(buscador.toLowerCase())
-        );
-        
-        if (resultados.length === 0) {
-            alert('No se encontraron géneros');
-        } else {
-            alert(`Se encontraron ${resultados.length} género(s)`);
-        }
-    };
-
-    const Nuevo = () => {
-        setMostrarModalCrear(true);
+        const res = await eliminarGenero(id);
+        if (res.success) fetchGeneros();
     };
 
     return (
         <div>
-            <div className='acciones'>
+
+            <div className="acciones">
                 <input
                     type="text"
-                    placeholder="Buscar genero"
+                    placeholder="Buscar género..."
                     value={buscador}
                     onChange={(e) => setBuscador(e.target.value)}
-                    className='InputAdmin'
+                    className="InputAdmin"
                 />
-                <button className='Buscar' onClick={Buscar}>
-                    Buscar
+
+                <button className="Buscar" onClick={Buscar}>Buscar</button>
+
+                <button className="Refrescar" onClick={fetchGeneros}>
+                    {loading ? "Cargando..." : "Refrescar"}
                 </button>
-                <button className='Nuevo' onClick={Nuevo}>
+
+                <button className="Nuevo" onClick={Nuevo}>
                     Nuevo
                 </button>
             </div>
@@ -146,41 +92,67 @@ const Generos = () => {
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>GENERO</th>
-                        <th>DESCRIPCION</th>
+                        <th>GÉNERO</th>
+                        <th>DESCRIPCIÓN</th>
                         <th>ACCIONES</th>
                     </tr>
                 </thead>
+
                 <tbody>
-                    {generos.map((genero) => (
+                    {pag.paginaItems.map(genero => (
                         <tr key={genero.id}>
                             <td>{genero.id}</td>
-                            <td>
-                                <p style={{ margin: 0, fontWeight: 'bold' }}>{genero.nombre}</p>
+
+                            <td style={{ fontWeight: "bold" }}>
+                                {genero.nombre}
                             </td>
-                            <td style={{ maxWidth: '300px' }}>{genero.descripcion}</td>
+
+                            <td style={{ maxWidth: "300px" }}>
+                                {genero.descripcion}
+                            </td>
+
                             <td>
-                                <button className='Borrar' onClick={() => Borrar(genero.id)}>
-                                    Borrar
-                                </button>
-                                <button className='Editar' onClick={() => Editar(genero)}>
-                                    Editar
-                                </button>
+                                <button className="Editar" onClick={() => Editar(genero)}>Editar</button>
+                                <button className="Borrar" onClick={() => Borrar(genero.id)}>Borrar</button>
                             </td>
                         </tr>
                     ))}
+
+                    {!loading && pag.paginaItems.length === 0 && (
+                        <tr><td colSpan="4">No hay resultados.</td></tr>
+                    )}
                 </tbody>
             </table>
 
-            {mostrarModalEditar && (
+            {listaProcesada.length > 0 && (
+                <div style={{ textAlign: "center", marginTop: 20 }}>
+                    <button
+                        className="Editar"
+                        onClick={pag.paginaAnterior}
+                        disabled={pag.paginaActual === 0}
+                    >
+                        ← Anterior
+                    </button>
+
+                    <span style={{ margin: "0 15px" }}>
+                        Página {pag.paginaActual + 1} de {pag.totalPaginas}
+                    </span>
+
+                    <button
+                        className="Editar"
+                        onClick={pag.siguientePagina}
+                        disabled={pag.paginaActual + 1 >= pag.totalPaginas}
+                    >
+                        Siguiente →
+                    </button>
+                </div>
+            )}
+
+            {mostrarModalEditar && generoSeleccionado && (
                 <ModalEditarGenero
-                    genero={{
-                        id: generoSeleccionado.id,
-                        nombre: generoSeleccionado.nombre,
-                        descripcion: generoSeleccionado.descripcion
-                    }}
+                    genero={generoSeleccionado}
                     alCerrar={cerrarModalEditar}
-                    alGuardar={guardarGenero}
+                    alGuardar={actualizarGenero}
                 />
             )}
 
@@ -192,6 +164,4 @@ const Generos = () => {
             )}
         </div>
     );
-};
-
-export default Generos;
+}

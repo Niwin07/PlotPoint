@@ -44,7 +44,6 @@ export default function EditProfilePage() {
     fetchUserData();
   }, []);
 
-  //luego de realizar una breve verificacion en el modal, se enviara la consulta para confirmar el cambio o avisar que los datos son incorrectos
   const cambiarContraseña = async (contrasenaActual, contrasenaNueva) => {
     try {
       await axios.put(
@@ -69,8 +68,6 @@ export default function EditProfilePage() {
     }
 
   }
-  //actualizamos la foto de perfil del usuario por separado
-
   const uploadAvatar = async (file) => {
     try {
       const formData = new FormData();
@@ -90,7 +87,6 @@ export default function EditProfilePage() {
   };
 
 
-  //setea la imagen que cambiemos
 
   const cambiarPerfil = (e) => {
     const file = e.target.files[0];
@@ -100,7 +96,6 @@ export default function EditProfilePage() {
     }
   };
 
-  //al apretar guardar se enviara la peticion con la foto de perfil, nombre y biografia 
 
   const Guardar = async () => {
     setLoading(true);
@@ -130,12 +125,10 @@ export default function EditProfilePage() {
         return;
       }
 
-      // Si hay un nuevo archivo de avatar, súbelo primero
       if (usuario.urlAvatar instanceof File) {
         avatarUrl = await uploadAvatar(usuario.urlAvatar);
       }
 
-      // Actualiza el perfil con JSON
       await axios.put(
         `${BACKEND_URL}/api/usuarios/perfil/actualizar`,
         {
@@ -163,12 +156,11 @@ export default function EditProfilePage() {
     }
   };
 
-  // se elimina la cuenta que poseas ahora mismo
 
   const eliminarCuenta = async () => {
     if (window.confirm('¿Estás seguro de que deseas eliminar tu cuenta?')) {
       try {
-        await axios.delete(`${BACKEND_URL}/api/usuarios/perfil`, {
+        await axios.delete(`${BACKEND_URL}/api/usuarios/perfil/borrar-cuenta`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -183,7 +175,6 @@ export default function EditProfilePage() {
     }
   };
 
-  // Limpia las URLs de preview cuando el componente se desmonta
   useEffect(() => {
     return () => {
       if (previewUrl) {
@@ -198,7 +189,6 @@ export default function EditProfilePage() {
       <div className="edit-page-container">
 
         {error && <div className="error-message">{error}</div>}
-        {/*imprimimos los datos del usuario */}
 
         <div className="edit-main-content">
           <div className="field-container">
@@ -235,7 +225,6 @@ export default function EditProfilePage() {
               Cambiar foto de perfil
             </label>
             
-          {/*preview de la foto de perfil */}
             {(previewUrl || usuario.urlAvatar) && (
               <img
                 src={previewUrl || `${BACKEND_URL}${usuario.urlAvatar}`}
@@ -291,7 +280,6 @@ export default function EditProfilePage() {
         {showModal &&
           <ModalContraseña
             onClose={() => setShowModal(false)}
-            //decimos que la funcion onCambiarContraseña llamara a la funcion cambiarContraseña del componente perfil
             onCambiarContraseña={cambiarContraseña}
           />}
       </div>

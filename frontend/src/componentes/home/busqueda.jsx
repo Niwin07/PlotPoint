@@ -1,112 +1,90 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "/src/componentes/home/busqueda.css";
 
 const Busqueda = () => {
   const [busqueda, setBusqueda] = useState("");
   const [categoria, setCategoria] = useState("");
+  const [generos, setGeneros] = useState([]);
   const [resultados, setResultados] = useState([]);
 
-  // --- Datos simulados ---
-  const usuarios = [
-    { id: 1, nombre: "Maria_Jose_Rodriguez2006" },
-    { id: 2, nombre: "lector_apasionado" },
-    { id: 3, nombre: "libromaniaco" },
-    { id: 4, nombre: "usuario_diferente" },
-    { id: 5, nombre: "lector_apasionado" },
-    { id: 6, nombre: "libromaniaco" },
-  ];
+  useEffect(() => {
+    cargarGeneros();
+  }, []);
 
-  const libros = [
-    {
-      id: 1,
-      titulo: "It",
-      autor: "Stephen King",
-      genero: "terror",
-      imagen: "/src/img/libro.webp",
-    },
-    {
-      id: 2,
-      titulo: "Harry Potter and the Deathly Hallows",
-      autor: "J. K. Rowling",
-      genero: "fantasía",
-      imagen:
-        "/src/img/libro.webp",
-    },
-    {
-      id: 3,
-      titulo: "Drácula",
-      autor: "Bram Stoker",
-      genero: "terror",
-      imagen: "/src/img/libro.webp",
-    },
-    {
-      id: 4,
-      titulo: "Pride and Prejudice",
-      autor: "Jane Austen",
-      genero: "romance",
-      imagen: "/src/img/libro.webp",
-    },
-    {
-      id: 5,
-      titulo: "It",
-      autor: "Stephen King",
-      genero: "terror",
-      imagen: "/src/img/libro.webp",
-    },
-    {
-      id: 6,
-      titulo: "Harry Potter and the Deathly Hallows",
-      autor: "J. K. Rowling",
-      genero: "fantasía",
-      imagen:
-        "/src/img/libro.webp",
-    },
-    {
-      id: 7,
-      titulo: "Drácula",
-      autor: "Bram Stoker",
-      genero: "terror",
-      imagen: "/src/img/libro.webp",
-    },
-    {
-      id: 8,
-      titulo: "Pride and Prejudice",
-      autor: "Jane Austen",
-      genero: "romance",
-      imagen: "/src/img/libro.webp",
-    },
-  ];
+  const cargarGeneros = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/busqueda/libros/generos');
+      const data = await response.json();
+      
+      if (data.status === 'ok') {
+        setGeneros(data.generos);
+      }
+    } catch (err) {
+      console.error('Error al cargar géneros:', err);
+    }
+  };
 
-  const manejarBusqueda = () => {
-    const termino = busqueda.toLowerCase().trim();
+  const manejarBusqueda = async () => {
+    const termino = busqueda.trim();
 
-    // Si selecciona una categoría (género), mostrar solo libros de ese género
     if (categoria !== "") {
-      const librosFiltrados = libros.filter(
-        (libro) => libro.genero.toLowerCase() === categoria.toLowerCase()
-      );
-      setResultados([{ tipo: "libros", data: librosFiltrados }]);
+      try {
+        const params = new URLSearchParams({ genero: categoria });
+        if (termino) {
+          params.append('q', termino);
+        }
+        
+        const response = await fetch(`http://localhost:3000/api/busqueda/libros?${params}`);
+        const data = await response.json();
+        
+        if (data.status === 'ok') {
+          setResultados([{ tipo: "libros", data: data.libros }]);
+        }
+      } catch (err) {
+        console.error('Error en búsqueda por género:', err);
+        setResultados([]);
+      }
       return;
     }
 
-    // Si no hay texto, limpiar resultados
     if (termino === "") {
       setResultados([]);
       return;
     }
 
-    // Buscar usuarios y libros por texto
-    const usuariosFiltrados = usuarios.filter((u) =>
-      u.nombre.toLowerCase().includes(termino)
-    );
-    const librosFiltrados = libros.filter((l) =>
-      l.titulo.toLowerCase().includes(termino)
-    );
 
-    setResultados([
-      { tipo: "usuarios", data: usuariosFiltrados },
-      { tipo: "libros", data: librosFiltrados },
-    ]);
+    try {
+      const response = await fetch(`http://localhost:3000/api/busqueda?q=${encodeURIComponent(termino)}`);
+      
+      if (!response.ok) {
+        console.error('Error HTTP:', response.status, response.statusText);
+        setResultados([]);
+        return;
+      }
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        console.error('La respuesta no es JSON. Content-Type:', contentType);
+        const text = await response.text();
+        console.error('Contenido recibido:', text.substring(0, 200));
+        setResultados([]);
+        return;
+      }
+
+      const data = await response.json();
+      
+      if (data.status === 'ok') {
+         console.log('Datos recibidos:', data); 
+         console.log('Usuarios:', data.usuarios); 
+        setResultados([
+          { tipo: "usuarios", data: data.usuarios || [] },
+          { tipo: "libros", data: data.libros || [] }
+        ]);
+      }
+    } catch (err) {
+      console.error('Error en búsqueda general:', err);
+      setResultados([]);
+    }
   };
 
   return (
@@ -124,9 +102,11 @@ const Busqueda = () => {
           onChange={(e) => setCategoria(e.target.value)}
         >
           <option value="">Seleccionar categoría</option>
-          <option value="terror">Terror</option>
-          <option value="fantasía">Fantasía</option>
-          <option value="romance">Romance</option>
+          {generos.map((genero) => (
+            <option key={genero.id} value={genero.nombre}>
+              {genero.nombre}
+            </option>
+          ))}
         </select>
 
         <button onClick={manejarBusqueda}>BUSCAR</button>
@@ -139,29 +119,32 @@ const Busqueda = () => {
           resultados.map((grupo, i) =>
             grupo.data.length > 0 ? (
               <div key={i}>
-
-
                 {grupo.tipo === "usuarios" ? (
                   <div className="usuarios">
                     {grupo.data.map((usuario) => (
-                      <a href="/usuario/">
-                        <div className="usuario" key={usuario.id}>
-                          <img src="/src/img/perfil.webp" alt="" />
-
-
-                          <p>{usuario.nombre}</p>
-
+                      <a href={`/usuario/${usuario.id}`} key={usuario.id}>
+                        <div className="usuario">
+                          <img 
+                            src={`${usuario.url_avatar}`} 
+                            alt={usuario.nombre_usuario}
+                          />
+                          <p>{usuario.nombre_usuario}</p>
                         </div>
                       </a>
-
                     ))}
                   </div>
                 ) : (
                   <div className="book-grid2">
                     {grupo.data.map((libro) => (
                       <div className="book-item2" key={libro.id}>
-                        <a href="/libro">
-                          <img src={libro.imagen} alt={libro.titulo} />
+                        <a href={`/libro/${libro.id}`}>
+                          <img 
+                            src={libro.url_portada || "/src/img/libro.webp"} 
+                            alt={libro.titulo}
+                            onError={(e) => {
+                              e.target.src = "/src/img/libro.webp";
+                            }}
+                          />
                         </a>
                       </div>
                     ))}

@@ -1,231 +1,185 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '/src/componentes/administracion/admin.css';
+
 import ModalEditarUsuario from '/src/componentes/modals/usuario/ModalEditarUsuario.jsx';
 import ModalCrearUsuario from '/src/componentes/modals/usuario/ModalCrearUsuario.jsx';
-import axios from 'axios'; 
+import ModalNoCuenta from '/src/componentes/modals/usuario/ModalNoCuenta.jsx';
 
-const Usuarios = () => {
-  const [usuarios, setUsuarios] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [buscador, setBuscador] = useState('');
-  const [mostrarModalEditar, setMostrarModalEditar] = useState(false);
-  const [mostrarModalCrear, setMostrarModalCrear] = useState(false);
-  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
+import usePaginacion from "/src/hooks/usePaginacion.jsx";
 
-  const token = localStorage.getItem('token');
+export default function Usuarios({
+    usuarios,
+    loading,
+    fetchUsuarios,
+    crearUsuario,
+    actualizarUsuario,
+    eliminarUsuario
+}) {
 
-  const api = axios.create({
-    baseURL: 'http://localhost:3000/api',
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
+    const [buscador, setBuscador] = useState("");
+    const [listaProcesada, setListaProcesada] = useState([]);
 
+    const pag = usePaginacion(listaProcesada, 10);
 
-  const fetchUsuarios = async () => {
-    setLoading(true);
-    try {
-      const res = await api.get('/usuarios/admin');
+    const Buscar = () => {
+        const q = buscador.toLowerCase();
 
-      const data = res.data;
-      if (data.status !== 'ok') throw new Error(data.message);
+        const filtrados = usuarios.filter(u =>
+            (u.nombre || "").toLowerCase().includes(q) ||
+            (u.nombre_usuario || "").toLowerCase().includes(q) ||
+            (u.correo || "").toLowerCase().includes(q) ||
+            (u.rol || "").toLowerCase().includes(q)
+        );
 
-      setUsuarios(data.usuarios);
-    } catch (err) {
-      let errorMsg = 'Error al traer usuarios';
-      if (err.response) { 
-        errorMsg = err.response.data.message || err.message;
-      } else if (err.request) { 
-        errorMsg = 'No se pudo conectar al servidor';
-      } else { 
-        errorMsg = err.message;
-      }
-      alert(errorMsg);
-    } finally {
-      setLoading(false);
-    }
-  };
+        setListaProcesada(filtrados);
+        pag.setPaginaActual(0);
+    };
 
-  useEffect(() => {
-    fetchUsuarios();
-  }, []);
+    useEffect(() => {
+        if (buscador.trim() === "") {
+            setListaProcesada(usuarios);
+            pag.setPaginaActual(0);
+        }
+    }, [buscador]);
 
-  const crearUsuario = async (datos) => {
-    try {
-      const body = {
-        nombre: datos.nombre,               
-        nombre_usuario: datos.nombreUsuario,  
-        correo: datos.correo,                
-        contrasena: datos.contrasenaHash,     
-      };
+    useEffect(() => {
+        setListaProcesada(usuarios);
+        pag.setPaginaActual(0);
+    }, [usuarios]);
 
-      const res = await axios.post('http://localhost:3000/api/usuarios/registro', body);
+    const [modalEditar, setModalEditar] = useState(false);
+    const [modalCrear, setModalCrear] = useState(false);
+    const [modalSinCuenta, setModalSinCuenta] = useState(false);
 
-      const data = res.data;
-      if (data.status !== 'ok') {
-        throw new Error(data.message || 'Error en el registro');
-      }
+    const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
 
-      alert('Usuario registrado exitosamente');
-      setMostrarModalCrear(false);
-      fetchUsuarios(); 
-    } catch (err) {
-      let errorMsg = 'Error al crear usuario';
-      if (err.response) {
-        errorMsg = err.response.data.message || err.message;
-      } else if (err.request) {
-        errorMsg = 'No se pudo conectar al servidor';
-      } else {
-        errorMsg = err.message;
-      }
-      alert(errorMsg);
-    }
-  };
+    const Editar = (usuario) => {
+        setUsuarioSeleccionado(usuario);
+        setModalEditar(true);
+    };
 
 
-  const Borrar = async (id) => {
-    if (!window.confirm('¿Seguro deseas eliminar este usuario?')) return;
+    const Nuevo = () => setModalCrear(true);
 
-    try {
-      const res = await api.delete(`/usuarios/admin/${id}`);
+    const cerrarEditar = () => setModalEditar(false);
+    const cerrarCrear = () => setModalCrear(false);
+    const cerrarNoCuenta = () => setModalSinCuenta(false);
 
-      const data = res.data;
-      if (data.status !== 'ok') throw new Error(data.message);
+    const Borrar = async (id) => {
+        if (!confirm("¿Seguro deseas eliminar este usuario?")) return;
 
-      alert('Usuario eliminado');
-      setUsuarios(prev => prev.filter(u => u.id !== id));
-    } catch (err) {
-      let errorMsg = 'Error al eliminar usuario';
-      if (err.response) {
-        errorMsg = err.response.data.message || err.message;
-      } else if (err.request) {
-        errorMsg = 'No se pudo conectar al servidor';
-      } else {
-        errorMsg = err.message;
-      }
-      alert(errorMsg);
-    }
-  };
+        const res = await eliminarUsuario(id);
+        if (res.success) fetchUsuarios();
+    };
 
-  const Editar = (usuario) => {
-    setUsuarioSeleccionado(usuario);
-    setMostrarModalEditar(true);
-  };
+    return (
+        <div>
 
-  const cerrarModalEditar = () => {
-    setMostrarModalEditar(false);
-    setUsuarioSeleccionado(null);
-    fetchUsuarios();
-  };
+            <div className="acciones">
+                <input
+                    type="text"
+                    placeholder="Buscar usuario..."
+                    value={buscador}
+                    onChange={(e) => setBuscador(e.target.value)}
+                    className="InputAdmin"
+                />
 
-  const guardarUsuario = async (datos) => {
-    try {
-      const body = {
-          nombre: datos.nombre,
-          nombre_usuario: datos.nombre_usuario,
-          correo: datos.correo
-      };
+                <button className="Buscar" onClick={Buscar}>Buscar</button>
+
+                <button className="Refrescar" onClick={fetchUsuarios}>
+                    {loading ? "Cargando..." : "Refrescar"}
+                </button>
+
+                <button className="Nuevo" onClick={Nuevo}>
+                    Nuevo
+                </button>
+            </div>
+
+            <table id="t01">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>NOMBRE USUARIO</th>
+                        <th>NOMBRE</th>
+                        <th>CORREO</th>
+                        <th>ROL</th>
+                        <th>ACCIONES</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {pag.paginaItems.map(usuario => (
+                        <tr key={usuario.id}>
+                            <td>{usuario.id}</td>
+
+                            <td style={{ fontWeight: "bold" }}>
+                                {usuario.nombre_usuario}
+                            </td>
+
+                            <td>{usuario.nombre}</td>
+
+                            <td>{usuario.correo}</td>
+
+                            <td>{usuario.rol}</td>
+
+                            <td>
+                                <button className="Editar" onClick={() => Editar(usuario)}>Editar</button>
+                                <button className="Borrar" onClick={() => Borrar(usuario.id)}>Borrar</button>
+                            </td>
+                        </tr>
+                    ))}
+
+                    {!loading && pag.paginaItems.length === 0 && (
+                        <tr><td colSpan="6">No hay resultados.</td></tr>
+                    )}
+                </tbody>
+            </table>
+
+            {listaProcesada.length > 0 && (
+                <div style={{ textAlign: "center", marginTop: 20 }}>
+                    <button
+                        className="Editar"
+                        onClick={pag.paginaAnterior}
+                        disabled={pag.paginaActual === 0}
+                    >
+                        ← Anterior
+                    </button>
+
+                    <span style={{ margin: "0 15px" }}>
+                        Página {pag.paginaActual + 1} de {pag.totalPaginas}
+                    </span>
+
+                    <button
+                        className="Editar"
+                        onClick={pag.siguientePagina}
+                        disabled={pag.paginaActual + 1 >= pag.totalPaginas}
+                    >
+                        Siguiente →
+                    </button>
+                </div>
+            )}
+
+            {modalEditar && usuarioSeleccionado && (
+                <ModalEditarUsuario
+                    usuario={usuarioSeleccionado}
+                    alCerrar={cerrarEditar}
+                    alGuardar={actualizarUsuario}
+                />
+            )}
+
+            {modalCrear && (
+                <ModalCrearUsuario
+                    alCerrar={cerrarCrear}
+                    alGuardar={crearUsuario}
+                />
+            )}
 
 
-      const res = await api.put(`/usuarios/admin/${usuarioSeleccionado.id}`, body);
-
-
-      const data = res.data;
-      if (data.status !== 'ok') throw new Error(data.message);
-
-      alert('Usuario actualizado correctamente');
-      cerrarModalEditar();
-    } catch (err) {
-
-      let errorMsg = 'Error actualizando usuario';
-      if (err.response) {
-        errorMsg = err.response.data.message || err.message;
-      } else if (err.request) {
-        errorMsg = 'No se pudo conectar al servidor';
-      } else {
-        errorMsg = err.message;
-      }
-      alert(errorMsg);
-    }
-  };
-
-
-  const Buscar = () => {
-    const text = buscador.toLowerCase();
-    const filtrados = usuarios.filter(u =>
-      (u.nombre_usuario || '').toLowerCase().includes(text) ||
-      (u.nombre || '').toLowerCase().includes(text) ||
-      (u.correo || '').toLowerCase().includes(text)
+            {modalSinCuenta && (
+                <ModalNoCuenta
+                    alCerrar={cerrarNoCuenta}
+                />
+            )}
+        </div>
     );
-    if (filtrados.length === 0) {
-      alert('Sin resultados');
-    } else {
-      setUsuarios(filtrados);
-    }
-  };
-
-  return (
-    <div>
-      <div className="acciones">
-        <input
-          type="text"
-          placeholder="Buscar usuario"
-          value={buscador}
-          onChange={(e) => setBuscador(e.target.value)}
-          className="InputAdmin"
-        />
-        <button className="Buscar" onClick={Buscar}>Buscar</button>
-        <button className="Nuevo" onClick={() => setMostrarModalCrear(true)}>Nuevo</button>
-        <button className="Refrescar" onClick={fetchUsuarios}>
-          {loading ? 'Cargando...' : 'Refrescar'}
-        </button>
-      </div>
-
-      <table id="t01">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>USUARIO</th>
-            <th>ROL</th>
-            <th>FECHA REGISTRO</th>
-            <th>ACCIONES</th>
-          </tr>
-        </thead>
-        <tbody>
-          {usuarios.map(usuario => (
-            <tr key={usuario.id}>
-              <td>{usuario.id}</td>
-              <td>
-                <p style={{ fontWeight: 'bold', margin: 0 }}>{usuario.nombre_usuario}</p>
-                <span style={{ fontSize: '12px', color: '#555' }}>{usuario.correo}</span>
-              </td>
-              <td>{usuario.rol}</td>
-              <td>{usuario.fecha_creacion}</td>
-              <td>
-                <button className="Editar" onClick={() => Editar(usuario)}>Editar</button>
-                <button className="Borrar" onClick={() => Borrar(usuario.id)}>Borrar</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {mostrarModalEditar && usuarioSeleccionado && (
-        <ModalEditarUsuario
-          usuario={usuarioSeleccionado}
-          alCerrar={cerrarModalEditar}
-          alGuardar={guardarUsuario}
-        />
-      )}
-
-      {mostrarModalCrear && (
-        <ModalCrearUsuario
-          alCerrar={() => setMostrarModalCrear(false)}
-          alGuardar={crearUsuario}
-        />
-      )}
-    </div>
-  );
-};
-
-export default Usuarios;
+}

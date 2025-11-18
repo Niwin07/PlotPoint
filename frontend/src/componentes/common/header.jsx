@@ -13,20 +13,18 @@ const Header = () => {
 
     const cerrarSesion = () => {
         localStorage.removeItem("usuario");
-        setIsLogged(false);     // actualiza el estado
+        localStorage.removeItem("token");
+        setIsLogged(false);    
         setIsAdmin(false);
         window.location.href = "/iniciarsesion";
     };
     useEffect(() => {
 
-
-        //este useEffect se encarga de que el menu desplegable se active y funcione al estar en tamaño de un dispositivo movil
-        //activa una clase del css que se encargara de mostrar el menu desplegado si tocas el menu 
         let header = document.querySelector('.header');
         let navbar = document.querySelector('.header .flex .navbar');
         let menuBtn = document.getElementById('menu-btn');
 
-        // Leer usuario del localStorage
+
 
         const usuario = JSON.parse(localStorage.getItem("usuario"));
         const miId = usuario?.id;
@@ -62,7 +60,6 @@ const Header = () => {
         if (menuBtn) menuBtn.onclick = handleMenuClick;
         window.addEventListener('scroll', handleScroll);
 
-        // Limpieza
         return () => {
             if (menuBtn) menuBtn.onclick = null;
             window.removeEventListener('scroll', handleScroll);

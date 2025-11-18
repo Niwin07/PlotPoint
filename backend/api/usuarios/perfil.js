@@ -326,5 +326,25 @@ router.obtenerPublico = async function(req, res, next) {
     }
 };
 
+router.delete('/borrar-cuenta', async function(req, res, next) {
+    const id = req.usuario.id;
+    try {
+        // Eliminar usuario de la base de datos
+        const sqlDelete = "DELETE FROM Usuario WHERE id = ?";
+        await db.query(sqlDelete, [id]);
+        console.log(`Usuario con ID ${id} eliminado.`);
+
+        res.json({
+            status: 'ok',
+            message: 'Cuenta eliminada exitosamente'
+        });
+
+    } catch (error) { 
+        console.error(error);
+        res.status(500).json({
+            error: 'Error al borrar la cuenta'
+        });
+    }
+}); 
 
 module.exports = router;

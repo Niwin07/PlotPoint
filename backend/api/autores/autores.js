@@ -4,16 +4,29 @@ const db = require('../../conexion');
 exports.listar = async function(req, res, next) {
     const { busqueda } = req.query;
 
-    let sql = "SELECT id, nombre, apellido, nacionalidad FROM Autor";
+    // Modificamos el SQL para incluir el conteo de libros
+    let sql = `
+        SELECT 
+            a.id, 
+            a.nombre, 
+            a.apellido, 
+            a.nacionalidad,
+            COUNT(l.id) as libros
+        FROM Autor a
+        LEFT JOIN Libro l ON a.id = l.autor_id
+    `;
+    
     let params = [];
     
     if (busqueda) {
-        sql += " WHERE nombre LIKE ? OR apellido LIKE ? OR nacionalidad LIKE ?";
+        sql += " WHERE a.nombre LIKE ? OR a.apellido LIKE ? OR a.nacionalidad LIKE ?";
         const busquedaParcial = `%${busqueda}%`;
         params = [busquedaParcial, busquedaParcial, busquedaParcial];
     }
 
-    sql += " ORDER BY apellido, nombre";
+    // Importante: GROUP BY para que COUNT funcione correctamente
+    sql += " GROUP BY a.id, a.nombre, a.apellido, a.nacionalidad";
+    sql += " ORDER BY a.apellido, a.nombre";
 
     try {
         const [rows] = await db.query(sql, params);
@@ -36,7 +49,19 @@ exports.obtener = async function(req, res, next) {
     const { id } = req.params;
 
     try {
-        const sql = "SELECT id, nombre, apellido, nacionalidad FROM Autor WHERE id = ?";
+        // También agregamos el conteo aquí
+        const sql = `
+            SELECT 
+                a.id, 
+                a.nombre, 
+                a.apellido, 
+                a.nacionalidad,
+                COUNT(l.id) as libros
+            FROM Autor a
+            LEFT JOIN Libro l ON a.id = l.autor_id
+            WHERE a.id = ?
+            GROUP BY a.id, a.nombre, a.apellido, a.nacionalidad
+        `;
         const [rows] = await db.query(sql, [id]);
 
         if (rows.length === 0) {
@@ -46,7 +71,7 @@ exports.obtener = async function(req, res, next) {
             });
         }
 
-        // Obtener libros del autor
+        // Obtener detalles de los libros del autor
         const sqlLibros = `
             SELECT id, titulo, anio_publicacion 
             FROM Libro 
@@ -56,8 +81,11 @@ exports.obtener = async function(req, res, next) {
         const [libros] = await db.query(sqlLibros, [id]);
 
         res.json({ 
-            ...rows[0],
-            libros: libros 
+            status: 'ok',
+            autor: {
+                ...rows[0],
+                detalleLibros: libros // Los detalles van en un campo aparte
+            }
         });
     } catch (error) {
         console.error(error);

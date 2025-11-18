@@ -3,6 +3,7 @@ const db = require('../../conexion');
 const { hashPass } = require('@damianegreco/hashpass');
 const verificarAdmin = require('../middlewares/admin');
 
+
 // Todas las rutas requieren rol de administrador
 router.use(verificarAdmin);
 
@@ -169,5 +170,7 @@ router.delete('/:user_id', async function (req, res, next) {
         });
     }
 });
+
+
 
 module.exports = router;
