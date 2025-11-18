@@ -4,7 +4,7 @@ import ReseñaCard from "../home/ReseñaCard";
 
 
 
-const ListaReseñas = ({ usuarioId }) => { // Solo necesita el ID del usuario a mostrar
+const ListaReseñas = ({ usuarioId }) => { 
   const BACKEND_URL = 'http://localhost:3000';
   const miId = JSON.parse(localStorage.getItem("usuario"))?.id;
 
@@ -13,10 +13,9 @@ const ListaReseñas = ({ usuarioId }) => { // Solo necesita el ID del usuario a 
 
   const fetchReseñas = async () => {
     setLoading(true);
-    if (!usuarioId) return; // No hacer nada si no hay ID
+    if (!usuarioId) return; 
 
     try {
-      // Siempre usa el endpoint público para obtener reseñas de un usuario específico
       const url = `${BACKEND_URL}/api/resenas?usuario_id=${usuarioId}`;
       const res = await axios.get(url);
       setReseñas(res.data.resenas);
@@ -30,7 +29,7 @@ const ListaReseñas = ({ usuarioId }) => { // Solo necesita el ID del usuario a 
 
   useEffect(() => {
     fetchReseñas();
-  }, [usuarioId]); // Se actualiza solo si el usuarioId cambia
+  }, [usuarioId]); 
 
   if (loading) {
     return <div style={{ padding: '20px', color: 'white' }}>Cargando reseñas...</div>;
@@ -45,7 +44,7 @@ const ListaReseñas = ({ usuarioId }) => { // Solo necesita el ID del usuario a 
       {reseñas.map((r) => (
         <ReseñaCard
           key={r.id}
-          id={r.id} // ID de la reseña para el link
+          id={r.id} 
           libro_titulo={r.libro_titulo}
           nombre_usuario={r.nombre_usuario}
           url_portada={r.url_portada}

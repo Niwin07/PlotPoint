@@ -138,7 +138,7 @@ export default function ReviewDetail() {
         <div className="usuario-reseña">
           <Link href={`/usuario/${review.usuario_id}`}>
             <img
-              src={review.url_avatar ? `${BACKEND_URL}${review.url_avatar}` : '/path/to/default/avatar.png'}
+              src={review.url_avatar ? `${review.url_avatar}` : '/path/to/default/avatar.png'}
               alt={review.nombre_usuario}
               className="foto-perfil"
             />
@@ -195,7 +195,7 @@ export default function ReviewDetail() {
             <div className="review-header">
               <Link href={`/usuario/${comment.usuario_id}`}>
                 <img
-                  src={comment.url_avatar ? `${BACKEND_URL}${comment.url_avatar}` : '/path/to/default/avatar.png'}
+                  src={comment.url_avatar ? `${comment.url_avatar}` : '/path/to/default/avatar.png'}
                   alt={comment.nombre_usuario}
                   className="foto-perfil"
                 />

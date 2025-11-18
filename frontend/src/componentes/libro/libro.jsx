@@ -264,7 +264,7 @@ export default function BookPage() {
                 <Link href={`/reseñalibro/${review.id || review._id}`}>
                   <div className="review-header">
                     <div className="avatar-foto">
-                      <img src={review.url_avatar ? `${BACKEND_URL}${review.url_avatar}` : ''} alt={review.nombre_usuario} />
+                      <img src={review.url_avatar ? `${review.url_avatar}` : ''} alt={review.nombre_usuario} />
                     </div>
                     <p className="review-user">{review.nombre_usuario}</p>
                     <div className="review-stars">

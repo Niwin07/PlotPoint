@@ -1,9 +1,15 @@
+const router = require('express').Router();
 const db = require('../../conexion');
 const fileUpload = require("express-fileupload");
 const path = require('path');
 const fs = require("fs");
+
+const verificarToken = require('../middlewares/auth');
+const verificarAdmin = require('../middlewares/admin');
+
 const directorio = path.join(__dirname, "..", "..", "uploads", "portadas");
 const BASE_URL = 'http://localhost:3000';
+
 if (!fs.existsSync(directorio)){
     fs.mkdirSync(directorio, { recursive: true });
 }
@@ -15,67 +21,49 @@ const transformarLibro = (libro) => {
     return libro;
 };
 
-// GET /api/libros - Listar todos los libros con información completa
-exports.listar = async function(req, res, next) {
+router.get('/', async (req, res) => {
     const { random, promedio, busqueda, autor_id, editorial_id, genero_id } = req.query;
 
     try {
-        if (random){
-            const sqlRandom= `
-            SELECT
-                id,
-                titulo,
-                url_portada
-            FROM
-                Libro
-            ORDER BY
-                RAND()
+        if (random) {
+            const sqlRandom = `
+            SELECT id, titulo, url_portada
+            FROM Libro
+            ORDER BY RAND()
             LIMIT 6;
-            `
+            `;
             const [libros] = await db.query(sqlRandom);
-            
-            const librosTransformados = libros.map(transformarLibro);
-            
             return res.json({ 
-                status: 'ok', 
-                libros: librosTransformados,
-                total: librosTransformados.length 
+                status: 'ok',
+                libros: libros.map(transformarLibro),
+                total: libros.length 
             });
         }
 
         if (promedio) {
             const sqlPromedio = `
-                SELECT
-                    L.id,
-                    L.titulo,
-                    L.url_portada,
+                SELECT 
+                    L.id, L.titulo, L.url_portada,
                     AVG(R.puntuacion) AS promedio_puntuacion
-                FROM
-                    Resena AS R
-                    JOIN Libro AS L ON R.libro_id = L.id
-                GROUP BY
-                    L.id, L.titulo, L.url_portada
-                ORDER BY
-                    promedio_puntuacion DESC
+                FROM Resena R
+                JOIN Libro L ON R.libro_id = L.id
+                GROUP BY L.id, L.titulo, L.url_portada
+                ORDER BY promedio_puntuacion DESC
                 LIMIT 6;
             `;
-            
             const [libros] = await db.query(sqlPromedio);
-            
-            const librosTransformados = libros.map(transformarLibro);
-
             return res.json({ 
-                status: 'ok', 
-                libros: librosTransformados, 
-                total: librosTransformados.length 
+                status: 'ok',
+                libros: libros.map(transformarLibro),
+                total: libros.length
             });
-        } 
-        
+        }
+
         const isAdmin = req.usuario && req.usuario.rol === 'admin';
         if ((autor_id || editorial_id || genero_id) && !isAdmin) {
             return res.status(403).json({
                 error: 'Acceso denegado',
-                message: 'Los filtros por autor, editorial y género están disponibles solo para administradores'
+                message: 'Los filtros por autor, editorial y género son solo para administradores'
             });
         }
 
@@ -85,85 +73,87 @@ exports.listar = async function(req, res, next) {
                 l.paginas, l.anio_publicacion,
                 a.id as autor_id, a.nombre as autor_nombre, a.apellido as autor_apellido,
                 e.id as editorial_id, e.nombre as editorial_nombre,
+                
                 GROUP_CONCAT(
-                    DISTINCT CONCAT(g.id, ':', g.nombre) 
-                    ORDER BY g.nombre 
+                    DISTINCT CONCAT(g.id, ':', g.nombre)
+                    ORDER BY g.nombre
                     SEPARATOR '|'
-                ) as generos_concatenados
+                ) AS generos_concatenados
+
             FROM Libro l
             LEFT JOIN Autor a ON l.autor_id = a.id
             LEFT JOIN Editorial e ON l.editorial_id = e.id
             LEFT JOIN LibroGenero lg ON l.id = lg.libro_id
             LEFT JOIN Genero g ON lg.genero_id = g.id
         `;
-        
+
         let conditions = [];
         let params = [];
-        
+
         if (busqueda) {
             conditions.push("(l.titulo LIKE ? OR l.isbn LIKE ? OR a.nombre LIKE ? OR a.apellido LIKE ?)");
-            const busquedaParcial = `%${busqueda}%`;
-            params.push(busquedaParcial, busquedaParcial, busquedaParcial, busquedaParcial);
+            const str = `%${busqueda}%`;
+            params.push(str, str, str, str);
         }
-        
+
         if (isAdmin && autor_id) {
             conditions.push("l.autor_id = ?");
             params.push(autor_id);
         }
-        
+
         if (isAdmin && editorial_id) {
             conditions.push("l.editorial_id = ?");
             params.push(editorial_id);
         }
-        
+
         if (isAdmin && genero_id) {
             conditions.push("l.id IN (SELECT libro_id FROM LibroGenero WHERE genero_id = ?)");
             params.push(genero_id);
         }
-        
+
         if (conditions.length > 0) {
             sql += " WHERE " + conditions.join(" AND ");
         }
-        
-        sql += " GROUP BY l.id, l.titulo, l.isbn, l.sinopsis, l.url_portada, l.paginas, l.anio_publicacion, a.id, a.nombre, a.apellido, e.id, e.nombre";
-        sql += " ORDER BY l.titulo";
+
+        sql += `
+            GROUP BY 
+                l.id, l.titulo, l.isbn, l.sinopsis, 
+                l.url_portada, l.paginas, l.anio_publicacion,
+                a.id, a.nombre, a.apellido, 
+                e.id, e.nombre
+            ORDER BY l.titulo;
+        `;
 
         const [libros] = await db.query(sql, params);
-        
-        const librosConGeneros = libros.map(libro => {
-            let generos = [];
-            if (libro.generos_concatenados) {
-                generos = libro.generos_concatenados.split('|').map(item => {
+
+        const librosFinal = libros.map(libro => {
+            const generos = libro.generos_concatenados
+                ? libro.generos_concatenados.split('|').map(item => {
                     const [id, nombre] = item.split(':');
                     return { id: parseInt(id), nombre };
-                });
-            }
-            
-            const { generos_concatenados, ...libroSinConcatenados } = libro;
-            
-            return transformarLibro({
-                ...libroSinConcatenados,
-                generos
-            });
+                })
+                : [];
+
+            const { generos_concatenados, ...resto } = libro;
+            return transformarLibro({ ...resto, generos });
         });
-            
-        res.json({ 
-            status: 'ok', 
-            libros: librosConGeneros, 
-            total: librosConGeneros.length 
+
+        res.json({
+            status: 'ok',
+            libros: librosFinal,
+            total: librosFinal.length
         });
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({ 
+        res.status(500).json({
             error: 'Error del servidor',
-            message: 'Error al obtener libros' 
+            message: 'Error al obtener libros'
         });
     }
-};
+});
 
-// GET /api/libros/:id - Obtener un libro específico
-exports.obtener = async function(req, res, next) {
+router.get('/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
@@ -171,27 +161,35 @@ exports.obtener = async function(req, res, next) {
             SELECT 
                 l.id, l.titulo, l.isbn, l.sinopsis, l.url_portada, 
                 l.paginas, l.anio_publicacion,
-                a.id as autor_id, a.nombre as autor_nombre, 
-                a.apellido as autor_apellido, a.nacionalidad as autor_nacionalidad,
-                e.id as editorial_id, e.nombre as editorial_nombre, e.pais as editorial_pais
+                
+                a.id as autor_id, 
+                a.nombre as autor_nombre, 
+                a.apellido as autor_apellido, 
+                a.nacionalidad as autor_nacionalidad,
+
+                e.id as editorial_id,
+                e.nombre as editorial_nombre,
+                e.pais as editorial_pais
+
             FROM Libro l
             LEFT JOIN Autor a ON l.autor_id = a.id
             LEFT JOIN Editorial e ON l.editorial_id = e.id
             WHERE l.id = ?
         `;
+
         const [rows] = await db.query(sql, [id]);
 
         if (rows.length === 0) {
-            return res.status(404).json({ 
+            return res.status(404).json({
                 error: 'Libro no encontrado',
-                message: 'No existe un libro con ese ID' 
+                message: 'No existe un libro con ese ID'
             });
         }
 
         const libro = transformarLibro(rows[0]);
 
         const [generos] = await db.query(`
-            SELECT g.id, g.nombre, g.descripcion 
+            SELECT g.id, g.nombre, g.descripcion
             FROM Genero g
             INNER JOIN LibroGenero lg ON g.id = lg.genero_id
             WHERE lg.libro_id = ?
@@ -199,129 +197,194 @@ exports.obtener = async function(req, res, next) {
 
         libro.generos = generos;
 
-        res.json(libro); 
+        res.json(libro);
+
     } catch (error) {
         console.error(error);
-        res.status(500).json({ 
+        res.status(500).json({
             error: 'Error del servidor',
-            message: 'Error al obtener el libro' 
+            message: 'Error al obtener el libro'
         });
     }
-};
+});
 
-// POST /api/libros - Crear un nuevo libro
-exports.crear = [
-    fileUpload(),
-    async function(req, res, next) {
-        const { 
-            titulo, isbn, sinopsis, paginas, anio_publicacion, 
-            autor_id, editorial_id
-        } = req.body;
-
-        let generos = req.body['generos[]'];
-        
-        if (generos && !Array.isArray(generos)) {
-            generos = [generos];
-        }
-
-        console.log('📦 Datos recibidos:', { titulo, autor_id, editorial_id, generos });
-
-        // Validaciones
-        if (!titulo) {
-            return res.status(400).json({ 
-                error: 'Datos incompletos',
-                message: 'El título del libro es requerido' 
-            });
-        }
-
-        if (!req.files || !req.files.portada) {
-            return res.status(400).json({ 
-                error: 'No hay archivo',
-                message: 'Debe enviar un archivo con el nombre "portada"' 
-            });
-        }
-
-        const { portada } = req.files;
-
-        const extension = path.extname(portada.name).toLowerCase();
-        const extensionesPermitidas = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
-        
-        if (!extensionesPermitidas.includes(extension)) {
-            return res.status(400).json({ 
-                error: 'Archivo no permitido',
-                message: 'Solo se permiten imágenes (jpg, jpeg, png, gif, webp)' 
-            });
-        }
-
-        const maxSize = 5 * 1024 * 1024;
-        if (portada.size > maxSize) {
-            return res.status(400).json({ 
-                error: 'Archivo muy grande',
-                message: 'El archivo no debe superar los 5MB' 
-            });
-        }
-
-        try {
-            const nombreArchivo = `portada_${Date.now()}${extension}`;
-            const filepath = path.join(directorio, nombreArchivo);
-            
-            await portada.mv(filepath);
-
-            const sql = `
-                INSERT INTO Libro 
-                (titulo, isbn, sinopsis, url_portada, paginas, anio_publicacion, autor_id, editorial_id) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            `;
-            
-            const [result] = await db.query(sql, [
-                titulo.trim(),
-                isbn ? isbn.trim() : null,
-                sinopsis ? sinopsis.trim() : null,
-                `/uploads/portadas/${nombreArchivo}`,
-                paginas || null,
-                anio_publicacion || null,
-                autor_id || null,
-                editorial_id || null
-            ]);
-
-            const libroId = result.insertId;
-
-            if (generos && Array.isArray(generos) && generos.length > 0) {
-                const sqlGeneros = "INSERT INTO LibroGenero (libro_id, genero_id) VALUES ?";
-                const valuesGeneros = generos.map(genero_id => [libroId, parseInt(genero_id)]);
-                await db.query(sqlGeneros, [valuesGeneros]);
-                console.log('✅ Géneros insertados:', valuesGeneros);
-            }
-
-            res.status(201).json({ 
-                status: 'ok',
-                message: 'Libro creado exitosamente',
-                id: libroId
-            });
-        } catch (error) {
-            console.error('❌ Error al crear libro:', error);
-            res.status(500).json({ 
-                error: 'Error del servidor',
-                message: 'Error al crear el libro' 
-            });
-        }
-    }
-];
-
-// PUT /api/libros/:id - Actualizar un libro
-exports.actualizar = async function(req, res, next) {
-    const { id } = req.params;
+router.post('/', verificarToken, verificarAdmin, fileUpload(), async (req, res) => {
     const { 
-        titulo, isbn, sinopsis, url_portada, 
-        paginas, anio_publicacion, 
-        autor_id, editorial_id, generos 
+        titulo, isbn, sinopsis, paginas, anio_publicacion,
+        autor_id, editorial_id
     } = req.body;
 
-    if (!titulo && !isbn && !sinopsis && url_portada === undefined && 
-        !paginas && !anio_publicacion && autor_id === undefined && editorial_id === undefined && !generos) {
-        return res.status(400).json({ 
+    let generos = req.body['generos[]'];
+
+    if (generos && !Array.isArray(generos)) {
+        generos = [generos];
+    }
+
+    console.log('📦 Datos recibidos:', { titulo, autor_id, editorial_id, generos });
+
+    if (!titulo) {
+        return res.status(400).json({
             error: 'Datos incompletos',
-            message: 'Debe proporcionar al menos un campo para actualizar' 
+            message: 'El título del libro es requerido'
+        });
+    }
+
+    if (!req.files || !req.files.portada) {
+        return res.status(400).json({
+            error: 'No hay archivo',
+            message: 'Debe enviar un archivo con el campo "portada"'
+        });
+    }
+
+    const { portada } = req.files;
+
+    const extension = path.extname(portada.name).toLowerCase();
+    const extensionesPermitidas = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+
+    if (!extensionesPermitidas.includes(extension)) {
+        return res.status(400).json({
+            error: 'Archivo no permitido',
+            message: 'Solo se permiten imágenes (jpg, jpeg, png, gif, webp)'
+        });
+    }
+
+    const maxSize = 5 * 1024 * 1024;
+    if (portada.size > maxSize) {
+        return res.status(400).json({
+            error: 'Archivo muy grande',
+            message: 'El archivo no debe superar 5MB'
+        });
+    }
+
+    try {
+        const nombreArchivo = `portada_${Date.now()}${extension}`;
+        const filepath = path.join(directorio, nombreArchivo);
+
+        await portada.mv(filepath);
+
+        const sql = `
+            INSERT INTO Libro 
+            (titulo, isbn, sinopsis, url_portada, paginas, anio_publicacion, autor_id, editorial_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+
+        const [result] = await db.query(sql, [
+            titulo.trim(),
+            isbn ? isbn.trim() : null,
+            sinopsis ? sinopsis.trim() : null,
+            `/uploads/portadas/${nombreArchivo}`,
+            paginas || null,
+            anio_publicacion || null,
+            autor_id || null,
+            editorial_id || null
+        ]);
+
+        const libroId = result.insertId;
+
+        if (generos && Array.isArray(generos) && generos.length > 0) {
+            const sqlGeneros = "INSERT INTO LibroGenero (libro_id, genero_id) VALUES ?";
+            const valuesGeneros = generos.map(g => [libroId, parseInt(g)]);
+            await db.query(sqlGeneros, [valuesGeneros]);
+        }
+
+        res.status(201).json({
+            status: 'ok',
+            message: 'Libro creado exitosamente',
+            id: libroId
+        });
+
+    } catch (error) {
+        console.error('❌ Error al crear libro:', error);
+        res.status(500).json({
+            error: 'Error del servidor',
+            message: 'Error al crear el libro'
+        });
+    }
+});
+
+router.post('/:id/upload-portada', verificarToken, verificarAdmin, fileUpload(), async (req, res) => {
+    const { id } = req.params;
+
+    if (!req.files || !req.files.portada) {
+        return res.status(400).json({
+            error: 'No hay archivo',
+            message: 'Debe enviar un archivo con el nombre "portada"'
+        });
+    }
+
+    const { portada } = req.files;
+
+    const extension = path.extname(portada.name).toLowerCase();
+    const extensionesPermitidas = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+
+    if (!extensionesPermitidas.includes(extension)) {
+        return res.status(400).json({
+            error: 'Archivo no permitido',
+            message: 'Solo se permiten imágenes (jpg, jpeg, png, gif, webp)'
+        });
+    }
+
+    const maxSize = 5 * 1024 * 1024;
+    if (portada.size > maxSize) {
+        return res.status(400).json({
+            error: 'Archivo muy grande',
+            message: 'El archivo no debe superar 5MB'
+        });
+    }
+
+    try {
+        const [libro] = await db.query("SELECT id, url_portada FROM Libro WHERE id = ?", [id]);
+        if (libro.length === 0) {
+            return res.status(404).json({
+                error: 'Libro no encontrado',
+                message: 'No existe un libro con ese ID'
+            });
+        }
+
+        const portadaAnterior = libro[0].url_portada;
+        if (portadaAnterior && portadaAnterior.startsWith('/uploads/portadas/') && !portadaAnterior.includes('default')) {
+            const nombreArchivoAnterior = path.basename(portadaAnterior);
+            const filepathAnterior = path.join(directorio, nombreArchivoAnterior);
+            if (fs.existsSync(filepathAnterior)) fs.unlinkSync(filepathAnterior);
+        }
+
+        const nombreArchivo = `portada_${id}_${Date.now()}${extension}`;
+        const filepath = path.join(directorio, nombreArchivo);
+
+        await portada.mv(filepath);
+
+        const urlPortada = `/uploads/portadas/${nombreArchivo}`;
+        await db.query("UPDATE Libro SET url_portada = ? WHERE id = ?", [urlPortada, id]);
+
+        res.status(201).json({
+            status: 'ok',
+            message: 'Portada actualizada exitosamente',
+            url_portada: `${BASE_URL}${urlPortada}`
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            error: 'Error del servidor',
+            message: 'Error al subir la portada'
+        });
+    }
+});
+
+router.put('/:id', verificarToken, verificarAdmin, async (req, res) => {
+    const { id } = req.params;
+    const { 
+        titulo, isbn, sinopsis, url_portada,
+        paginas, anio_publicacion,
+        autor_id, editorial_id, generos
+    } = req.body;
+
+    if (!titulo && !isbn && !sinopsis && url_portada === undefined &&
+        !paginas && !anio_publicacion && autor_id === undefined && editorial_id === undefined &&
+        !generos) {
+        return res.status(400).json({
+            error: 'Datos incompletos',
+            message: 'Debe proporcionar al menos un campo para actualizar'
         });
     }
 
@@ -331,9 +394,9 @@ exports.actualizar = async function(req, res, next) {
 
         if (titulo) {
             if (titulo.trim().length < 1) {
-                return res.status(400).json({ 
+                return res.status(400).json({
                     error: 'Título inválido',
-                    message: 'El título no puede estar vacío' 
+                    message: 'El título no puede estar vacío'
                 });
             }
             updates.push("titulo = ?");
@@ -369,9 +432,9 @@ exports.actualizar = async function(req, res, next) {
             if (autor_id) {
                 const [autor] = await db.query("SELECT id FROM Autor WHERE id = ?", [autor_id]);
                 if (autor.length === 0) {
-                    return res.status(404).json({ 
+                    return res.status(404).json({
                         error: 'Autor no encontrado',
-                        message: 'El autor especificado no existe' 
+                        message: 'El autor especificado no existe'
                     });
                 }
             }
@@ -383,9 +446,9 @@ exports.actualizar = async function(req, res, next) {
             if (editorial_id) {
                 const [editorial] = await db.query("SELECT id FROM Editorial WHERE id = ?", [editorial_id]);
                 if (editorial.length === 0) {
-                    return res.status(404).json({ 
+                    return res.status(404).json({
                         error: 'Editorial no encontrada',
-                        message: 'La editorial especificada no existe' 
+                        message: 'La editorial especificada no existe'
                     });
                 }
             }
@@ -393,241 +456,139 @@ exports.actualizar = async function(req, res, next) {
             params.push(editorial_id || null);
         }
 
-        // Actualizar libro si hay cambios en los campos básicos
         if (updates.length > 0) {
             const sql = `UPDATE Libro SET ${updates.join(", ")} WHERE id = ?`;
             params.push(id);
-            const [result] = await db.query(sql, params);
 
+            const [result] = await db.query(sql, params);
             if (result.affectedRows === 0) {
-                return res.status(404).json({ 
+                return res.status(404).json({
                     error: 'Libro no encontrado',
-                    message: 'No existe un libro con ese ID' 
+                    message: 'No existe un libro con ese ID'
                 });
             }
         }
 
-        // Actualizar géneros si se proporcionan
         if (generos && Array.isArray(generos)) {
-            // Eliminar géneros existentes
             await db.query("DELETE FROM LibroGenero WHERE libro_id = ?", [id]);
-            
-            // Insertar nuevos géneros
+
             if (generos.length > 0) {
                 const sqlGeneros = "INSERT INTO LibroGenero (libro_id, genero_id) VALUES ?";
-                const valuesGeneros = generos.map(genero_id => [id, genero_id]);
+                const valuesGeneros = generos.map(g => [id, g]);
                 await db.query(sqlGeneros, [valuesGeneros]);
             }
         }
 
-        res.json({ 
+        res.json({
             status: 'ok',
-            message: 'Libro actualizado exitosamente' 
+            message: 'Libro actualizado exitosamente'
         });
+
     } catch (error) {
         console.error(error);
-        
+
         if (error.code === 'ER_DUP_ENTRY') {
-            return res.status(409).json({ 
+            return res.status(409).json({
                 error: 'ISBN duplicado',
-                message: 'Ya existe un libro con ese ISBN' 
+                message: 'Ya existe un libro con ese ISBN'
             });
         }
-        
-        res.status(500).json({ 
+
+        res.status(500).json({
             error: 'Error del servidor',
-            message: 'Error al actualizar el libro' 
+            message: 'Error al actualizar el libro'
         });
     }
-};
+});
 
-exports.subirPortada = [
-    fileUpload(),
-    async function(req, res, next) {
-        const { id } = req.params;
-        
-        if (!req.files || !req.files.portada) {
-            return res.status(400).json({ 
-                error: 'No hay archivo',
-                message: 'Debe enviar un archivo con el nombre "portada"' 
-            });
-        }
-        
-        const { portada } = req.files;
-        
-        const extension = path.extname(portada.name).toLowerCase();
-        const extensionesPermitidas = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
-        
-        if (!extensionesPermitidas.includes(extension)) {
-            return res.status(400).json({ 
-                error: 'Archivo no permitido',
-                message: 'Solo se permiten imágenes (jpg, jpeg, png, gif, webp)' 
-            });
-        }
-        
-        const maxSize = 5 * 1024 * 1024;
-        if (portada.size > maxSize) {
-            return res.status(400).json({ 
-                error: 'Archivo muy grande',
-                message: 'El archivo no debe superar los 5MB' 
-            });
-        }
-
-        try {
-            const [libro] = await db.query("SELECT id, url_portada FROM Libro WHERE id = ?", [id]);
-            if (libro.length === 0) {
-                return res.status(404).json({ 
-                    error: 'Libro no encontrado',
-                    message: 'No existe un libro con ese ID' 
-                });
-            }
-
-            const portadaAnterior = libro[0].url_portada;
-            if (portadaAnterior && portadaAnterior.startsWith('/uploads/portadas/') && !portadaAnterior.includes('default')) {
-                const nombreArchivoAnterior = path.basename(portadaAnterior);
-                const filepathAnterior = path.join(directorio, nombreArchivoAnterior);
-                
-                if (fs.existsSync(filepathAnterior)) {
-                    fs.unlinkSync(filepathAnterior);
-                }
-            }
-            
-            const nombreArchivo = `portada_${id}_${Date.now()}${extension}`;
-            const filepath = path.join(directorio, nombreArchivo);
-            
-            portada.mv(filepath, async function(error) { 
-                if (error) {
-                    console.error(error);
-                    return res.status(500).json({ 
-                        error: 'Error al guardar',
-                        message: 'Ocurrió un error al guardar el archivo' 
-                    });
-                }
-                
-                const urlPortada = `/uploads/portadas/${nombreArchivo}`;
-                const sql = "UPDATE Libro SET url_portada = ? WHERE id = ?";
-                
-                try {
-                    await db.query(sql, [urlPortada, id]);
-                    
-                    res.status(201).json({ 
-                        status: 'ok',
-                        message: 'Portada actualizada exitosamente',
-                        url_portada: `${BASE_URL}${urlPortada}` 
-                    });
-                } catch (dbError) {
-                    console.error(dbError);
-                    fs.unlinkSync(filepath);
-                    res.status(500).json({ 
-                        error: 'Error al actualizar',
-                        message: 'El archivo se guardó pero no se pudo actualizar la base de datos' 
-                    });
-                }
-            });
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ 
-                error: 'Error del servidor',
-                message: 'Error al procesar la solicitud' 
-            });
-        }
-    }
-];
-
-exports.eliminarPortada = async function(req, res, next) {
+router.delete('/:id/delete-portada', verificarToken, verificarAdmin, async (req, res) => {
     const { id } = req.params;
-    
+
     try {
         const [libro] = await db.query("SELECT url_portada FROM Libro WHERE id = ?", [id]);
-        
+
         if (libro.length === 0) {
-            return res.status(404).json({ 
+            return res.status(404).json({
                 error: 'Libro no encontrado',
-                message: 'No existe un libro con ese ID' 
+                message: 'No existe un libro con ese ID'
             });
         }
-        
-        const portadaActual = libro[0].url_portada;
-        
-        if (portadaActual && portadaActual.startsWith('/uploads/portadas/') && !portadaActual.includes('default')) {
-            const nombreArchivo = path.basename(portadaActual);
+
+        const url = libro[0].url_portada;
+        if (url && url.startsWith('/uploads/portadas/') && !url.includes('default')) {
+            const nombreArchivo = path.basename(url);
             const filepath = path.join(directorio, nombreArchivo);
-            
+
             if (fs.existsSync(filepath)) {
                 fs.unlinkSync(filepath);
             }
         }
-        
-        const portadaDefault = '/uploads/portadas/default.png';
-        const sqlUpdate = "UPDATE Libro SET url_portada = ? WHERE id = ?";
-        
-        await db.query(sqlUpdate, [portadaDefault, id]);
-        
-        res.json({ 
+
+        await db.query("UPDATE Libro SET url_portada = NULL WHERE id = ?", [id]);
+
+        res.json({
             status: 'ok',
-            message: 'Portada eliminada exitosamente',
-            url_portada: `${BASE_URL}${portadaDefault}` 
+            message: 'Portada eliminada correctamente'
         });
+
     } catch (error) {
         console.error(error);
-        res.status(500).json({ 
+        res.status(500).json({
             error: 'Error del servidor',
-            message: 'Error al eliminar portada' 
+            message: 'Error al eliminar la portada'
         });
     }
-};
+});
 
-exports.eliminar = async function(req, res, next) {
+router.delete('/:id', verificarToken, verificarAdmin, async (req, res) => {
     const { id } = req.params;
 
     try {
-        const [lecturas] = await db.query("SELECT COUNT(*) as total FROM Lectura WHERE libro_id = ?", [id]);
-        
-        if (lecturas[0].total > 0) {
-            return res.status(409).json({ 
-                error: 'No se puede eliminar',
-                message: `El libro tiene ${lecturas[0].total} lectura(s) asociada(s). No se puede eliminar.` 
-            });
-        }
+        const [portada] = await db.query(
+            "SELECT url_portada FROM Libro WHERE id = ?", [id]
+        );
 
-        const [libro] = await db.query("SELECT url_portada FROM Libro WHERE id = ?", [id]);
-        
-        if (libro.length === 0) {
-            return res.status(404).json({ 
-                error: 'Libro no encontrado',
-                message: 'No existe un libro con ese ID' 
-            });
-        }
+        // Borrar portada física
+        if (portada.length > 0 && portada[0].url_portada) {
+            const url = portada[0].url_portada;
 
-        const portada = libro[0].url_portada;
-        if (portada && portada.startsWith('/uploads/portadas/') && !portada.includes('default')) {
-            const nombreArchivo = path.basename(portada);
-            const filepath = path.join(directorio, nombreArchivo);
-            
-            if (fs.existsSync(filepath)) {
-                fs.unlinkSync(filepath);
+            if (url.startsWith('/uploads/portadas/') && !url.includes('default')) {
+                const nombreArchivo = path.basename(url);
+                const filepath = path.join(directorio, nombreArchivo);
+
+                if (fs.existsSync(filepath)) {
+                    fs.unlinkSync(filepath);
+                }
             }
         }
 
-        const sql = "DELETE FROM Libro WHERE id = ?";
-        const [result] = await db.query(sql, [id]);
+        await db.query("DELETE FROM LibroGenero WHERE libro_id = ?", [id]);
+
+        await db.query("DELETE FROM Resena WHERE libro_id = ?", [id]);
+
+        await db.query("DELETE FROM Likes WHERE libro_id = ?", [id]);
+
+        const [result] = await db.query("DELETE FROM Libro WHERE id = ?", [id]);
 
         if (result.affectedRows === 0) {
-            return res.status(404).json({ 
+            return res.status(404).json({
                 error: 'Libro no encontrado',
-                message: 'No existe un libro con ese ID' 
+                message: 'No existe un libro con ese ID'
             });
         }
 
-        res.json({ 
+        res.json({
             status: 'ok',
-            message: 'Libro eliminado exitosamente' 
+            message: 'Libro eliminado exitosamente'
         });
+
     } catch (error) {
         console.error(error);
-        res.status(500).json({ 
+        res.status(500).json({
             error: 'Error del servidor',
-            message: 'Error al eliminar el libro' 
+            message: 'Error al eliminar el libro'
         });
     }
-};
+});
+
+module.exports = router;

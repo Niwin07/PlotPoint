@@ -1,120 +1,121 @@
+const router = require('express').Router();
 const db = require('../../conexion');
+const verificarToken = require('../middlewares/auth');
 
-// POST /api/seguidores - seguir a un usuario 
-exports.seguirUsuario = async function(req, res, next) {
+router.post('/', verificarToken, async (req, res) => {
     const { seguido_id } = req.body;
-    const seguidor_id = req.usuario.id; // ID del usuario autenticado
+    const seguidor_id = req.usuario.id;
 
-    // Validaciones
     if (!seguido_id) {
-        return res.status(400).json({ 
+        return res.status(400).json({
             error: 'Datos incompletos',
-            message: 'El ID del usuario a seguir es requerido' 
+            message: 'El ID del usuario a seguir es requerido'
         });
     }
 
-    // Aquí implementamos la lógica que movimos de la BD (evitar auto-seguimiento)
     if (seguidor_id == seguido_id) {
-        return res.status(400).json({ 
+        return res.status(400).json({
             error: 'Acción no permitida',
-            message: 'No puedes seguirte a ti mismo' 
+            message: 'No puedes seguirte a ti mismo'
         });
     }
 
     try {
-        // Validar que el usuario a seguir existe
+        // validar si el usuario existe
         const [usuario] = await db.query("SELECT id FROM Usuario WHERE id = ?", [seguido_id]);
         if (usuario.length === 0) {
-            return res.status(404).json({ 
+            return res.status(404).json({
                 error: 'Usuario no encontrado',
-                message: 'El usuario que intentas seguir no existe' 
+                message: 'El usuario que intentas seguir no existe'
             });
         }
 
+        // insertar seguidor
         const sql = "INSERT INTO Seguidores (seguidor_id, seguido_id) VALUES (?, ?)";
         await db.query(sql, [seguidor_id, seguido_id]);
 
-        res.status(201).json({ 
+        res.status(201).json({
             status: 'ok',
             message: 'Usuario seguido exitosamente'
         });
 
     } catch (error) {
         console.error(error);
+
         if (error.code === 'ER_DUP_ENTRY') {
-            return res.status(409).json({ 
+            return res.status(409).json({
                 error: 'Ya sigues a este usuario',
-                message: 'Ya estás siguiendo a este usuario' 
+                message: 'Ya estás siguiendo a este usuario'
             });
         }
-        res.status(500).json({ 
+
+        res.status(500).json({
             error: 'Error del servidor',
-            message: 'Error al intentar seguir al usuario' 
+            message: 'Error al intentar seguir al usuario'
         });
     }
-};
+});
 
-// DELETE /api/seguidores/:seguido_id - dejar de seguir a un usuario
-exports.dejarDeSeguir = async function(req, res, next) {
+
+router.delete('/:seguido_id', verificarToken, async (req, res) => {
     const { seguido_id } = req.params;
-    const seguidor_id = req.usuario.id; 
+    const seguidor_id = req.usuario.id;
 
     try {
         const sql = "DELETE FROM Seguidores WHERE seguidor_id = ? AND seguido_id = ?";
         const [result] = await db.query(sql, [seguidor_id, seguido_id]);
 
         if (result.affectedRows === 0) {
-            return res.status(404).json({ 
+            return res.status(404).json({
                 error: 'No encontrado',
-                message: 'No estabas siguiendo a este usuario' 
+                message: 'No estabas siguiendo a este usuario'
             });
         }
 
-        res.json({ 
+        res.json({
             status: 'ok',
-            message: 'Dejaste de seguir al usuario' 
+            message: 'Dejaste de seguir al usuario'
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ 
+        res.status(500).json({
             error: 'Error del servidor',
-            message: 'Error al dejar de seguir al usuario' 
+            message: 'Error al dejar de seguir al usuario'
         });
     }
-};
+});
 
-// GET /api/seguidores/check/:usuario_id - verificar si sigo a un usuario 
-exports.verificarSeguimiento = async function(req, res, next) {
-    const { usuario_id } = req.params; 
+
+router.get('/check/:usuario_id', verificarToken, async (req, res) => {
+    const { usuario_id } = req.params;
     const seguidor_id = req.usuario.id;
 
     try {
         const sql = "SELECT 1 FROM Seguidores WHERE seguidor_id = ? AND seguido_id = ?";
         const [rows] = await db.query(sql, [seguidor_id, usuario_id]);
 
-        res.json({ 
+        res.json({
             siguiendo: rows.length > 0
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ 
+        res.status(500).json({
             error: 'Error del servidor',
-            message: 'Error al verificar el seguimiento' 
+            message: 'Error al verificar el seguimiento'
         });
     }
-};
+});
 
 
-// GET /api/seguidores/:usuario_id/seguidores - Obtener seguidores de un usuario
-exports.obtenerSeguidores = async function(req, res, next) {
-    const { usuario_id } = req.params; 
+router.get('/:usuario_id/seguidores', async (req, res) => {
+    const { usuario_id } = req.params;
 
     try {
         const sql = `
             SELECT 
-                u.id, 
-                u.nombre_usuario, 
-                u.nombre, 
+                u.id,
+                u.nombre_usuario,
+                u.nombre,
                 u.url_avatar
             FROM Usuario u
             INNER JOIN Seguidores s ON u.id = s.seguidor_id
@@ -123,31 +124,32 @@ exports.obtenerSeguidores = async function(req, res, next) {
         `;
         const [seguidores] = await db.query(sql, [usuario_id]);
 
-        res.json({ 
+        res.json({
             status: 'ok',
-            usuario_id: usuario_id,
-            seguidores: seguidores,
-            total: seguidores.length 
+            usuario_id,
+            seguidores,
+            total: seguidores.length
         });
+
     } catch (error) {
         console.error(error);
-        res.status(500).json({ 
+        res.status(500).json({
             error: 'Error del servidor',
-            message: 'Error al obtener los seguidores' 
+            message: 'Error al obtener seguidores'
         });
     }
-};
+});
 
-// GET /api/seguidores/:usuario_id/seguidos - Obtener usuarios que sigue un usuario
-exports.obtenerSeguidos = async function(req, res, next) {
+
+router.get('/:usuario_id/seguidos', async (req, res) => {
     const { usuario_id } = req.params;
 
     try {
         const sql = `
             SELECT 
-                u.id, 
-                u.nombre_usuario, 
-                u.nombre, 
+                u.id,
+                u.nombre_usuario,
+                u.nombre,
                 u.url_avatar
             FROM Usuario u
             INNER JOIN Seguidores s ON u.id = s.seguido_id
@@ -156,17 +158,21 @@ exports.obtenerSeguidos = async function(req, res, next) {
         `;
         const [seguidos] = await db.query(sql, [usuario_id]);
 
-        res.json({ 
+        res.json({
             status: 'ok',
-            usuario_id: usuario_id,
-            seguidos: seguidos,
-            total: seguidos.length 
+            usuario_id,
+            seguidos,
+            total: seguidos.length
         });
+
     } catch (error) {
         console.error(error);
-        res.status(500).json({ 
+        res.status(500).json({
             error: 'Error del servidor',
-            message: 'Error al obtener los usuarios seguidos' 
+            message: 'Error al obtener seguidos'
         });
     }
-};
+});
+
+
+module.exports = router;
