@@ -2,60 +2,21 @@ import React, { useState } from 'react';
 import './ModalLibro.css';
 import useLibro from '/src/hooks/useLibro';
 
-export default function ModalCrearLibro({ alCerrar, alGuardar }) {
+export default function ModalCrearLibro({ 
+  autores = [], 
+  editoriales = [], 
+  generosDisponibles = [], 
+  alCerrar, 
+  alGuardar 
+}) {
   const [datos, setDato] = useLibro();
   const [mostrarDropdownGeneros, setMostrarDropdownGeneros] = useState(false);
-
-  const generosDisponibles = [
-    'Ficción',
-    'Terror',
-    'Humor',
-    'Romance',
-    'Fantasía',
-    'Ciencia Ficción',
-    'Misterio',
-    'Thriller',
-    'Histórico',
-    'Aventura',
-    'Drama',
-    'Biografía',
-    'Poesía',
-    'Ensayo',
-    'Autoayuda',
-    'Distopía',
-    'Policial',
-    'Juvenil'
-  ];
-
-  const autoresDisponibles = [
-    { id: 1, nombre: 'Gabriel García Márquez' },
-    { id: 2, nombre: 'J.K. Rowling' },
-    { id: 3, nombre: 'Stephen King' },
-    { id: 4, nombre: 'Isabel Allende' },
-    { id: 5, nombre: 'Paulo Coelho' },
-    { id: 6, nombre: 'Mario Vargas Llosa' },
-    { id: 7, nombre: 'Julio Cortázar' },
-    { id: 8, nombre: 'Jorge Luis Borges' },
-    { id: 9, nombre: 'Laura Esquivel' },
-    { id: 10, nombre: 'Carlos Ruiz Zafón' }
-  ];
-
-  const editorialesDisponibles = [
-    { id: 1, nombre: 'LibroTeca' },
-    { id: 2, nombre: 'Penguin Random House' },
-    { id: 3, nombre: 'Planeta' },
-    { id: 4, nombre: 'Alfaguara' },
-    { id: 5, nombre: 'Anagrama' },
-    { id: 6, nombre: 'Salamandra' },
-    { id: 7, nombre: 'Tusquets' },
-    { id: 8, nombre: 'Ediciones B' },
-    { id: 9, nombre: 'Destino' },
-    { id: 10, nombre: 'Santillana' }
-  ];
+  const [archivoPortada, setArchivoPortada] = useState(null);
 
   const manejarCambioImagen = (e) => {
     const archivo = e.target.files[0];
     if (archivo) {
+      setArchivoPortada(archivo);
       const lector = new FileReader();
       lector.onloadend = () => {
         setDato('urlPortada', lector.result);
@@ -64,46 +25,50 @@ export default function ModalCrearLibro({ alCerrar, alGuardar }) {
     }
   };
 
-  const alternarGenero = (genero) => {
+  const alternarGenero = (generoId) => {
     const generosActuales = datos.generos;
-    const estaSeleccionado = generosActuales.includes(genero);
+    const estaSeleccionado = generosActuales.includes(generoId);
     
     if (estaSeleccionado) {
       if (generosActuales.length === 1) {
         alert('Debe seleccionar al menos 1 género');
         return;
       }
-      setDato('generos', generosActuales.filter(g => g !== genero));
+      setDato('generos', generosActuales.filter(g => g !== generoId));
     } else {
       if (generosActuales.length >= 5) {
         alert('Puede seleccionar máximo 5 géneros');
         return;
       }
-      setDato('generos', [...generosActuales, genero]);
+      setDato('generos', [...generosActuales, generoId]);
     }
   };
 
-  const eliminarGenero = (genero) => {
+  const eliminarGenero = (generoId) => {
     if (datos.generos.length === 1) {
       alert('Debe seleccionar al menos 1 género');
       return;
     }
-    setDato('generos', datos.generos.filter(g => g !== genero));
+    setDato('generos', datos.generos.filter(g => g !== generoId));
+  };
+
+  const obtenerNombreGenero = (generoId) => {
+    const genero = generosDisponibles.find(g => g.id === generoId);
+    return genero ? genero.nombre : 'Desconocido';
   };
 
   const manejarEnvio = (e) => {
     e.preventDefault();
     
-    // Validaciones
     if (!datos.titulo.trim()) {
       alert('El título es obligatorio');
       return;
     }
-    if(!datos.urlPortada){
+    if (!archivoPortada) {
       alert('La portada es obligatoria');
       return;
     }
-    if(!datos.autorId){
+    if (!datos.autorId) {
       alert('El autor es obligatorio');
       return;
     }
@@ -127,13 +92,26 @@ export default function ModalCrearLibro({ alCerrar, alGuardar }) {
       alert('La sinopsis es obligatoria');
       return;
     }
-    if(!datos.editorialId){
-      alert('La editorial es obligatoria')
+    if (!datos.editorialId) {
+      alert('La editorial es obligatoria');
       return;
     }
 
+    const formData = new FormData();
+    formData.append('titulo', datos.titulo.trim());
+    formData.append('isbn', datos.isbn.trim());
+    formData.append('sinopsis', datos.sinopsis.trim());
+    formData.append('paginas', parseInt(datos.paginas));
+    formData.append('anio_publicacion', parseInt(datos.anioPublicacion));
+    formData.append('autor_id', parseInt(datos.autorId));
+    formData.append('editorial_id', parseInt(datos.editorialId));
+    formData.append('portada', archivoPortada);
+    
+    datos.generos.forEach(generoId => {
+      formData.append('generos[]', generoId);
+    });
 
-    alGuardar(datos);
+    alGuardar(formData);
   };
 
   return (
@@ -180,9 +158,9 @@ export default function ModalCrearLibro({ alCerrar, alGuardar }) {
                 className="campo-input-libro campo-select-libro"
               >
                 <option value="" disabled>Seleccionar autor</option>
-                {autoresDisponibles.map(autor => (
+                {autores.map(autor => (
                   <option key={autor.id} value={autor.id}>
-                    {autor.nombre}
+                    {autor.nombre} {autor.apellido}
                   </option>
                 ))}
               </select>
@@ -231,37 +209,47 @@ export default function ModalCrearLibro({ alCerrar, alGuardar }) {
                       onClick={() => setMostrarDropdownGeneros(!mostrarDropdownGeneros)}
                     >
                       <div className="generos-seleccionados">
-                        {datos.generos.map(genero => (
-                          <span key={genero} className="etiqueta-genero">
-                            {genero}
-                            <button
-                              type="button"
-                              className="boton-eliminar-genero"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                eliminarGenero(genero);
-                              }}
-                            >
-                              ×
-                            </button>
-                          </span>
-                        ))}
+                        {datos.generos.length === 0 ? (
+                          <span style={{ color: '#999' }}>Seleccionar géneros...</span>
+                        ) : (
+                          datos.generos.map(generoId => (
+                            <span key={generoId} className="etiqueta-genero">
+                              {obtenerNombreGenero(generoId)}
+                              <button
+                                type="button"
+                                className="boton-eliminar-genero"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  eliminarGenero(generoId);
+                                }}
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ))
+                        )}
                       </div>
-                      <span className="flecha-dropdown">˅</span>
+                      <span className="flecha-dropdown">▼</span>
                     </div>
                     
                     {mostrarDropdownGeneros && (
                       <div className="dropdown-generos">
-                        {generosDisponibles.map(genero => (
-                          <label key={genero} className="opcion-genero">
-                            <input
-                              type="checkbox"
-                              checked={datos.generos.includes(genero)}
-                              onChange={() => alternarGenero(genero)}
-                            />
-                            <span>{genero}</span>
-                          </label>
-                        ))}
+                        {generosDisponibles.length === 0 ? (
+                          <div style={{ padding: '10px', textAlign: 'center', color: '#999' }}>
+                            No hay géneros disponibles. Créalos primero en la sección Géneros.
+                          </div>
+                        ) : (
+                          generosDisponibles.map(genero => (
+                            <label key={genero.id} className="opcion-genero">
+                              <input
+                                type="checkbox"
+                                checked={datos.generos.includes(genero.id)}
+                                onChange={() => alternarGenero(genero.id)}
+                              />
+                              <span>{genero.nombre}</span>
+                            </label>
+                          ))
+                        )}
                       </div>
                     )}
                   </div>
@@ -274,7 +262,7 @@ export default function ModalCrearLibro({ alCerrar, alGuardar }) {
                     className="campo-input-libro campo-select-libro"
                   >
                     <option value="" disabled>Seleccionar editorial</option>
-                    {editorialesDisponibles.map(editorial => (
+                    {editoriales.map(editorial => (
                       <option key={editorial.id} value={editorial.id}>
                         {editorial.nombre}
                       </option>

@@ -15,7 +15,8 @@ const Header = () => {
 
     const cerrarSesion = () => {
         localStorage.removeItem("usuario");
-        setIsLogged(false);     // actualiza el estado
+        localStorage.removeItem("token");
+        setIsLogged(false);    
         setIsAdmin(false);
         window.location.href = "/iniciarsesion";
     };
@@ -35,7 +36,7 @@ const Header = () => {
         let navbar = document.querySelector('.header .flex .navbar');
         let menuBtn = document.getElementById('menu-btn');
 
-        // Leer usuario del localStorage
+
 
         const usuario = JSON.parse(localStorage.getItem("usuario"));
         const miId = usuario?.id;
@@ -69,7 +70,6 @@ const Header = () => {
         if (menuBtn) menuBtn.onclick = handleMenuClick;
         window.addEventListener('scroll', handleScroll);
 
-        // Limpieza
         return () => {
             if (menuBtn) menuBtn.onclick = null;
             window.removeEventListener('scroll', handleScroll);

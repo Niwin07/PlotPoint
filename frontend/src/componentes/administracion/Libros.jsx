@@ -1,213 +1,157 @@
-import React, { useState, useEffect, useMemo } from 'react'; 
+import React, { useState, useEffect } from 'react';
 import '/src/componentes/administracion/admin.css';
+
 import ModalEditarLibro from '/src/componentes/modals/libro/ModalEditarLibro.jsx';
 import ModalCrearLibro from '/src/componentes/modals/libro/ModalCrearLibro.jsx';
-import axios from 'axios';
 
-const ITEMS_POR_PAGINA = 10;
+import usePaginacion from "/src/hooks/usePaginacion.jsx";
 
-const Libros = () => {
-    const [masterLibros, setMasterLibros] = useState([]); 
-    const [loading, setLoading] = useState(false);
-    
-    const [autores, setAutores] = useState([]);
-    const [editoriales, setEditoriales] = useState([]);
-    const [generos, setGeneros] = useState([]);
+export default function Libros({
+    libros,
+    autores,
+    editoriales,
+    generos,
+    loading,
+    crearLibro,
+    actualizarLibro,
+    eliminarLibro,
+    fetchLibros,
+    api
+}) {
+
+    const [buscador, setBuscador] = useState("");
+    const [filtroCategoria, setFiltroCategoria] = useState("");
+    const [ordenFecha, setOrdenFecha] = useState("");
+    const [ordenLetra, setOrdenLetra] = useState("a-z");
+
+    const [listaProcesada, setListaProcesada] = useState([]);
+
+    const pag = usePaginacion(listaProcesada, 10);
+
+    const aplicarFiltros = (base) => {
+        const toNum = (x) => Number(x) || 0;
+
+        let temp = [...base];
+
+        if (filtroCategoria !== "") {
+            temp = temp.filter(l =>
+                l.generos?.some(g => g.id === parseInt(filtroCategoria))
+            );
+        }
+
+        if (ordenFecha === "recientes") {
+            temp.sort((a, b) => toNum(b.anio_publicacion) - toNum(a.anio_publicacion));
+        } else if (ordenFecha === "antiguos") {
+            temp.sort((a, b) => toNum(a.anio_publicacion) - toNum(b.anio_publicacion));
+        }
+
+        if (ordenLetra === "a-z") {
+            temp.sort((a, b) => a.titulo.localeCompare(b.titulo));
+        } else if (ordenLetra === "z-a") {
+            temp.sort((a, b) => b.titulo.localeCompare(a.titulo));
+        }
+
+        return temp;
+    };
+
+    const buscarLibros = () => {
+        const q = buscador.toLowerCase();
+        let base = libros.filter(l =>
+            (l.titulo || "").toLowerCase().includes(q) ||
+            (l.autor_nombre || "").toLowerCase().includes(q) ||
+            (l.autor_apellido || "").toLowerCase().includes(q) ||
+            (l.isbn || "").toLowerCase().includes(q)
+        );
+
+        const procesada = aplicarFiltros(base);
+        setListaProcesada(procesada);
+        pag.setPaginaActual(0);
+    };
+
+    useEffect(() => {
+        if (buscador.trim() === "") {
+            const procesada = aplicarFiltros(libros);
+            setListaProcesada(procesada);
+            pag.setPaginaActual(0);
+        }
+    }, [filtroCategoria, ordenFecha, ordenLetra]);
+
+    useEffect(() => {
+        if (buscador.trim() === "") {
+            const procesada = aplicarFiltros(libros);
+            setListaProcesada(procesada);
+            pag.setPaginaActual(0);
+        }
+    }, [buscador]);
+
+    useEffect(() => {
+        const procesada = aplicarFiltros(libros);
+        setListaProcesada(procesada);
+        pag.setPaginaActual(0);
+    }, [libros]);
 
     const [mostrarModalEditar, setMostrarModalEditar] = useState(false);
     const [mostrarModalCrear, setMostrarModalCrear] = useState(false);
     const [libroSeleccionado, setLibroSeleccionado] = useState(null);
-    const [currentPage, setCurrentPage] = useState(0);
 
-    const [buscador, setBuscador] = useState('');
-    const [filtroCategoria, setFiltroCategoria] = useState('');
-    const [ordenFecha, setOrdenFecha] = useState(''); 
-    const [ordenLetra, setOrdenLetra] = useState('a-z');
-
-    const token = localStorage.getItem('token');
-    const api = axios.create({
-        baseURL: 'http://localhost:3000/api',
-        headers: { 'Authorization': `Bearer ${token}` }
-    });
-
-    useEffect(() => {
-        fetchLibros();
-        fetchDatosParaModales();
-    }, []);
-
-    const fetchLibros = async () => {
-        setLoading(true);
-        setBuscador('');
-        setFiltroCategoria('');
-        setOrdenFecha('');
-        setOrdenLetra('a-z');
-        setCurrentPage(0);
-        try {
-            const res = await api.get('/libros'); 
-            if (res.data.status === 'ok') {
-                console.log(res.data)
-                setMasterLibros(res.data.libros);
-            }
-        } catch (err) {
-            alert(`Error al cargar libros: ${err.response?.data?.message || err.message}`);
-        } finally {
-            setLoading(false);
-        }
+    const Editar = (libro) => {
+        setLibroSeleccionado(libro);
+        setMostrarModalEditar(true);
     };
 
-
-    const fetchDatosParaModales = async () => {
-        try {
-            const [autoresRes, editorialesRes, generosRes] = await Promise.all([
-                api.get('/autores'),
-                api.get('/editoriales'),
-                api.get('/generos')
-            ]);
-            setAutores(autoresRes.data.autores || []);
-            setEditoriales(editorialesRes.data.editoriales || []);
-            setGeneros(generosRes.data.generos || []);
-        } catch (err) { console.error("Error cargando datos para modales:", err); }
+    const Nuevo = () => {
+        if (!autores.length) return alert("Primero crea un autor");
+        if (!editoriales.length) return alert("Primero crea una editorial");
+        if (!generos.length) return alert("Primero crea un género");
+        setMostrarModalCrear(true);
     };
 
-    const Refrescar = () => {
-        fetchLibros();
-    };
-
-    const Nuevo = () => setMostrarModalCrear(true);
-    const Editar = (libro) => { setLibroSeleccionado(libro); setMostrarModalEditar(true); };
-    const cerrarModalEditar = () => { setMostrarModalEditar(false); setLibroSeleccionado(null); };
+    const cerrarModalEditar = () => setMostrarModalEditar(false);
     const cerrarModalCrear = () => setMostrarModalCrear(false);
-    
-    const crearLibro = async (datosNuevoLibro) => {
-        try {
-            const formData = new FormData();
-            formData.append('titulo', datosNuevoLibro.titulo);
-            formData.append('isbn', datosNuevoLibro.isbn);
-            formData.append('sinopsis', datosNuevoLibro.sinopsis);
-            formData.append('paginas', datosNuevoLibro.paginas);
-            formData.append('anio_publicacion', datosNuevoLibro.anio_publicacion);
-            formData.append('autor_id', datosNuevoLibro.autor_id);
-            formData.append('editorial_id', datosNuevoLibro.editorial_id);
-            if (datosNuevoLibro.portadaFile) { formData.append('portada', datosNuevoLibro.portadaFile); }
-            if (Array.isArray(datosNuevoLibro.generos)) { datosNuevoLibro.generos.forEach(id => formData.append('generos[]', id)); }
 
-            const res = await api.post('/libros', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-            if (res.data.status === 'ok') { alert(' Libro creado'); cerrarModalCrear(); fetchLibros(); } 
-            else { throw new Error(res.data.message); }
-        } catch (err) { alert(`Error al crear libro: ${err.response?.data?.message || err.message}`); }
-    };
-    const guardarLibro = async (datosActualizados) => {
-        try {
-            const res = await api.put(`/libros/${libroSeleccionado.id}`, datosActualizados);
-            if (res.data.status === 'ok') { alert(' Libro actualizado'); cerrarModalEditar(); fetchLibros(); } 
-            else { throw new Error(res.data.message); }
-        } catch (err) { alert(`Error al guardar libro: ${err.response?.data?.message || err.message}`); }
-    };
     const Borrar = async (id) => {
-        if (window.confirm('¿Seguro deseas eliminar?')) {
-            try {
-                const res = await api.delete(`/libros/${id}`);
-                if (res.data.status === 'ok') { alert('Libro eliminado'); fetchLibros(); } 
-                else { throw new Error(res.data.message); }
-            } catch (err) { alert(`Error al eliminar: ${err.response?.data?.message || err.message}`); }
-        }
-    };
-
-
-
-    const librosFiltrados = useMemo(() => {
-        let tempLibros = [...masterLibros];
-        const lowerBuscador = buscador.toLowerCase().trim();
-        tempLibros = tempLibros.filter(libro => {
-            const busquedaMatch = lowerBuscador === '' ||
-                (libro.titulo && libro.titulo.toLowerCase().includes(lowerBuscador)) ||
-                (libro.autor_nombre && libro.autor_nombre.toLowerCase().includes(lowerBuscador)) ||
-                (libro.autor_apellido && libro.autor_apellido.toLowerCase().includes(lowerBuscador));
-
-            const categoriaMatch = !filtroCategoria ||
-                (libro.generos && libro.generos.some(g => g.id === parseInt(filtroCategoria, 10)));
-            
-            return busquedaMatch && categoriaMatch;
-        });
-
-        if (ordenFecha === 'recientes') {
-            tempLibros.sort((a, b) => (b.anio_publicacion || 0) - (a.anio_publicacion || 0));
-        } else if (ordenFecha === 'antiguos') {
-            tempLibros.sort((a, b) => (a.anio_publicacion || 0) - (b.anio_publicacion || 0));
-        } else if (ordenLetra === 'a-z') {
-            tempLibros.sort((a, b) => a.titulo.localeCompare(b.titulo));
-        } else if (ordenLetra === 'z-a') {
-            tempLibros.sort((a, b) => b.titulo.localeCompare(a.titulo));
-        }
-
-        return tempLibros;
-    }, [masterLibros, buscador, filtroCategoria, ordenFecha, ordenLetra]);
-
-    useEffect(() => {
-        setCurrentPage(0);
-    }, [librosFiltrados]); 
-
-
-    const totalPaginas = Math.ceil(librosFiltrados.length / ITEMS_POR_PAGINA);
-    const librosPaginaActual = librosFiltrados.slice(
-        currentPage * ITEMS_POR_PAGINA,
-        (currentPage + 1) * ITEMS_POR_PAGINA
-    );
-    const siguientePagina = () => {
-        if ((currentPage + 1) * ITEMS_POR_PAGINA < librosFiltrados.length) {
-            setCurrentPage(currentPage + 1);
-        }
-    };
-    const paginaAnterior = () => {
-        if (currentPage > 0) {
-            setCurrentPage(currentPage - 1);
-        }
+        if (!confirm("¿Seguro deseas eliminar este libro?")) return;
+        const res = await eliminarLibro(id);
+        if (res.success) fetchLibros();
     };
 
     return (
         <div>
-            <div className='acciones'>
+            <div className="acciones">
+
                 <input
                     type="text"
-                    placeholder="Buscar libro por nombre..."
+                    placeholder="Buscar libro..."
                     value={buscador}
-                    onChange={(e) => setBuscador(e.target.value)} 
-                    className='InputAdmin'
+                    onChange={e => setBuscador(e.target.value)}
+                    className="InputAdmin"
                 />
-                <select
-                    value={ordenFecha}
-                    onChange={(e) => setOrdenFecha(e.target.value)} 
-                    className='InputAdmin'
-                >
-                    <option value="">Fecha de creación</option>
-                    <option value="recientes">Mas Recientes (Año)</option>
-                    <option value="antiguos">Mas Antiguos (Año)</option>
+
+                <select value={ordenFecha} onChange={e => setOrdenFecha(e.target.value)} className="InputAdmin">
+                    <option value="">Fecha</option>
+                    <option value="recientes">Más recientes</option>
+                    <option value="antiguos">Más antiguos</option>
                 </select>
-                <select
-                    value={filtroCategoria}
-                    onChange={(e) => setFiltroCategoria(e.target.value)}
-                    className='InputAdmin'
-                >
-                    <option value="">Categoría (Todas)</option>
+
+                <select value={filtroCategoria} onChange={e => setFiltroCategoria(e.target.value)} className="InputAdmin">
+                    <option value="">Género (todos)</option>
                     {generos.map(g => (
                         <option key={g.id} value={g.id}>{g.nombre}</option>
                     ))}
                 </select>
-                <select
-                    value={ordenLetra}
-                    onChange={(e) => setOrdenLetra(e.target.value)} 
-                    className='InputAdmin'
-                    disabled={ordenFecha !== ''} 
-                >
+
+                <select value={ordenLetra} onChange={e => setOrdenLetra(e.target.value)} className="InputAdmin">
                     <option value="a-z">A - Z</option>
                     <option value="z-a">Z - A</option>
                 </select>
-                <button className='Nuevo' onClick={Refrescar}>
-                    Refrescar Datos
+
+                <button className="Buscar" onClick={buscarLibros}>Buscar</button>
+
+                <button className="Refrescar" onClick={fetchLibros}>
+                    {loading ? "Cargando..." : "Refrescar"}
                 </button>
-                <button className='Nuevo' onClick={Nuevo}>
-                    Nuevo
-                </button>
+
+                <button className="Nuevo" onClick={Nuevo}>Nuevo Libro</button>
             </div>
 
             <table id="t01">
@@ -221,87 +165,75 @@ const Libros = () => {
                         <th>ACCIONES</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {loading && (
-                        <tr><td colSpan="6">Cargando libros...</td></tr>
-                    )}
-                    {!loading && masterLibros.length === 0 && (
-                         <tr><td colSpan="6">No se encontraron libros.</td></tr>
-                    )}
-                    {!loading && librosFiltrados.length === 0 && masterLibros.length > 0 && (
-                         <tr><td colSpan="6">No hay resultados para los filtros aplicados.</td></tr>
-                    )}
-                    
 
-                    {!loading && librosPaginaActual.map((libro) => (
+                <tbody>
+                    {pag.paginaItems.map(libro => (
                         <tr key={libro.id}>
                             <td>{libro.id}</td>
+
                             <td>
-                                <p style={{ margin: 0, fontWeight: 'bold' }}>{libro.titulo}</p>
-                                <span style={{ fontSize: '13px', color: '#666' }}>
+                                <p style={{ margin: 0, fontWeight: "bold" }}>{libro.titulo}</p>
+                                <span style={{ fontSize: "13px", color: "#666" }}>
                                     {libro.autor_nombre} {libro.autor_apellido}
                                 </span>
                             </td>
+
                             <td>
-                                {libro.generos && libro.generos.map((g, index) => (
+                                {libro.generos?.map((g, i) => (
                                     <span key={g.id}>
-                                        {g.nombre}
-                                        {index < libro.generos.length - 1 ? ', ' : ''}
+                                        {g.nombre}{i < libro.generos.length - 1 ? ", " : ""}
                                     </span>
                                 ))}
                             </td>
+
                             <td>{libro.isbn}</td>
                             <td>{libro.anio_publicacion}</td>
+
                             <td>
-                                <button className='Borrar' onClick={() => Borrar(libro.id)}>
-                                    Borrar
-                                </button>
-                                <button className='Editar' onClick={() => Editar(libro)}>
-                                    Editar
-                                </button>
+                                <button className="Editar" onClick={() => Editar(libro)}>Editar</button>
+                                <button className="Borrar" onClick={() => Borrar(libro.id)}>Borrar</button>
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
 
-            <div className="paginacion-controles" style={{ textAlign: 'center', margin: '20px 0' }}>
-                <button 
-                    className="Editar"
-                    onClick={paginaAnterior} 
-                    disabled={currentPage === 0}
-                >
-                    &larr; Anterior
-                </button>
-                <span style={{ margin: '0 15px', fontSize: '14px' }}>
-                    Página {currentPage + 1} de {totalPaginas > 0 ? totalPaginas : 1}
-                </span>
-                <button 
-                    className="Editar"
-                    onClick={siguientePagina} 
-                    disabled={(currentPage + 1) * ITEMS_POR_PAGINA >= librosFiltrados.length}
-                >
-                    Siguiente &rarr;
-                </button>
-            </div>
+            {listaProcesada.length > 0 && (
+                <div style={{ textAlign: "center", marginTop: 20 }}>
+                    <button className="Editar" onClick={pag.paginaAnterior} disabled={pag.paginaActual === 0}>
+                        ← Anterior
+                    </button>
 
-            {mostrarModalEditar && (
+                    <span style={{ margin: "0 15px" }}>
+                        Página {pag.paginaActual + 1} de {pag.totalPaginas}
+                    </span>
+
+                    <button
+                        className="Editar"
+                        onClick={pag.siguientePagina}
+                        disabled={pag.paginaActual + 1 >= pag.totalPaginas}
+                    >
+                        Siguiente →
+                    </button>
+                </div>
+            )}
+
+            {mostrarModalEditar && libroSeleccionado && (
                 <ModalEditarLibro
                     libro={{
                         ...libroSeleccionado,
-                        generos: libroSeleccionado.generos.map(g => g.id), 
-                        paginas: String(libroSeleccionado.paginas || ''),
-                        anio_publicacion: String(libroSeleccionado.anio_publicacion || ''),
+                        generos: libroSeleccionado.generos.map(g => g.id)
                     }}
                     autores={autores}
                     editoriales={editoriales}
                     generosDisponibles={generos}
                     alCerrar={cerrarModalEditar}
-                    alGuardar={guardarLibro}
-                    api={api}
+                    alGuardar={actualizarLibro}
                     libroId={libroSeleccionado.id}
+                    api={api}
                 />
             )}
+
             {mostrarModalCrear && (
                 <ModalCrearLibro
                     autores={autores}
@@ -313,6 +245,4 @@ const Libros = () => {
             )}
         </div>
     );
-};
-
-export default Libros;
+}

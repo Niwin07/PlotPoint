@@ -14,31 +14,48 @@ if (!fs.existsSync(directorio)){
 }
 
 // NOTA: Este router ya recibe verificarToken aplicado desde main.js
-// Por lo tanto, req.usuario siempre estará disponible
 
 // GET /api/usuarios/perfil - Obtener perfil del usuario autenticado
-router.get('/', function(req, res, next) {
-    const userId = req.usuario.id;
+router.get('/', async function(req, res, next) { 
+    const userId = req.usuario.id; 
     
-    // Solo campos que el usuario debería ver/editar en su perfil
-    let sql = `SELECT id, nombre, nombre_usuario, correo, biografia, url_avatar
-               FROM Usuario WHERE id = ?`;
-    
-    db.query(sql, [userId])
-        .then(([rows]) => {
-            if (rows.length === 0) {
-                return res.status(404).json({ 
-                    error: 'Usuario no encontrado' 
-                });
-            }
-            res.json(rows[0]);
-        })
-        .catch((error) => {
-            console.error(error);
-            res.status(500).json({ 
-                error: 'Error al obtener perfil' 
+    try {
+        const sqlPerfil = `SELECT id, nombre, nombre_usuario, correo, biografia, url_avatar 
+                           FROM Usuario WHERE id = ?`;
+        const sqlResenas = `SELECT COUNT(*) as total_reseñas FROM Resena WHERE usuario_id = ?`;
+        const sqlSeguidores = `SELECT COUNT(*) as total_seguidores FROM Seguidores WHERE seguido_id = ?`;
+        const sqlSeguidos = `SELECT COUNT(*) as total_seguidos FROM Seguidores WHERE seguidor_id = ?`;
+        const [
+            [perfilRows],
+            [reseñasRows],
+            [seguidoresRows],
+            [seguidosRows]
+        ] = await Promise.all([
+            db.query(sqlPerfil, [userId]),     
+            db.query(sqlResenas, [userId]),
+            db.query(sqlSeguidores, [userId]),
+            db.query(sqlSeguidos, [userId])
+        ]);
+
+        if (perfilRows.length === 0) {
+            return res.status(404).json({ 
+                error: 'Usuario no encontrado' 
             });
+        }
+        
+        const perfil = perfilRows[0];
+        perfil.reseñas = reseñasRows[0].total_reseñas;
+        perfil.seguidores = seguidoresRows[0].total_seguidores;
+        perfil.seguidos = seguidosRows[0].total_seguidos;
+
+        res.json(perfil);
+
+    } catch (error) {
+        console.error('Error al obtener perfil:', error);
+        res.status(500).json({ 
+            error: 'Error al obtener perfil' 
         });
+    }
 });
 
 // PUT /api/usuarios/perfil/actualizar - Actualizar datos del perfil
@@ -326,5 +343,25 @@ router.obtenerPublico = async function(req, res, next) {
     }
 };
 
+router.delete('/borrar-cuenta', async function(req, res, next) {
+    const id = req.usuario.id;
+    try {
+        // Eliminar usuario de la base de datos
+        const sqlDelete = "DELETE FROM Usuario WHERE id = ?";
+        await db.query(sqlDelete, [id]);
+        console.log(`Usuario con ID ${id} eliminado.`);
+
+        res.json({
+            status: 'ok',
+            message: 'Cuenta eliminada exitosamente'
+        });
+
+    } catch (error) { 
+        console.error(error);
+        res.status(500).json({
+            error: 'Error al borrar la cuenta'
+        });
+    }
+}); 
 
 module.exports = router;

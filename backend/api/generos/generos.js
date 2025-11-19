@@ -1,7 +1,9 @@
+const router = require('express').Router();
 const db = require('../../conexion');
+const verificarToken = require('../middlewares/auth');
+const verificarAdmin = require('../middlewares/admin');
 
-// GET /api/generos - Listar todos los géneros
-exports.listar = async function(req, res, next) {
+router.get('/', async (req, res) => {
     const { busqueda } = req.query;
 
     let sql = "SELECT id, nombre, descripcion FROM Genero";
@@ -9,8 +11,8 @@ exports.listar = async function(req, res, next) {
     
     if (busqueda) {
         sql += " WHERE nombre LIKE ? OR descripcion LIKE ?";
-        const busquedaParcial = `%${busqueda}%`;
-        params = [busquedaParcial, busquedaParcial];
+        const b = `%${busqueda}%`;
+        params = [b, b];
     }
 
     sql += " ORDER BY nombre";
@@ -29,10 +31,9 @@ exports.listar = async function(req, res, next) {
             message: 'Error al obtener géneros' 
         });
     }
-};
+});
 
-// GET /api/generos/:id - Obtener un género específico
-exports.obtener = async function(req, res, next) {
+router.get('/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
@@ -46,12 +47,11 @@ exports.obtener = async function(req, res, next) {
             });
         }
 
-        // Obtener libros del género
         const sqlLibros = `
             SELECT l.id, l.titulo, l.anio_publicacion 
             FROM Libro l
             INNER JOIN LibroGenero lg ON l.id = lg.libro_id
-            WHERE lg.genero_id = ? 
+            WHERE lg.genero_id = ?
             ORDER BY l.anio_publicacion DESC
         `;
         const [libros] = await db.query(sqlLibros, [id]);
@@ -67,13 +67,11 @@ exports.obtener = async function(req, res, next) {
             message: 'Error al obtener el género' 
         });
     }
-};
+});
 
-// POST /api/generos - Crear un nuevo género
-exports.crear = async function(req, res, next) {
+router.post('/', verificarToken, verificarAdmin, async (req, res) => {
     const { nombre, descripcion } = req.body;
 
-    // Validaciones
     if (!nombre) {
         return res.status(400).json({ 
             error: 'Datos incompletos',
@@ -81,17 +79,10 @@ exports.crear = async function(req, res, next) {
         });
     }
 
-    if (typeof nombre !== 'string') {
-        return res.status(400).json({ 
-            error: 'Datos inválidos',
-            message: 'El nombre debe ser texto' 
-        });
-    }
-
     if (nombre.trim().length < 2) {
         return res.status(400).json({ 
             error: 'Nombre inválido',
-            message: 'El nombre debe tener al menos 2 caracteres' 
+            message: 'Debe tener al menos 2 caracteres' 
         });
     }
 
@@ -107,6 +98,7 @@ exports.crear = async function(req, res, next) {
             message: 'Género creado exitosamente',
             id: result.insertId
         });
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ 
@@ -114,17 +106,16 @@ exports.crear = async function(req, res, next) {
             message: 'Error al crear el género' 
         });
     }
-};
+});
 
-// PUT /api/generos/:id - Actualizar un género
-exports.actualizar = async function(req, res, next) {
+router.put('/:id', verificarToken, verificarAdmin, async (req, res) => {
     const { id } = req.params;
     const { nombre, descripcion } = req.body;
 
     if (!nombre && descripcion === undefined) {
         return res.status(400).json({ 
             error: 'Datos incompletos',
-            message: 'Debe proporcionar al menos un campo para actualizar' 
+            message: 'Debe proporcionar algún campo' 
         });
     }
 
@@ -135,7 +126,7 @@ exports.actualizar = async function(req, res, next) {
         if (nombre.trim().length < 2) {
             return res.status(400).json({ 
                 error: 'Nombre inválido',
-                message: 'El nombre debe tener al menos 2 caracteres' 
+                message: 'Debe tener al menos 2 caracteres' 
             });
         }
         updates.push("nombre = ?");
@@ -164,6 +155,7 @@ exports.actualizar = async function(req, res, next) {
             status: 'ok',
             message: 'Género actualizado exitosamente' 
         });
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ 
@@ -171,20 +163,20 @@ exports.actualizar = async function(req, res, next) {
             message: 'Error al actualizar el género' 
         });
     }
-};
+});
 
-// DELETE /api/generos/:id - Eliminar un género
-exports.eliminar = async function(req, res, next) {
+router.delete('/:id', verificarToken, verificarAdmin, async (req, res) => {
     const { id } = req.params;
 
     try {
-        // Verificar si tiene libros asociados
-        const [libros] = await db.query("SELECT COUNT(*) as total FROM LibroGenero WHERE genero_id = ?", [id]);
+        const [libros] = await db.query(
+            "SELECT COUNT(*) as total FROM LibroGenero WHERE genero_id = ?", [id]
+        );
         
         if (libros[0].total > 0) {
             return res.status(409).json({ 
                 error: 'No se puede eliminar',
-                message: `El género tiene ${libros[0].total} libro(s) asociado(s). Elimine esas relaciones primero.` 
+                message: `El género tiene ${libros[0].total} libro(s) asociado(s)` 
             });
         }
 
@@ -202,6 +194,7 @@ exports.eliminar = async function(req, res, next) {
             status: 'ok',
             message: 'Género eliminado exitosamente' 
         });
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ 
@@ -209,4 +202,6 @@ exports.eliminar = async function(req, res, next) {
             message: 'Error al eliminar el género' 
         });
     }
-};
+});
+
+module.exports = router;

@@ -2,76 +2,39 @@ import React, { useState, useEffect } from 'react';
 import './ModalLibro.css';
 import useLibro from '/src/hooks/useLibro';
 
-export default function ModalEditarLibro({ libro, alCerrar, alGuardar }) {
+export default function ModalEditarLibro({ 
+  libro, 
+  autores = [], 
+  editoriales = [], 
+  generosDisponibles = [], 
+  alCerrar, 
+  alGuardar,
+  api,
+  libroId
+}) {
   const [datos, setDato] = useLibro();
   const [mostrarDropdownGeneros, setMostrarDropdownGeneros] = useState(false);
+  const [archivoPortada, setArchivoPortada] = useState(null);
 
-  const generosDisponibles = [
-    'Ficción',
-    'Terror',
-    'Humor',
-    'Romance',
-    'Fantasía',
-    'Ciencia Ficción',
-    'Misterio',
-    'Thriller',
-    'Histórico',
-    'Aventura',
-    'Drama',
-    'Biografía',
-    'Poesía',
-    'Ensayo',
-    'Autoayuda',
-    'Distopía',
-    'Policial',
-    'Juvenil'
-  ];
-
-  const autoresDisponibles = [
-    { id: 1, nombre: 'Gabriel García Márquez' },
-    { id: 2, nombre: 'J.K. Rowling' },
-    { id: 3, nombre: 'Stephen King' },
-    { id: 4, nombre: 'Isabel Allende' },
-    { id: 5, nombre: 'Paulo Coelho' },
-    { id: 6, nombre: 'Mario Vargas Llosa' },
-    { id: 7, nombre: 'Julio Cortázar' },
-    { id: 8, nombre: 'Jorge Luis Borges' },
-    { id: 9, nombre: 'Laura Esquivel' },
-    { id: 10, nombre: 'Carlos Ruiz Zafón' }
-  ];
-
-  const editorialesDisponibles = [
-    { id: 1, nombre: 'LibroTeca' },
-    { id: 2, nombre: 'Penguin Random House' },
-    { id: 3, nombre: 'Planeta' },
-    { id: 4, nombre: 'Alfaguara' },
-    { id: 5, nombre: 'Anagrama' },
-    { id: 6, nombre: 'Salamandra' },
-    { id: 7, nombre: 'Tusquets' },
-    { id: 8, nombre: 'Ediciones B' },
-    { id: 9, nombre: 'Destino' },
-    { id: 10, nombre: 'Santillana' }
-  ];
-
-  // Cargar los datos del libro cuando el modal se abre
   useEffect(() => {
     if (libro) {
       setDato('id', libro.id);
       setDato('titulo', libro.titulo);
       setDato('isbn', libro.isbn);
       setDato('sinopsis', libro.sinopsis);
-      setDato('urlPortada', libro.urlPortada);
+      setDato('urlPortada', libro.url_portada || libro.urlPortada);
       setDato('paginas', libro.paginas);
-      setDato('anioPublicacion', libro.anioPublicacion);
-      setDato('editorialId', libro.editorialId);
-      setDato('autorId', libro.autorId);
-      setDato('generos', libro.generos);
+      setDato('anioPublicacion', libro.anio_publicacion || libro.anioPublicacion);
+      setDato('editorialId', libro.editorial_id || libro.editorialId);
+      setDato('autorId', libro.autor_id || libro.autorId);
+      setDato('generos', Array.isArray(libro.generos) ? libro.generos : []);
     }
   }, [libro]);
 
   const manejarCambioImagen = (e) => {
     const archivo = e.target.files[0];
     if (archivo) {
+      setArchivoPortada(archivo);
       const lector = new FileReader();
       lector.onloadend = () => {
         setDato('urlPortada', lector.result);
@@ -80,37 +43,41 @@ export default function ModalEditarLibro({ libro, alCerrar, alGuardar }) {
     }
   };
 
-  const alternarGenero = (genero) => {
+  const alternarGenero = (generoId) => {
     const generosActuales = datos.generos;
-    const estaSeleccionado = generosActuales.includes(genero);
+    const estaSeleccionado = generosActuales.includes(generoId);
     
     if (estaSeleccionado) {
       if (generosActuales.length === 1) {
         alert('Debe seleccionar al menos 1 género');
         return;
       }
-      setDato('generos', generosActuales.filter(g => g !== genero));
+      setDato('generos', generosActuales.filter(g => g !== generoId));
     } else {
       if (generosActuales.length >= 5) {
         alert('Puede seleccionar máximo 5 géneros');
         return;
       }
-      setDato('generos', [...generosActuales, genero]);
+      setDato('generos', [...generosActuales, generoId]);
     }
   };
 
-  const eliminarGenero = (genero) => {
+  const eliminarGenero = (generoId) => {
     if (datos.generos.length === 1) {
       alert('Debe seleccionar al menos 1 género');
       return;
     }
-    setDato('generos', datos.generos.filter(g => g !== genero));
+    setDato('generos', datos.generos.filter(g => g !== generoId));
   };
 
-  const manejarEnvio = (e) => {
+  const obtenerNombreGenero = (generoId) => {
+    const genero = generosDisponibles.find(g => g.id === generoId);
+    return genero ? genero.nombre : 'Desconocido';
+  };
+
+  const manejarEnvio = async (e) => {
     e.preventDefault();
     
-    // Validaciones
     if (!datos.titulo.trim()) {
       alert('El título es obligatorio');
       return;
@@ -136,7 +103,32 @@ export default function ModalEditarLibro({ libro, alCerrar, alGuardar }) {
       return;
     }
 
-    alGuardar(datos);
+    try {
+      if (archivoPortada) {
+        const formData = new FormData();
+        formData.append('portada', archivoPortada);
+        
+        await api.post(`/libros/${libroId}/upload-portada`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+      }
+
+      const datosParaEnviar = {
+        titulo: datos.titulo.trim(),
+        isbn: datos.isbn.trim(),
+        sinopsis: datos.sinopsis.trim(),
+        paginas: parseInt(datos.paginas),
+        anio_publicacion: parseInt(datos.anioPublicacion),
+        autor_id: parseInt(datos.autorId),
+        editorial_id: parseInt(datos.editorialId),
+        generos: datos.generos
+      };
+
+      alGuardar(libroId, datosParaEnviar); 
+      
+    } catch (err) {
+      alert(`Error: ${err.response?.data?.message || err.message}`);
+    }
   };
 
   return (
@@ -182,9 +174,9 @@ export default function ModalEditarLibro({ libro, alCerrar, alGuardar }) {
                 onChange={(e) => setDato('autorId', parseInt(e.target.value))}
                 className="campo-input-libro campo-select-libro"
               >
-                {autoresDisponibles.map(autor => (
+                {autores.map(autor => (
                   <option key={autor.id} value={autor.id}>
-                    {autor.nombre}
+                    {autor.nombre} {autor.apellido}
                   </option>
                 ))}
               </select>
@@ -233,35 +225,39 @@ export default function ModalEditarLibro({ libro, alCerrar, alGuardar }) {
                       onClick={() => setMostrarDropdownGeneros(!mostrarDropdownGeneros)}
                     >
                       <div className="generos-seleccionados">
-                        {datos.generos.map(genero => (
-                          <span key={genero} className="etiqueta-genero">
-                            {genero}
-                            <button
-                              type="button"
-                              className="boton-eliminar-genero"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                eliminarGenero(genero);
-                              }}
-                            >
-                              ×
-                            </button>
-                          </span>
-                        ))}
+                        {datos.generos.length === 0 ? (
+                          <span style={{ color: '#999' }}>Seleccionar géneros...</span>
+                        ) : (
+                          datos.generos.map(generoId => (
+                            <span key={generoId} className="etiqueta-genero">
+                              {obtenerNombreGenero(generoId)}
+                              <button
+                                type="button"
+                                className="boton-eliminar-genero"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  eliminarGenero(generoId);
+                                }}
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ))
+                        )}
                       </div>
-                      <span className="flecha-dropdown">˅</span>
+                      <span className="flecha-dropdown">▼</span>
                     </div>
                     
                     {mostrarDropdownGeneros && (
                       <div className="dropdown-generos">
                         {generosDisponibles.map(genero => (
-                          <label key={genero} className="opcion-genero">
+                          <label key={genero.id} className="opcion-genero">
                             <input
                               type="checkbox"
-                              checked={datos.generos.includes(genero)}
-                              onChange={() => alternarGenero(genero)}
+                              checked={datos.generos.includes(genero.id)}
+                              onChange={() => alternarGenero(genero.id)}
                             />
-                            <span>{genero}</span>
+                            <span>{genero.nombre}</span>
                           </label>
                         ))}
                       </div>
@@ -275,7 +271,7 @@ export default function ModalEditarLibro({ libro, alCerrar, alGuardar }) {
                     onChange={(e) => setDato('editorialId', parseInt(e.target.value))}
                     className="campo-input-libro campo-select-libro"
                   >
-                    {editorialesDisponibles.map(editorial => (
+                    {editoriales.map(editorial => (
                       <option key={editorial.id} value={editorial.id}>
                         {editorial.nombre}
                       </option>
