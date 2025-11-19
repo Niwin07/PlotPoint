@@ -4,6 +4,7 @@ import axios from "axios";
 import TarjetaResena from "./TarjetaResena";
 import FormularioComentario from "./FormularioComentario";
 import ListadoComentarios from "./ListadoComentarios";
+import ModalNoCuenta from '/src/componentes/modals/usuario/ModalNoCuenta';
 
 import { Route } from "wouter";
 
@@ -20,6 +21,7 @@ export default function DetalleResena() {
     const [comentarios, setComentarios] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [showModalCuenta, setShowModalCuenta] = useState(false);
 
     const obtenerResena = async (id) => {
         try {
@@ -63,7 +65,7 @@ export default function DetalleResena() {
 
     const guardarComentario = async (datos) => {
         if (!token) {
-            alert("Debes iniciar sesión para comentar");
+            setShowModalCuenta(true);
             return;
         }
 
@@ -96,7 +98,7 @@ export default function DetalleResena() {
 
     const eliminarComentario = async (idComentario) => {
         if (!token) {
-            alert("Debes iniciar sesión.");
+            setShowModalCuenta(true);
             return;
         }
 
@@ -156,6 +158,7 @@ export default function DetalleResena() {
                 eliminarComentario={(id) => eliminarComentario(id)}
             />
         </div>
+            {showModalCuenta && <ModalNoCuenta onClose={() => setShowModalCuenta(false)} />}
         </Route>
     );
 }

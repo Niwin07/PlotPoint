@@ -5,6 +5,7 @@ import MeGustas from '/src/componentes/perfil/MeGustas.jsx';
 import PerfilVista from '/src/componentes/perfil/PerfilVista.jsx';
 import ListaReseñas from '/src/componentes/perfil/ListaReseñas.jsx';
 import EditarPerfil from '/src/componentes/perfil/EditarPerfil.jsx';
+import ModalNoCuenta from '/src/componentes/modals/usuario/ModalNoCuenta';
 import '/src/componentes/perfil/PerfilPag.css';
 
 const BACKEND_URL = 'http://localhost:3000';
@@ -21,6 +22,8 @@ export default function Main() {
     const [libros, setLibros] = useState([]);
     const [loadingReseñas, setLoadingReseñas] = useState(false);
     const [loadingLibros, setLoadingLibros] = useState(false);
+     const [showModalCuenta, setShowModalCuenta] = useState(false);
+
     
     const token = localStorage.getItem("token");
     const miId = JSON.parse(localStorage.getItem("usuario"))?.id;
@@ -118,7 +121,7 @@ export default function Main() {
 
     const toggleSeguir = async () => {
         if (!token) {
-            alert("Necesitas iniciar sesión para seguir a usuarios.");
+            setShowModalCuenta(true);
             return;
         }
 
@@ -229,6 +232,7 @@ export default function Main() {
                     loading={loadingLibros}
                 />
             </Route>
+            {showModalCuenta && <ModalNoCuenta onClose={() => setShowModalCuenta(false)} />}
         </>
     );
 }

@@ -86,11 +86,7 @@ function App() {
 
         </Switch>
 
-        {/* Este modal debe activarse si realizas una accion que requiera cuenta de Plotpoint */}
-        {/* 
-        <button onClick={() => setShowModal(true)}>Abrir modal</button>
-        {showModal && <ModalNoCuenta onClose={() => setShowModal(false)} />} 
-        */}
+       
       </main>
 
       {!ocultarLayout && <Footer />}

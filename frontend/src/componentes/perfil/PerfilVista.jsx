@@ -19,6 +19,7 @@ export default function PerfilVista({ perfil, esMiPerfil, siguiendo, onFollowTog
                     />
                     <div className="dot-decoration"></div>
                 </div>
+                
 
                 {/* Nombre con o sin ícono de editar */}
                 {esMiPerfil ? (
@@ -35,25 +36,16 @@ export default function PerfilVista({ perfil, esMiPerfil, siguiendo, onFollowTog
                 <h2 className='username'>{perfil.nombre_usuario ?? perfil.nombreUsuario ?? ''}</h2>
 
                 {/* Botón según el contexto */}
-                {token && (
-                    esMiPerfil ? (
-                        /*
-                        <Link href={`/perfil/${perfil.id}/editarperfil`} className="follow-button">
-                            Editar Perfil
-                        </Link>
-                        */
-                       <></>
-                    ) : (
-                        <button
-                            className="follow-button"
-                            onClick={onFollowToggle}
-                            style={{
-                                backgroundColor: siguiendo ? "var(--secundario2)" : "var(--secundario1)",
-                            }}
-                        >
-                            {siguiendo ? "Seguido" : "Seguir"}
-                        </button>
-                    )
+                {!esMiPerfil && (
+                    <button
+                        className="follow-button"
+                        onClick={onFollowToggle}
+                        style={{
+                            backgroundColor: siguiendo ? "var(--secundario2)" : "var(--secundario1)",
+                        }}
+                    >
+                        {siguiendo ? "Seguido" : "Seguir"}
+                    </button>
                 )}
 
                 {/* Estadísticas */}

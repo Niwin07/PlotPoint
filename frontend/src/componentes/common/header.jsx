@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import '/src/componentes/common/header.css';
-import { Route, Link, useRoute } from "wouter";
-//import Usuario from '../perfil/Usuario';
+import { Route, Link, useRoute, useLocation } from "wouter";
+import ModalNoCuenta from '/src/componentes/modals/usuario/ModalNoCuenta';
 
 
 const Header = () => {
     const [isAdmin, setIsAdmin] = useState(false);
     const [isLogged, setIsLogged] = useState(false);
     const [miId, setMiId] = useState(null);
+    const [showModalCuenta, setShowModalCuenta] = useState(false);
+    const [location, setLocation] = useLocation();
     
 
 
@@ -16,6 +18,15 @@ const Header = () => {
         setIsLogged(false);     // actualiza el estado
         setIsAdmin(false);
         window.location.href = "/iniciarsesion";
+    };
+
+    const irAlPerfil = () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            setShowModalCuenta(true);
+            return;
+        }
+        setLocation(`/perfil/${miId}`);
     };
     useEffect(() => {
         //este useEffect se encarga de que el menu desplegable se active y funcione al estar en tamaño de un dispositivo movil
@@ -67,14 +78,14 @@ const Header = () => {
     return (
         <header class="header">
             <section class="flex">
-                <h1>Plotpoint</h1>
+                <h1>PlotPoint</h1>
 
 
                 <nav class="navbar">
                     <a href="/inicio">Inicio</a>
                     <a href="/reseñasinicio">Reseñas</a>
                     <a href="/busqueda">Busqueda</a>
-                    <Link href={`/perfil/${miId}`}>Perfil</Link>
+                    <a href="#" onClick={(e) => { e.preventDefault(); irAlPerfil(); }}>Perfil</a>
                     {isAdmin && <a href="/admin/">Admin</a>}
 
                     {isLogged ? (
@@ -87,6 +98,7 @@ const Header = () => {
                 <div id="menu-btn" class="fas fa-bars-staggered"></div>
             </section>
 
+            {showModalCuenta && <ModalNoCuenta onClose={() => setShowModalCuenta(false)} />}
         </header>
 
     );

@@ -1,13 +1,21 @@
 import { useState } from "react";
 import Rating from "react-rating";
 
+
 export default function ModalCalificar({ cerrarModal, guardarResena }) {
     const [puntuacion, setPuntuacion] = useState(0);
     const [contenido, setContenido] = useState("");
     const [pendiente, setPendiente] = useState(false);
 
+   
+    const token = localStorage.getItem("token");
+
     const guardar = async (e) => {
         e.preventDefault();
+        console.log(token)
+
+      
+        
         setPendiente(true);
         
         const resena = {
@@ -50,6 +58,7 @@ export default function ModalCalificar({ cerrarModal, guardarResena }) {
                     </button>
                 </div>
             </div>
+           
         </div>
     );
 }

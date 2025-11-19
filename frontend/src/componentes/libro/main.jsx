@@ -4,6 +4,9 @@ import axios from "axios";
 import DetalleLibro from "./DetalleLibro";
 import ListadoResenas from "./ListadoResenas";
 import ModalCalificar from "./ModalCalificar";
+import ModalNoCuenta from '/src/componentes/modals/usuario/ModalNoCuenta';
+
+
 
 
 export default function Libro() {
@@ -18,6 +21,9 @@ export default function Libro() {
     const [error, setError] = useState(null);
     const [isFavorite, setIsFavorite] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [showModalCuenta, setShowModalCuenta] = useState(false);
+
+
 
     const obtenerLibro = async (id) => {
         setLoading(true);
@@ -64,7 +70,8 @@ export default function Libro() {
 
     const toggleFavorite = async () => {
         if (!token) {
-            alert("Debes iniciar sesión para marcar favoritos");
+            setShowModalCuenta(true);
+
             return;
         }
 
@@ -161,7 +168,14 @@ export default function Libro() {
                         libro={libro}
                         isFavorite={isFavorite}
                         toggleFavorite={toggleFavorite}
-                        abrirModal={() => setShowModal(true)}
+                        abrirModal={() => {
+                            // Validar si hay token antes de abrir el modal de calificar
+                            if (token) {
+                                setShowModal(true);
+                            } else {
+                                setShowModalCuenta(true);
+                            }
+                        }}
                         backendUrl={BACKEND_URL}
                     />
 
@@ -178,6 +192,15 @@ export default function Libro() {
                     guardarResena={(datos) => guardarResena(datos)}
                 />
             )}
+
+            {showModalCuenta && (
+                <ModalNoCuenta onClose={() => setShowModalCuenta(false)} />
+            )}
+
+           
+        
+        
+        
         </div>
         </Route>
     );
