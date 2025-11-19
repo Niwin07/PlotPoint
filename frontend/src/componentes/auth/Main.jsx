@@ -8,11 +8,14 @@ import { Route, useLocation } from "wouter";
 
 export default function AuthMain() {
 
+    // Estado para mensajes de error
     const [mensaje, setMensaje] = useState("");
     const [location, setLocation] = useLocation();
 
+    // Función para registrar un nuevo usuario
     const registrar = async (usuario) => {
         try {
+            // Preparar datos para el registro
             const datos = {
                 nombre: usuario.nombreUsuario.trim(),
                 nombre_usuario: usuario.nombreUsuario.trim(),
@@ -22,12 +25,15 @@ export default function AuthMain() {
                 url_avatar: "",
             };
 
+            // Realizar la solicitud de registro
             await axios.post("http://localhost:3000/api/usuarios/registro", datos);
 
             alert("Registro exitoso. Ahora puedes iniciar sesión.");
+            // Redirigir a la página de inicio de sesión
             setLocation("/iniciarsesion");
 
         } catch (error) {
+            // Manejo de errores
             console.error("Error en registro:", error);
             
 
@@ -41,21 +47,23 @@ export default function AuthMain() {
         }
     };
 
-   
+   // Función para iniciar sesión
     const login = async (usuario) => {
         try {
+            // Preparar datos para el inicio de sesión
             const body = {
                 nombre_usuario: usuario.nombreUsuario.trim(),
                 contrasena: usuario.contrasenaHash.trim(),
             };
-
+            // Realizar la solicitud de inicio de sesión
             const resp = await axios.post(
                 "http://localhost:3000/api/usuarios/login",
                 body
             );
-
+            // Manejar la respuesta
             const data = resp.data;
 
+            // Verificar si el inicio de sesión no fue exitoso
             if (data.status !== "ok") {
                 setMensaje(data.message || "Credenciales incorrectas");
                 return;
