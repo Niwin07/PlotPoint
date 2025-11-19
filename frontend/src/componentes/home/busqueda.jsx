@@ -122,7 +122,7 @@ const Busqueda = () => {
                 {grupo.tipo === "usuarios" ? (
                   <div className="usuarios">
                     {grupo.data.map((usuario) => (
-                      <a href={`/usuario/${usuario.id}`} key={usuario.id}>
+                      <a href={`/perfil/${usuario.id}`} key={usuario.id}>
                         <div className="usuario">
                           <img 
                             src={`${usuario.url_avatar}`} 

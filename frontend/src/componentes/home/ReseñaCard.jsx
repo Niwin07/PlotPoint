@@ -16,7 +16,7 @@ const ReseñaCard = ({ id, libro_titulo, nombre_usuario, url_portada, contenido,
 
   return (
     <div className="reseña-card">
-      <Link className="link-reseña" href={`/reseñalibro/${id}`}>
+      <Link className="link-reseña" href={`/resenalibro/${id}`}>
         {puedeEliminar && (
           <button className="eliminar-btn" onClick={eliminarReseña}>
             Eliminar

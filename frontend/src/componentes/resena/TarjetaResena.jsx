@@ -8,7 +8,7 @@ export default function TarjetaResena({ resena, backendUrl }) {
             <div className="usuario-reseña">
                 <Link href={`/perfil/${resena.usuario_id}`}>
                     <img
-                        src={resena.url_avatar ? `${backendUrl}${resena.url_avatar}` : '/path/to/default/avatar.png'}
+                        src={resena.url_avatar ? `${resena.url_avatar}` : '/path/to/default/avatar.png'}
                         alt={resena.nombre_usuario}
                         className="foto-perfil"
                     />
