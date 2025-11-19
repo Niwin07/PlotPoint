@@ -1,77 +1,51 @@
-import React, { useState } from 'react';
-import useUsuario from '../../hooks/useUsuario';
-import '/src/componentes/auth/crearcuenta.css';
-import axios from 'axios'; 
-
-const Signup = () => {
+import useUsuario from "../../hooks/useUsuario";
+import { useState } from "react";
+import { Link } from "wouter";
+import './crearcuenta.css';
+export default function CrearCuenta({ registrar, mensaje }) {
     const [usuario, setUsuario] = useUsuario();
     const [terminos, setTerminos] = useState(false);
     const [errores, setErrores] = useState({});
-    const [mensaje, setMensaje] = useState('');
+
 
     const handleCheck = (e) => {
         const { name, checked } = e.target;
         console.log(name)
         if (name === 'terminos') {
             setTerminos(checked);
-        } 
+        }
     };
 
-    const validarValores = async (e) => {
+    const validar = (e) => {
         e.preventDefault();
-        let erroresTemp = {};
 
-        if (!usuario.nombreUsuario.trim() || usuario.nombreUsuario.length < 6) {
-            erroresTemp.nombreUsuario = 'El nombre de usuario debe tener al menos 6 caracteres';
-        }
-        if(usuario.nombreUsuario.length > 20){
-            erroresTemp.nombreUsuario = 'El nombre de usuario no puede exceder los 20 caracteres';
-        }
-        if (!usuario.correo.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,4})+$/)) {
-            erroresTemp.correo = 'Correo electrónico inválido';
-        }
-        if (usuario.contrasenaHash.length < 6) {
-            erroresTemp.contrasenaHash = 'La contraseña debe tener al menos 6 caracteres';
-        }
-        if (!terminos) {
-            erroresTemp.terminos = 'Debes aceptar los términos y condiciones';
-        }
+        let temp = {};
 
-        setErrores(erroresTemp);
+        if (!usuario.nombreUsuario.trim() || usuario.nombreUsuario.length < 6)
+            temp.nombreUsuario = "El nombre de usuario debe tener al menos 6 caracteres";
 
-        if (Object.keys(erroresTemp).length > 0) return;
+        if (!usuario.correo.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,4})+$/))
+            temp.correo = "Correo electrónico inválido";
 
-        try {
-            const datosAEnviar = {
-                nombre: usuario.nombreUsuario.trim(), 
-                nombre_usuario: usuario.nombreUsuario.trim(),
-                correo: usuario.correo.trim(),
-                contrasena: usuario.contrasenaHash.trim(),
-                biografia: "", 
-                url_avatar: "" 
-            };
+        if (usuario.contrasenaHash.length < 6)
+            temp.contrasenaHash = "La contraseña debe tener al menos 6 caracteres";
 
-            const response = await axios.post('http://localhost:3000/api/usuarios/registro', datosAEnviar);
+        if (!terminos)
+            temp.terminos = "Debes aceptar los términos y condiciones";
 
-            alert(' Registro exitoso. Ahora puedes iniciar sesión.');
-            window.location.href = '/iniciarsesion';
+        setErrores(temp);
 
-        } catch (error) {
-            console.error('Error en registro:', error);
-            if (error.response) {
-                setMensaje(error.response.data.message || 'Error al registrar usuario');
-            } else if (error.request) {
-                setMensaje('Error de conexión con el servidor');
-            } else {
-                setMensaje('Error inesperado al preparar la solicitud');
-            }
+        if (Object.keys(temp).length === 0) {
+            console.log('Datos válidos:', usuario);
+            registrar(usuario);
         }
     };
 
     return (
+
         <div className="signup" id="login">
             <div className="row">
-                <form className="formulario" onSubmit={validarValores}>
+                <form className="formulario" onSubmit={validar}>
                     <div className="box">
                         <h3>Unete a Plotpoint</h3>
                         <div className="secciones">
@@ -118,14 +92,14 @@ const Signup = () => {
                             required
                         />
                         <label htmlFor="acepto-terminos">
-                            Acepto los <a href="/terminosycondiciones">términos y condiciones</a>
+                            Acepto los <Link href={"/terminosycondiciones"}>términos y condiciones</Link>
                         </label>
                         {errores.terminos && <span className="error">{errores.terminos}</span>}
 
                         {mensaje && <span className="error">{mensaje}</span>}
 
                         <input type="submit" className="btn" value="REGISTRARSE" />
-                        <p>¿Ya tienes una cuenta? <span><a href="/iniciarsesion">Iniciar sesión</a></span></p>
+                        <p>¿Ya tienes una cuenta? <span><Link href={"/iniciarsesion"}>Iniciar sesión</Link></span></p>
                     </div>
                 </form>
                 <div className="imagen-form">
@@ -133,7 +107,6 @@ const Signup = () => {
                 </div>
             </div>
         </div>
-    );
-};
 
-export default Signup;
+    )
+}

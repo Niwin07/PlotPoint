@@ -112,12 +112,6 @@
     padding: 1rem 0;
     line-height: 2;
 }
-/*.reviews .reviews-slider .developer h3{
-    text-transform: none;
-    color:var(--black);
-    font-size: 2.2rem;
-    padding: .5rem 0;
-}*/
 .reviews{
     display: flex;
     justify-content: center;

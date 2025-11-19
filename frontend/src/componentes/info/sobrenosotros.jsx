@@ -4,7 +4,8 @@ import '/src/componentes/info/sobrenosotros.css';
 
 const SobreNosotros = () => {
     useEffect(() => {
-        //este useEffect se encargara accionar una clase dependiedo de la pregunta que quieras conocer de nosotros y de ocultar las otras que no
+        //este useEffect se encargara accionar una clase dependiedo de la pregunta que quieras conocer de nosotros y 
+        // de ocultar las otras que no
         //seleccionaste
         const preguntas = document.querySelectorAll('.pregunta');
         preguntas.forEach(pregunta => {
@@ -97,7 +98,7 @@ const SobreNosotros = () => {
                     <div class="base">
                         <div class="developer">
                             <div class="developer-info">
-                                <img src="/src/img/perfil.webp" alt=""></img>
+                                <img src="/src/img/david.webp" alt=""></img>
                                 <h3>Aranda Cristian David</h3>
                                 <p>Oriundo de Ushuaia, Aranda Cristian David se encargo del desarrollo del frontend, componentes de React y diseño responsivo .                               </p>
 
@@ -106,7 +107,7 @@ const SobreNosotros = () => {
                         </div>
                         <div class="developer">
                             <div class="developer-info">
-                                <img src="/src/img/perfil.webp" alt=""></img>
+                                <img src="/src/img/nehuen.webp" alt=""></img>
                                 <h3>Henry Nehuen Mesias Rios </h3>
                                 <p>Oriunda de Ushuaia, Mesias Henry Nehuen se encargo del desarrollo del backend, APIs, base de datos y seguridad.
                                 </p>

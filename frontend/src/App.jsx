@@ -16,17 +16,15 @@ import Busqueda from './componentes/home/busqueda';
 import ListaReseñasInicio from './componentes/home/ListaReseñasInicio';
 
 //  Libros y reseñas
-import Libro from './componentes/libro/libro';
-import ReviewDetail from './componentes/libro/ReviewDetail';
+import MainLibro from './componentes/libro/main';
+import MainResena from './componentes/resena/main';
 
 //  Usuario / Perfil
-import Perfil from './componentes/perfil/Perfil';
-import EditarPerfil from './componentes/perfil/EditarPerfil'
-import Usuario from './componentes/perfil/Usuario';
+import MainPerfil from './componentes/perfil/Main';
+//import EditarPerfil from './componentes/perfil/EditarPerfil'
 
 //  Autenticación
-import Iniciarsesion from './componentes/auth/iniciarsesion';
-import Crearcuenta from './componentes/auth/crearcuenta';
+import MainAuth from './componentes/auth/Main';
 
 // ℹ Información y soporte
 import SobreNosotros from './componentes/info/sobrenosotros';
@@ -58,21 +56,22 @@ function App() {
           <Route path="/reseñasinicio" component={ListaReseñasInicio} />
 
           {/*  Libros y reseñas */}
-          <Route path="/libro/:id" component={Libro} />
-          <Route path="/reseñalibro/:id" component={ReviewDetail} />
+          <Route path="/libro/:id" component={MainLibro} />
+          <Route path="/resenalibro/:id" component={MainResena} />
 
-          {/*  Usuario / Perfil */}
-          <Route path="/usuario/:id" component={Usuario} />
-          <Route path="/usuario/:id/megustas" component={Usuario} />
-          <Route path="/usuario/:id/reseñas" component={Usuario} />
-          <Route path="/perfil/:id" component={Perfil} />
-          <Route path="/perfil/:id/megustas" component={Perfil} />
-          <Route path="/perfil/:id/reseñas" component={Perfil} />
-          <Route path="/perfil/:id/editarperfil" component={EditarPerfil} />
+          {/*  Usuario / Perfil 
+          <Route path="/usuario/:id" component={MainPerfil} />
+          <Route path="/usuario/:id/megustas" component={MainPerfil} />
+          <Route path="/usuario/:id/reseñas" component={MainPerfil} />
+          */}
+          <Route path="/perfil/:id" component={MainPerfil} />
+          <Route path="/perfil/:id/megustas" component={MainPerfil} />
+          <Route path="/perfil/:id/reseñas" component={MainPerfil} />
+          <Route path="/perfil/:id/editarperfil" component={MainPerfil} />
 
           {/*  Autenticación */}
-          <Route path="/iniciarsesion" component={Iniciarsesion} />
-          <Route path="/registro" component={Crearcuenta} />
+          <Route path="/iniciarsesion" component={MainAuth} />
+          <Route path="/registro" component={MainAuth} />
 
           {/*  Información y soporte */}
           <Route path="/sobrenosotros" component={SobreNosotros} />
@@ -87,11 +86,7 @@ function App() {
 
         </Switch>
 
-        {/* Este modal debe activarse si realizas una accion que requiera cuenta de Plotpoint */}
-        {/* 
-        <button onClick={() => setShowModal(true)}>Abrir modal</button>
-        {showModal && <ModalNoCuenta onClose={() => setShowModal(false)} />} 
-        */}
+       
       </main>
 
       {!ocultarLayout && <Footer />}

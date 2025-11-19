@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "/src/componentes/modals/usuario/ModalNoCuenta.css";
+import { Link } from "wouter";
 
 export default function ModalNoCuenta({ onClose }) {
   return (
@@ -18,13 +19,13 @@ export default function ModalNoCuenta({ onClose }) {
           <strong>Plotpoint</strong>, haz clic para iniciar sesión
         </p>
 
-        <a href="/iniciarsesion" className="login-btn">Iniciar sesión</a>
+        <Link href="/iniciarsesion" className="login-btn">Iniciar sesión</Link>
 
         <p className="create-text">
           ¿No tienes cuenta?{" "}
-          <a href="/registro" className="create-link">
+          <Link href="/registro" className="create-link">
             Crear cuenta
-          </a>
+          </Link>
         </p>
       </div>
     </div>

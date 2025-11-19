@@ -1,65 +1,32 @@
-import React, { useState, useEffect } from "react";
-import axios from 'axios';
 import ReseñaCard from "../home/ReseñaCard";
+import '/src/componentes/home/ReseñaCard.css';
 
-
-
-const ListaReseñas = ({ usuarioId }) => { 
-  const BACKEND_URL = 'http://localhost:3000';
-  const miId = JSON.parse(localStorage.getItem("usuario"))?.id;
-
-  const [reseñas, setReseñas] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  const fetchReseñas = async () => {
-    setLoading(true);
-    if (!usuarioId) return; 
-
-    try {
-      const url = `${BACKEND_URL}/api/resenas?usuario_id=${usuarioId}`;
-      const res = await axios.get(url);
-      setReseñas(res.data.resenas);
-
-    } catch (error) {
-      console.error("Error cargando reseñas:", error);
-    } finally {
-      setLoading(false);
+export default function ListaReseñas({ reseñas, loading, miId, obtenerReseñas }) {
+    if (loading) {
+        return <div style={{ padding: '20px', color: 'white' }}>Cargando reseñas...</div>;
     }
-  };
 
-  useEffect(() => {
-    fetchReseñas();
-  }, [usuarioId]); 
+    if (reseñas.length === 0) {
+        return <div style={{ padding: '20px', color: 'white' }}>Este usuario aún no tiene reseñas.</div>;
+    }
 
-  if (loading) {
-    return <div style={{ padding: '20px', color: 'white' }}>Cargando reseñas...</div>;
-  }
-
-  if (reseñas.length === 0) {
-    return <div style={{ padding: '20px', color: 'white' }}>Este usuario aún no tiene reseñas.</div>;
-  }
-
-  return (
-    <div className="lista-reseñas">
-      {reseñas.map((r) => (
-        <ReseñaCard
-          key={r.id}
-          id={r.id} 
-          libro_titulo={r.libro_titulo}
-          nombre_usuario={r.nombre_usuario}
-          url_portada={r.url_portada}
-          contenido={r.contenido}
-          puntuacion={r.puntuacion}
-          url_avatar={r.url_avatar}
-
-          miId={miId}
-          usuario_id={r.usuario_id}
-
-          onReseñaEliminada={fetchReseñas}
-        />
-      ))}
-    </div>
-  );
-};
-
-export default ListaReseñas;
+    return (
+        <div className="lista-reseñas">
+            {reseñas.map((reseña) => (
+                <ReseñaCard
+                    key={reseña.id}
+                    id={reseña.id}
+                    libro_titulo={reseña.libro_titulo}
+                    nombre_usuario={reseña.nombre_usuario}
+                    url_portada={reseña.url_portada}
+                    contenido={reseña.contenido}
+                    puntuacion={reseña.puntuacion}
+                    url_avatar={reseña.url_avatar}
+                    miId={miId}
+                    usuario_id={reseña.usuario_id}
+                    onReseñaEliminada={() => obtenerReseñas()}
+                />
+            ))}
+        </div>
+    );
+}

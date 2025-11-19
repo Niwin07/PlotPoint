@@ -49,16 +49,9 @@ textarea{
     --light-bg: #f4f4f4;
     --box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .1);
     --border: .1rem solid rgba(0, 0, 0, .3);
-    /*
-    --gradient: linear-gradient(90deg, var(--cyan), var(--blue));
-    --gradient-hover: linear-gradient(90deg, var(--blue), var(--cyan));
-    */
-
 }
 p{
-  /*font-family: 'Inria Serif', serif;*/
   font-family: "Lora", serif;
-  
   font-optical-sizing: auto;
   font-weight: 600;
   font-style: normal;
@@ -72,26 +65,16 @@ h1, h2, h3, h4, h5, h6{
   
 }
 a{
-    
     font-weight: 700;
   font-style: normal;
-    /*color: rgba(255, 255, 255, 0.788);*/
- 
 }
 
 html {
     background-image: url(./img/fondo.webp);
     background-size: cover;
-    /*background-position: center*/
     font-size: 62.5%;
     scroll-behavior: smooth;
     scroll-padding-top: 9rem;
-    /*background: #1A1311;
-    /* fallback for old browsers */
-    /*background: -webkit-linear-gradient(to right, #373B44, #4286f4);  /* Chrome 10-25, Safari 5.1-6 */
-    /*background: linear-gradient(to right, #373B44, #4286f4); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
-
 }
 
 
