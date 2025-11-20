@@ -2,13 +2,13 @@ import Rating from "react-rating";
 import { Link } from "wouter";
 import '/src/componentes/libro/ReviewDetail.css';
 
-export default function TarjetaResena({ resena, backendUrl }) {
+export default function TarjetaResena({ resena }) {
     return (
         <div className="main-card">
             <div className="usuario-reseña">
                 <Link href={`/perfil/${resena.usuario_id}`}>
                     <img
-                        src={resena.url_avatar ? `${backendUrl}${resena.url_avatar}` : '/path/to/default/avatar.png'}
+                        src={resena.url_avatar ? `${resena.url_avatar}` : '/path/to/default/avatar.png'}
                         alt={resena.nombre_usuario}
                         className="foto-perfil"
                     />

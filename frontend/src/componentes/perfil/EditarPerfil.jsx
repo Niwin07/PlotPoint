@@ -220,7 +220,7 @@ export default function EditarPerfil({ obtenerPerfil }) {
 
                         {(previewUrl || usuario.urlAvatar) && (
                             <img
-                                src={previewUrl || `${BACKEND_URL}${usuario.urlAvatar}`}
+                                src={previewUrl || `${usuario.urlAvatar}`}
                                 alt="Preview"
                                 style={{
                                     width: '100px',
