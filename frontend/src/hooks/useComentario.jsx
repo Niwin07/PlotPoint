@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function useReseña() {
+export default function useComentario() {
     const [contenido, setContenido] = useState('');
 
     const setDato = (campo, valor) => {
