@@ -3,7 +3,7 @@ const db = require('../../conexion');
 
 // GET /api/busqueda/usuarios?q=termino&rol=admin
 router.get('/', async function(req, res, next) {
-    const { q, rol, limite = '20' } = req.query;
+    const { q, rol } = req.query;
 
     if (!q || q.trim().length < 2) {
         return res.status(400).json({

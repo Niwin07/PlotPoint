@@ -60,15 +60,6 @@ router.get('/', async function(req, res, next) {
 
         sql += ` ORDER BY l.titulo ASC`;
 
-        // Límite de resultados
-        const limiteNum = parseInt(limite);
-        if (limiteNum > 0 && limiteNum <= 100) {
-            sql += ` LIMIT ?`;
-            params.push(limiteNum);
-        } else {
-            sql += ` LIMIT 20`;
-        }
-
         const [libros] = await db.query(sql, params);
 
         const librosTransformados = libros.map(transformarLibro);
