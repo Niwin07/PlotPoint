@@ -1,23 +1,25 @@
 import React from 'react';
 import '/src/componentes/info/soporte.css';
 
-// este componente se encargara de que si, tienes cualquier duda sobre plotpoint, lo consultes enviandonos un mensaje que nos llegara al correo
-//para que posteriormente nosotros aclaremos o solucionemos tus dudas.
-
-
 const Soporte = () => {
+    //Endpoint para recibir los correos, Formspree
+    const FORMSPREE_ENDPOINT = "https://formspree.io/f/mjklgvaa";
+
     return (
-        <div class="contacto" id="contacto">
-            <div class="row">
-                <form action="" class="formulario">
-                    <div class="box">
+        <div className="contacto" id="contacto">
+            <div className="row">
+                <form action={FORMSPREE_ENDPOINT} method="POST" className="formulario">
+                    <div className="box">
                         <h3>Soporte</h3>
                        
-                        <textarea name="" placeholder="Escribe tus dudas..."></textarea>
-                        <input type="submit" value="ENVIAR" class="btn"></input>
+                        <input type="email" name="email" placeholder="Tu correo electrónico" required />
+
+                        <textarea name="mensaje" placeholder="Escribe tus dudas..." required></textarea>
+                        
+                        <input type="submit" value="ENVIAR" className="btn"></input>
                     </div>
                 </form>
-                <div class="imagen-form">
+                <div className="imagen-form">
                     <img src="/src/img/ilustracion.webp" alt=""></img>
                 </div>
             </div>
