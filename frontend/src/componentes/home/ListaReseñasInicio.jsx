@@ -4,14 +4,17 @@ import axios from 'axios';
 
 const ListaReseñasInicio = () => {
   const [reviews, setReviews] = useState([]);
+  
+  // sacamos el token y el id del user del localstorage
+  // con 'miId' sabremos si la reseña que se muestra fue escrita por el user logueado
   const token = localStorage.getItem('token');
   const BACKEND_URL = 'http://localhost:3000';
   const usuario = JSON.parse(localStorage.getItem("usuario"));
   const miId = usuario?.id;
 
-
-  const fetchFeedReviews = async () => {
+  const fetchReseñas = async () => {
     try {
+      // enviamos el token en el header para que la api sepa quien hace la peticion
       const response = await axios.get(`${BACKEND_URL}/api/resenas`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -22,7 +25,7 @@ const ListaReseñasInicio = () => {
     }
   };
 
-  const handleEliminarReseña = async (idReseña) => {
+  const eliminarReseña = async (idReseña) => {
     if (!confirm("¿Eliminar reseña?")) return;
 
     try {
@@ -30,14 +33,16 @@ const ListaReseñasInicio = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      fetchFeedReviews();
+      // despues de borrar una reseña, volvemos a llamar a la api
+      // para que la lista en pantalla se actualice y desaparezca lo borrado.
+      fetchReseñas();
     } catch (error) {
       alert(error);
     }
   };
 
   useEffect(() => {
-    fetchFeedReviews();
+    fetchReseñas();
   }, []); 
 
   return (
@@ -52,10 +57,14 @@ const ListaReseñasInicio = () => {
           contenido={r.contenido}
           puntuacion={r.puntuacion}
           url_avatar={r.url_avatar}
-          miId={miId}
-          usuario_id={r.usuario_id}
+          
+          // pasamos los IDs para verificar permisos en el hijo
+          miId={miId}          
+          usuario_id={r.usuario_id} 
 
-          onReseñaEliminada={() => handleEliminarReseña(r.id)} 
+          // pasamos la función de borrado como un callback. 
+          // el hijo va a avisar cuando ocurra 
+          onReseñaEliminada={() => eliminarReseña(r.id)} 
         />
       ))}
     </div>

@@ -1,15 +1,17 @@
 const router = require('express').Router();
-const jwt = require('jsonwebtoken');
-const { verificarPass } = require('@damianegreco/hashpass');
+const { verificarPass, generarToken } = require('@damianegreco/hashpass');
 const db = require('../../conexion');
 
-const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_EXPIRES_IN = '6h';
+const TOKEN_SECRET = process.env.TOKEN_SECRET || process.env.JWT_SECRET;
+const TOKEN_EXPIRES_HOURS = 6;
+
+if (!TOKEN_SECRET) {
+    console.error('ERROR: TOKEN_SECRET no está definido en las variables de entorno');
+}
 
 router.post('/', async function(req, res) {
     let { nombre_usuario, contrasena } = req.body;
 
-    // Validación básica
     if (!nombre_usuario || !contrasena) {
         return res.status(400).json({ 
             error: 'Datos incompletos',
@@ -25,7 +27,6 @@ router.post('/', async function(req, res) {
     }
 
     try {
-        // email o nombre_usuario
         const esEmail = nombre_usuario.includes('@');
 
         const sql = `
@@ -45,7 +46,6 @@ router.post('/', async function(req, res) {
 
         const usuario = usuarios[0];
 
-        // Validar contraseña
         const passwordValida = verificarPass(contrasena, usuario.contrasena_hash);
         if (!passwordValida) {
             return res.status(401).json({ 
@@ -54,15 +54,14 @@ router.post('/', async function(req, res) {
             });
         }
 
-        // Generar JWT
-        const token = jwt.sign(
+        const token = generarToken(
+            TOKEN_SECRET,
+            TOKEN_EXPIRES_HOURS,
             { 
                 id: usuario.id, 
                 nombre_usuario: usuario.nombre_usuario,
                 rol: usuario.rol || 'usuario'
-            },
-            JWT_SECRET,
-            { expiresIn: JWT_EXPIRES_IN }
+            }
         );
         
         res.status(200).json({

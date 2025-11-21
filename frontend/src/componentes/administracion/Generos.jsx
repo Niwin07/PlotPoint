@@ -15,11 +15,15 @@ export default function Generos({
     fetchGeneros
 }) {
 
+    // estados para manejar el input de busqueda y la lista filtrada
     const [buscador, setBuscador] = useState("");
     const [listaProcesada, setListaProcesada] = useState([]);
 
+    // conectamos la paginacion a la lista filtrada, no a la original.
+    // asi la paginacion se adapta a los resultados de busqueda.
     const pag = usePaginacion(listaProcesada, 10);
 
+    // filtra por nombre o descripcion
     const Buscar = () => {
         const q = buscador.toLowerCase();
 
@@ -29,9 +33,10 @@ export default function Generos({
         );
 
         setListaProcesada(filtrados);
-        pag.setPaginaActual(0);
+        pag.setPaginaActual(0); // reseteamos a la pagina 1
     };
 
+    // si limpian el buscador (texto vacio), mostramos todo de nuevo
     useEffect(() => {
         if (buscador.trim() === "") {
             setListaProcesada(generos);
@@ -39,6 +44,8 @@ export default function Generos({
         }
     }, [buscador]);
 
+    // si cambia la data original en el padre,
+    // actualizamos nuestra lista local para reflejar los cambios
     useEffect(() => {
         setListaProcesada(generos);
         pag.setPaginaActual(0);

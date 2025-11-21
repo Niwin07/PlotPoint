@@ -1,12 +1,12 @@
 import { Link } from "wouter";
 
-function TarjetaComentario({ comentario, miId, backendUrl, eliminarComentario }) {
+function TarjetaComentario({ comentario, miId, eliminarComentario }) {
     return (
         <div className="comentario-card">
             <div className="review-header">
                 <Link href={`/perfil/${comentario.usuario_id}`}>
                     <img
-                        src={comentario.url_avatar ? `${backendUrl}${comentario.url_avatar}` : '/path/to/default/avatar.png'}
+                        src={comentario.url_avatar ? `${comentario.url_avatar}` : '/path/to/default/avatar.png'}
                         alt={comentario.nombre_usuario}
                         className="foto-perfil"
                     />

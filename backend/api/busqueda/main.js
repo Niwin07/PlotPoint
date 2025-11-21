@@ -34,7 +34,7 @@ router.get('/', async function(req, res, next) {
     if (!q || q.trim().length < 1) {
         return res.status(400).json({
             error: 'Búsqueda inválida',
-            message: 'Debe proporcionar al menos 2 caracteres para buscar'
+            message: 'Debe proporcionar al menos 1 caracter para buscar'
         });
     }
 
@@ -48,7 +48,6 @@ router.get('/', async function(req, res, next) {
                 l.url_portada
             FROM Libro l
             WHERE l.titulo LIKE ?
-            LIMIT 10
         `;
 
         const sqlUsuarios = `
@@ -59,7 +58,6 @@ router.get('/', async function(req, res, next) {
             FROM Usuario u
             WHERE u.nombre LIKE ?
                OR u.nombre_usuario LIKE ?
-            LIMIT 10
         `;
 
         const [libros] = await db.query(sqlLibros, [termino]);

@@ -8,22 +8,31 @@ import ModalNoCuenta from '/src/componentes/modals/usuario/ModalNoCuenta.jsx';
 import usePaginacion from "/src/hooks/usePaginacion.jsx";
 
 export default function Usuarios({
-    usuarios,
+    usuarios, // la data que viene de headerAdmin
     loading,
-    fetchUsuarios,
+    fetchUsuarios, 
     crearUsuario,
     actualizarUsuario,
     eliminarUsuario
 }) {
 
     const [buscador, setBuscador] = useState("");
+    
+
+    // no mostramos 'usuarios' directamente. Usamos este estado intermedio
+    // para guardar la lista ya filtrada por el buscador.
     const [listaProcesada, setListaProcesada] = useState([]);
 
+    // integracion del hook de paginacion:
+    // le pasamos la 'listaProcesada' (filtrada), no la original.
+    // asi, si buscas "Juan", la paginación se recalcula solo para los "Juanes".
     const pag = usePaginacion(listaProcesada, 10);
 
+    // funcionalidad del buscador
     const Buscar = () => {
         const q = buscador.toLowerCase();
 
+        // filtramos si el texto coincide con Nombre, Usuario, Correo o Rol (rol ta al cohete).
         const filtrados = usuarios.filter(u =>
             (u.nombre || "").toLowerCase().includes(q) ||
             (u.nombre_usuario || "").toLowerCase().includes(q) ||
@@ -32,9 +41,10 @@ export default function Usuarios({
         );
 
         setListaProcesada(filtrados);
-        pag.setPaginaActual(0);
+        pag.setPaginaActual(0); // vuelve a la pagina 1 dsps de filtrar
     };
 
+    //si se borra el texto del buscador, se restaura la lista completa
     useEffect(() => {
         if (buscador.trim() === "") {
             setListaProcesada(usuarios);
@@ -42,22 +52,24 @@ export default function Usuarios({
         }
     }, [buscador]);
 
+    // setup inicial de la listaProcesada   
+    // si 'usuarios' cambia en el padre (ej: se editó un usuario y se recargó la API),
+    // actualizamos nuestra lista local para que se vea el cambio.
     useEffect(() => {
         setListaProcesada(usuarios);
         pag.setPaginaActual(0);
     }, [usuarios]);
 
+
     const [modalEditar, setModalEditar] = useState(false);
     const [modalCrear, setModalCrear] = useState(false);
     const [modalSinCuenta, setModalSinCuenta] = useState(false);
-
     const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
 
     const Editar = (usuario) => {
-        setUsuarioSeleccionado(usuario);
-        setModalEditar(true);
+        setUsuarioSeleccionado(usuario); // guarda CUAL usuario vamos a editar
+        setModalEditar(true);            // abre el modal
     };
-
 
     const Nuevo = () => setModalCrear(true);
 
@@ -69,12 +81,12 @@ export default function Usuarios({
         if (!confirm("¿Seguro deseas eliminar este usuario?")) return;
 
         const res = await eliminarUsuario(id);
-        if (res.success) fetchUsuarios();
+        // si se borró bien, pedimos al padre que recargue los datos
+        if (res.success) fetchUsuarios(); 
     };
 
     return (
         <div>
-
             <div className="acciones">
                 <input
                     type="text"
@@ -108,20 +120,15 @@ export default function Usuarios({
                 </thead>
 
                 <tbody>
+                    {/* Solo mapeamos 'pag.paginaItems' (los 10 de la página actual),
+                        no la lista completa. */}
                     {pag.paginaItems.map(usuario => (
                         <tr key={usuario.id}>
                             <td>{usuario.id}</td>
-
-                            <td style={{ fontWeight: "bold" }}>
-                                {usuario.nombre_usuario}
-                            </td>
-
+                            <td style={{ fontWeight: "bold" }}>{usuario.nombre_usuario}</td>
                             <td>{usuario.nombre}</td>
-
                             <td>{usuario.correo}</td>
-
                             <td>{usuario.rol}</td>
-
                             <td>
                                 <button className="Editar" onClick={() => Editar(usuario)}>Editar</button>
                                 <button className="Borrar" onClick={() => Borrar(usuario.id)}>Borrar</button>
@@ -173,7 +180,6 @@ export default function Usuarios({
                     alGuardar={crearUsuario}
                 />
             )}
-
 
             {modalSinCuenta && (
                 <ModalNoCuenta

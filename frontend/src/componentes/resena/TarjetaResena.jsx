@@ -2,7 +2,7 @@ import Rating from "react-rating";
 import { Link } from "wouter";
 import '/src/componentes/libro/ReviewDetail.css';
 
-export default function TarjetaResena({ resena, backendUrl }) {
+export default function TarjetaResena({ resena }) {
     return (
         <div className="main-card">
             <div className="usuario-reseña">

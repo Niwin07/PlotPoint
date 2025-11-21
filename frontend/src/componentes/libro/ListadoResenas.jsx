@@ -1,14 +1,14 @@
 import Rating from "react-rating";
 import { Link } from "wouter";
 
-function TarjetaResena({ resena, backendUrl }) {
+function TarjetaResena({ resena }) {
     return (
         <div className="review-card">
             <Link href={`/resenalibro/${resena.id || resena._id}`}>
                 <div className="review-header">
                     <div className="avatar-foto">
                         <img
-                            src={resena.url_avatar ? `${backendUrl}${resena.url_avatar}` : ''}
+                            src={resena.url_avatar ? `${resena.url_avatar}` : ''}
                             alt={resena.nombre_usuario}
                         />
                     </div>

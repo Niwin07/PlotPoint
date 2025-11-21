@@ -59,6 +59,7 @@
     flex:1 1 25rem;
     
 }
+.contacto .row .formulario input,
 .contacto .row .formulario .input,
 .contacto .row .formulario textarea{
     padding: 1rem 1.2rem;
@@ -68,7 +69,15 @@
     font-size: 1.8rem;
     margin-top: 1rem;
     font-family: 'Playfair Display';
+    border: none; 
 }
+
+.contacto .row .formulario input[type="email"],
+.contacto .row .formulario input[type="text"] {
+    width: 100%;
+    background-color: var(--texto);
+}
+
 .contacto .row .formulario textarea{
     background-color: var(--texto);
     width:100%;
