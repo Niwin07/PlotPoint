@@ -15,11 +15,14 @@ export default function Editoriales({
     fetchEditoriales
 }) {
 
+    // estados para el texto del buscador y la lista que vamos a mostrar (filtrada)
     const [buscador, setBuscador] = useState("");
     const [listaProcesada, setListaProcesada] = useState([]);
 
+    // hook de paginacion conectado a la lista filtrada
     const pag = usePaginacion(listaProcesada, 10);
 
+    // filtra por nombre o pais
     const Buscar = () => {
         const q = buscador.toLowerCase();
 
@@ -29,9 +32,10 @@ export default function Editoriales({
         );
 
         setListaProcesada(filtrados);
-        pag.setPaginaActual(0);
+        pag.setPaginaActual(0); // volvemos a la primera pagina
     };
 
+    // si borran el texto del buscador, restauramos la lista completa
     useEffect(() => {
         if (buscador.trim() === "") {
             setListaProcesada(editoriales);
@@ -39,6 +43,7 @@ export default function Editoriales({
         }
     }, [buscador]);
 
+    // si llegan datos nuevos del backend, actualizamos la lista local
     useEffect(() => {
         setListaProcesada(editoriales);
         pag.setPaginaActual(0);
@@ -58,6 +63,7 @@ export default function Editoriales({
 
     const Nuevo = () => setMostrarModalCrear(true);
 
+    // confirmacion antes de borrar y recarga si fue exitoso
     const Borrar = async (id) => {
         if (!confirm("¿Seguro deseas eliminar esta editorial?")) return;
 

@@ -34,7 +34,7 @@ router.get('/', async function(req, res, next) {
     if (!q || q.trim().length < 1) {
         return res.status(400).json({
             error: 'Búsqueda inválida',
-            message: 'Debe proporcionar al menos 2 caracteres para buscar'
+            message: 'Debe proporcionar al menos 1 caracter para buscar'
         });
     }
 

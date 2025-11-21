@@ -8,10 +8,19 @@ const fs = require("fs");
 // Directorio para guardar las fotos de perfil
 const directorio = path.join(__dirname, "..", "..", "uploads", "avatars");
 
+const BASE_URL = 'http://localhost:3000';
+
 // Crear directorio si no existe
 if (!fs.existsSync(directorio)){
     fs.mkdirSync(directorio, { recursive: true });
 }
+
+const transformPerfilURL = (perfil) => {
+    if (perfil.url_avatar && !perfil.url_avatar.startsWith('http')) {
+        perfil.url_avatar = `${BASE_URL}${perfil.url_avatar}`;
+    }
+    return perfil;
+};
 
 // NOTA: Este router ya recibe verificarToken aplicado desde main.js
 
@@ -48,7 +57,9 @@ router.get('/', async function(req, res, next) {
         perfil.seguidores = seguidoresRows[0].total_seguidores;
         perfil.seguidos = seguidosRows[0].total_seguidos;
 
-        res.json(perfil);
+        const perfilTransformado = transformPerfilURL(perfil);
+
+        res.json(perfilTransformado);
 
     } catch (error) {
         console.error('Error al obtener perfil:', error);
@@ -299,16 +310,13 @@ router.obtenerPublico = async function(req, res, next) {
     const { id } = req.params;
 
     try {
-        // 1. Consulta principal del perfil
         const sqlPerfil = `SELECT id, nombre, nombre_usuario, biografia, url_avatar 
                            FROM Usuario WHERE id = ?`;
         
-        // 2. Consultas para las estadísticas
         const sqlResenas = `SELECT COUNT(*) as total_reseñas FROM Resena WHERE usuario_id = ?`;
         const sqlSeguidores = `SELECT COUNT(*) as total_seguidores FROM Seguidores WHERE seguido_id = ?`;
         const sqlSeguidos = `SELECT COUNT(*) as total_seguidos FROM Seguidores WHERE seguidor_id = ?`;
 
-        // Ejecutar todas las consultas en paralelo
         const [
             [perfilRows],
             [reseñasRows],
@@ -327,13 +335,14 @@ router.obtenerPublico = async function(req, res, next) {
             });
         }
         
-        // Combinar todos los resultados
         const perfil = perfilRows[0];
         perfil.reseñas = reseñasRows[0].total_reseñas;
         perfil.seguidores = seguidoresRows[0].total_seguidores;
         perfil.seguidos = seguidosRows[0].total_seguidos;
 
-        res.json(perfil);
+        const perfilTransformado = transformPerfilURL(perfil);
+
+        res.json(perfilTransformado);
 
     } catch (error) {
         console.error(error);

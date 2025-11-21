@@ -1,20 +1,23 @@
 const router = require('express').Router();
 const db = require('../../conexion');
-const fileUpload = require("express-fileupload");
-const path = require('path');
-const fs = require("fs");
+const fileUpload = require("express-fileupload"); // libreria clave para manejar archivos
+const path = require('path'); // ayuda a construir rutas de carpetas sin importar el sistema operativo
+const fs = require("fs"); // sistema de archivos: permite leer, crear o borrar archivos fisicos
 
 const verificarToken = require('../middlewares/auth');
 const verificarAdmin = require('../middlewares/admin');
 
+// definimos la carpeta donde se guardaran las fotos fisicamente en el servidor
 const directorio = path.join(__dirname, "..", "..", "uploads", "portadas");
 const BASE_URL = 'http://localhost:3000';
 
+// si la carpeta no existe, la creamos para que no de error al guardar
 if (!fs.existsSync(directorio)){
     fs.mkdirSync(directorio, { recursive: true });
 }
 
 const transformarLibro = (libro) => {
+    // si la portada no es una url completa (ej: http://...), le pegamos el dominio al principio
     if (libro.url_portada && !libro.url_portada.startsWith('http')) {
         libro.url_portada = `${BASE_URL}${libro.url_portada}`;
     }
@@ -208,6 +211,7 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+// IMPORTANTE: fileUpload() aqui es el middleware que intercepta el archivo antes de entrar a la ruta
 router.post('/', verificarToken, verificarAdmin, fileUpload(), async (req, res) => {
     const { 
         titulo, isbn, sinopsis, paginas, anio_publicacion,
@@ -229,6 +233,7 @@ router.post('/', verificarToken, verificarAdmin, fileUpload(), async (req, res) 
         });
     }
 
+    // validacion 1: verificamos si realmente enviaron un archivo en el campo 'portada'
     if (!req.files || !req.files.portada) {
         return res.status(400).json({
             error: 'No hay archivo',
@@ -236,8 +241,11 @@ router.post('/', verificarToken, verificarAdmin, fileUpload(), async (req, res) 
         });
     }
 
+    // recuperamos el archivo del objeto req.files
     const { portada } = req.files;
 
+    // validacion 2: seguridad de extensiones.
+    // sacamos la extension del nombre original (ej: .jpg) y la pasamos a minusculas
     const extension = path.extname(portada.name).toLowerCase();
     const extensionesPermitidas = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
 
@@ -248,6 +256,7 @@ router.post('/', verificarToken, verificarAdmin, fileUpload(), async (req, res) 
         });
     }
 
+    // validacion 3: tamaño maximo (5MB aqui) para no saturar el servidor
     const maxSize = 5 * 1024 * 1024;
     if (portada.size > maxSize) {
         return res.status(400).json({
@@ -257,9 +266,13 @@ router.post('/', verificarToken, verificarAdmin, fileUpload(), async (req, res) 
     }
 
     try {
+        // creamos un nombre unico usando la fecha actual (Date.now) para evitar sobrescribir archivos
         const nombreArchivo = `portada_${Date.now()}${extension}`;
+        
+        // ruta completa donde guardaremos el archivo en el disco duro
         const filepath = path.join(directorio, nombreArchivo);
 
+        // accion de guardado: movemos el archivo de la memoria temporal a la carpeta definitiva
         await portada.mv(filepath);
 
         const sql = `
@@ -268,11 +281,12 @@ router.post('/', verificarToken, verificarAdmin, fileUpload(), async (req, res) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
+        // en la base de datos NO guardamos la imagen binaria, solo guardamos la ruta (texto)
         const [result] = await db.query(sql, [
             titulo.trim(),
             isbn ? isbn.trim() : null,
             sinopsis ? sinopsis.trim() : null,
-            `/uploads/portadas/${nombreArchivo}`,
+            `/uploads/portadas/${nombreArchivo}`, 
             paginas || null,
             anio_publicacion || null,
             autor_id || null,
@@ -302,6 +316,7 @@ router.post('/', verificarToken, verificarAdmin, fileUpload(), async (req, res) 
     }
 });
 
+// ruta especifica para actualizar SOLO la portada
 router.post('/:id/upload-portada', verificarToken, verificarAdmin, fileUpload(), async (req, res) => {
     const { id } = req.params;
 
@@ -341,16 +356,20 @@ router.post('/:id/upload-portada', verificarToken, verificarAdmin, fileUpload(),
             });
         }
 
+        // limpieza: antes de subir la nueva, buscamos si ya tenia una portada vieja y la borramos
         const portadaAnterior = libro[0].url_portada;
         if (portadaAnterior && portadaAnterior.startsWith('/uploads/portadas/') && !portadaAnterior.includes('default')) {
             const nombreArchivoAnterior = path.basename(portadaAnterior);
             const filepathAnterior = path.join(directorio, nombreArchivoAnterior);
+            
+            // fs.unlinkSync borra el archivo fisico del disco para no ocupar espacio basura
             if (fs.existsSync(filepathAnterior)) fs.unlinkSync(filepathAnterior);
         }
 
         const nombreArchivo = `portada_${id}_${Date.now()}${extension}`;
         const filepath = path.join(directorio, nombreArchivo);
 
+        // guardamos la nueva imagen
         await portada.mv(filepath);
 
         const urlPortada = `/uploads/portadas/${nombreArchivo}`;
@@ -514,11 +533,15 @@ router.delete('/:id/delete-portada', verificarToken, verificarAdmin, async (req,
             });
         }
 
+        // recuperamos la ruta de la portada para saber cual borrar
         const url = libro[0].url_portada;
+        
+        // solo borramos si es una imagen subida por nosotros (empieza con /uploads) y no es la default
         if (url && url.startsWith('/uploads/portadas/') && !url.includes('default')) {
             const nombreArchivo = path.basename(url);
             const filepath = path.join(directorio, nombreArchivo);
 
+            // verificamos existencia fisica y borramos
             if (fs.existsSync(filepath)) {
                 fs.unlinkSync(filepath);
             }
@@ -547,8 +570,6 @@ router.delete('/:id', verificarToken, verificarAdmin, async (req, res) => {
         const [portada] = await db.query(
             "SELECT url_portada FROM Libro WHERE id = ?", [id]
         );
-
-        // Borrar portada física
         if (portada.length > 0 && portada[0].url_portada) {
             const url = portada[0].url_portada;
 

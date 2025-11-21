@@ -19,32 +19,41 @@ export default function Libros({
     api
 }) {
 
+    // estados para manejar los inputs de filtros y orden
     const [buscador, setBuscador] = useState("");
     const [filtroCategoria, setFiltroCategoria] = useState("");
     const [ordenFecha, setOrdenFecha] = useState("");
     const [ordenLetra, setOrdenLetra] = useState("a-z");
 
+    // no mostramos 'libros' directo, usamos esta lista procesada
+    // para guardar la lista ya filtrada y ordenada
     const [listaProcesada, setListaProcesada] = useState([]);
 
+    // integracion del hook de paginacion con la lista filtrada
     const pag = usePaginacion(listaProcesada, 10);
 
+    // logica central de filtros: se encarga de ordenar y filtrar por categoría.
+    // recibe una lista base (que puede venir del buscador de texto o del original)
     const aplicarFiltros = (base) => {
         const toNum = (x) => Number(x) || 0;
 
-        let temp = [...base];
+        let temp = [...base]; // copia para no mutar el array original
 
+        // filtro por id de genero (categoria)
         if (filtroCategoria !== "") {
             temp = temp.filter(l =>
                 l.generos?.some(g => g.id === parseInt(filtroCategoria))
             );
         }
 
+        // ordenamiento por fecha (numerico)
         if (ordenFecha === "recientes") {
             temp.sort((a, b) => toNum(b.anio_publicacion) - toNum(a.anio_publicacion));
         } else if (ordenFecha === "antiguos") {
             temp.sort((a, b) => toNum(a.anio_publicacion) - toNum(b.anio_publicacion));
         }
 
+        // ordenamiento alfabetico por titulo
         if (ordenLetra === "a-z") {
             temp.sort((a, b) => a.titulo.localeCompare(b.titulo));
         } else if (ordenLetra === "z-a") {
@@ -54,6 +63,8 @@ export default function Libros({
         return temp;
     };
 
+    // funcionalidad del buscador de texto:
+    // primero filtra por string, y al resultado le aplica los demas filtros (fecha, cat)
     const buscarLibros = () => {
         const q = buscador.toLowerCase();
         let base = libros.filter(l =>
@@ -65,9 +76,11 @@ export default function Libros({
 
         const procesada = aplicarFiltros(base);
         setListaProcesada(procesada);
-        pag.setPaginaActual(0);
+        pag.setPaginaActual(0); // reset a pag 1
     };
 
+    // si cambian los selects (fecha, orden, genero), re-ejecutamos el filtro
+    // sobre la data original (o filtrada si quisieras combinar con buscador en tiempo real)
     useEffect(() => {
         if (buscador.trim() === "") {
             const procesada = aplicarFiltros(libros);
@@ -76,6 +89,7 @@ export default function Libros({
         }
     }, [filtroCategoria, ordenFecha, ordenLetra]);
 
+    // si se borra el texto del buscador, restauramos la lista aplicando los filtros activos
     useEffect(() => {
         if (buscador.trim() === "") {
             const procesada = aplicarFiltros(libros);
@@ -84,6 +98,7 @@ export default function Libros({
         }
     }, [buscador]);
 
+    // setup inicial: si llega data nueva del backend, actualizamos la lista local
     useEffect(() => {
         const procesada = aplicarFiltros(libros);
         setListaProcesada(procesada);
@@ -99,6 +114,7 @@ export default function Libros({
         setMostrarModalEditar(true);
     };
 
+    // validacion importante: no dejamos abrir el modal si faltan datos previos
     const Nuevo = () => {
         if (!autores.length) return alert("Primero crea un autor");
         if (!editoriales.length) return alert("Primero crea una editorial");
@@ -167,6 +183,7 @@ export default function Libros({
                 </thead>
 
                 <tbody>
+                    {/* renderizado de la tabla: mapeamos solo los items de la pagina actual */}
                     {pag.paginaItems.map(libro => (
                         <tr key={libro.id}>
                             <td>{libro.id}</td>
@@ -179,6 +196,7 @@ export default function Libros({
                             </td>
 
                             <td>
+                                {/* mapeamos los generos y agregamos una coma si no es el ultimo */}
                                 {libro.generos?.map((g, i) => (
                                     <span key={g.id}>
                                         {g.nombre}{i < libro.generos.length - 1 ? ", " : ""}
@@ -222,6 +240,7 @@ export default function Libros({
                 <ModalEditarLibro
                     libro={{
                         ...libroSeleccionado,
+                        // pasamos solo los IDs de generos para que el select del modal los lea
                         generos: libroSeleccionado.generos.map(g => g.id)
                     }}
                     autores={autores}

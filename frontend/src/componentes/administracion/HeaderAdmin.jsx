@@ -13,12 +13,15 @@ import { Router, Route, Link, useLocation } from "wouter";
 import axios from 'axios';
 
 const HeaderAdmin = () => {
+    // seteamos los estados de los datos
     const [libros, setLibros] = useState([]);
     const [autores, setAutores] = useState([]);
     const [editoriales, setEditoriales] = useState([]);
     const [generos, setGeneros] = useState([]);
     const [usuarios, setUsuarios] = useState([]);
 
+    // usamos un objeto en lugar de un simple true/false. 
+    // para que en caso de que alguno no cargue los demas sigan funcionando
     const [loading, setLoading] = useState({
         libros: false,
         autores: false,
@@ -27,15 +30,21 @@ const HeaderAdmin = () => {
         usuarios: false,
     });
 
+
+    // definimos los const del token y la api (googlear .create)
     const token = localStorage.getItem('token');
     const api = axios.create({
         baseURL: 'http://localhost:3000/api',
         headers: { 'Authorization': `Bearer ${token}` }
     });
 
+    // funcion extra para setear los loadings individuales
     const setLoadingState = (key, value) => {
         setLoading(prev => ({ ...prev, [key]: value }));
     };
+
+
+    // fetch de datos (get), cada uno declara su propio loading   
 
     const fetchLibros = async () => {
         setLoadingState('libros', true);
@@ -77,8 +86,12 @@ const HeaderAdmin = () => {
         } finally { setLoadingState('usuarios', false); }
     };
 
+
+    // metodos crud de cada una de las secciones, se actualiza con cada cambio
+
     const crearLibro = async (formData) => {
         try {
+            // aca usamos 'multipart/form-data' porque se suben img
             const res = await api.post('/libros', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
@@ -199,10 +212,10 @@ const HeaderAdmin = () => {
         } catch { return { success: false }; }
     };
 
-    // ---------- Usuarios ----------
+    
     const crearUsuario = async (datos) => {
         try {
-            const res = await axios.post('http://localhost:3000/api/usuarios/registro', datos);
+            const res = await api.post('/usuarios/registro', datos);
             if (res.data.status === 'ok') {
                 await fetchUsuarios();
                 return { success: true };
@@ -230,8 +243,7 @@ const HeaderAdmin = () => {
         } catch { return { success: false }; }
     };
 
-
-    // ============= CARGA INICIAL =============
+    // se ejecuta cada vez que entramos a admin (una sola vez)
     useEffect(() => {
         fetchLibros();
         fetchAutores();
@@ -240,7 +252,8 @@ const HeaderAdmin = () => {
         fetchUsuarios();
     }, []);
 
-    // ===================== NAV ACTIVA =====================
+
+    // la logica visual para que se pinte de otro color la pestaña donde estás
     const [location] = useLocation();
     const isActive = (path) => {
         if (path === "/admin/") return location === "/admin" || location === "/admin/";
@@ -272,13 +285,15 @@ const HeaderAdmin = () => {
                 </Link>
             </nav>
 
-            {/* Rutas */}
+
+            {/*  mandamos los datos y funciones a los hijos */}
+            
             <Route path="/admin/" component={() =>
                 <Libros
                     libros={libros}
-                    autores={autores}
-                    editoriales={editoriales}
-                    generos={generos}
+                    autores={autores}       // necesario para el Select de autores al crear libro
+                    editoriales={editoriales} // necesario para el Select de editoriales
+                    generos={generos}       // necesario para el Select de géneros
                     loading={loading.libros}
                     fetchLibros={fetchLibros}
                     crearLibro={crearLibro}

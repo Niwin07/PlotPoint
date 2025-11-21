@@ -1,15 +1,15 @@
 const router = require('express').Router();
 
 const usuariosRouter = require('./usuarios/main');
-const resenasRouter = require('./reseñas/main');
-const librosRouter = require('./libros/main');
-const comentariosRouter = require('./comentarios/main');
-const likesRouter = require('./likes/main')
+const resenasRouter = require('./reseñas/reseñas');
 const busquedaRouter = require('./busqueda/main');
-const autoresRouter = require('./autores/main');
-const editorialesRouter = require('./editoriales/main')
-const generosRouter = require('./generos/main');
-const seguidoresRouter = require('./seguidores/main');
+const librosRouter = require('./libros/libros');
+const comentariosRouter = require('./comentarios/comentarios');
+const likesRouter = require('./likes/likes');
+const autoresRouter = require('./autores/autores');
+const editorialesRouter = require('./editoriales/editoriales')
+const generosRouter = require('./generos/generos');
+const seguidoresRouter = require('./seguidores/seguidores');
 
 router.use('/usuarios', usuariosRouter);
 router.use('/resenas', resenasRouter); 

@@ -1,9 +1,8 @@
-const jwt = require('jsonwebtoken');
+const { verificarToken } = require('@damianegreco/hashpass');
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const { TOKEN_SECRET } = process.env;
 
-function verificarToken(req, res, next) {
-    // Obtener token del header Authorization
+function middleware(req, res, next) {
     const authHeader = req.headers.authorization;
     
     if (!authHeader) {
@@ -13,39 +12,31 @@ function verificarToken(req, res, next) {
         });
     }
     
-    // Verificar formato "Bearer TOKEN"
+    let token;
     const parts = authHeader.split(' ');
-    if (parts.length !== 2 || parts[0] !== 'Bearer') {
+    
+    if (parts.length === 2 && parts[0] === 'Bearer') {
+        token = parts[1];
+    } else if (parts.length === 1) {
+        token = parts[0];
+    } else {
         return res.status(401).json({ 
             error: 'Formato de token inválido',
-            message: 'El formato debe ser: Bearer {token}' 
+            message: 'El formato debe ser: Bearer {token} o solo {token}' 
         });
     }
     
-    const token = parts[1];
+    const verificacion = verificarToken(token, TOKEN_SECRET);
     
-    try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        req.usuario = decoded; // { id, user, rol }
+    if (verificacion?.data) {
+        req.usuario = verificacion.data; 
         next();
-    } catch (error) {
-        if (error.name === 'TokenExpiredError') {
-            return res.status(401).json({ 
-                error: 'Token expirado',
-                message: 'Por favor, inicia sesión nuevamente' 
-            });
-        }
-        if (error.name === 'JsonWebTokenError') {
-            return res.status(401).json({ 
-                error: 'Token inválido',
-                message: 'El token proporcionado no es válido' 
-            });
-        }
+    } else {
         return res.status(401).json({ 
-            error: 'Error de autenticación',
-            message: error.message 
+            error: 'Token inválido o expirado',
+            message: 'Por favor, inicia sesión nuevamente' 
         });
     }
 }
 
-module.exports = verificarToken;
+module.exports = middleware;

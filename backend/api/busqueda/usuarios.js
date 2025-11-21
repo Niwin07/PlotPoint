@@ -5,10 +5,10 @@ const db = require('../../conexion');
 router.get('/', async function(req, res, next) {
     const { q, rol } = req.query;
 
-    if (!q || q.trim().length < 2) {
+    if (!q || q.trim().length < 1) {
         return res.status(400).json({
             error: 'Búsqueda inválida',
-            message: 'Debe proporcionar al menos 2 caracteres para buscar'
+            message: 'Debe proporcionar al menos 1 caracter para buscar'
         });
     }
 

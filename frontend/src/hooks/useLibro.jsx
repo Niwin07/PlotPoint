@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 export default function useLibro() {
-    // define el useState para cada campo de la bd
+    // define el useState para cada campo del libro
     const [id, setId] = useState(null);
     const [titulo, setTitulo] = useState('');
     const [isbn, setIsbn] = useState('');

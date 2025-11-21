@@ -15,11 +15,15 @@ export default function Autores({
     fetchAutores
 }) {
 
+    // estados para manejar el input de busqueda y la lista filtrada
     const [buscador, setBuscador] = useState("");
     const [listaProcesada, setListaProcesada] = useState([]);
 
+    // conectamos la paginacion a la lista filtrada, no a la original.
+    // asi la paginacion se adapta a los resultados de busqueda.
     const pag = usePaginacion(listaProcesada, 10);
 
+    // filtra por nombre o apellido
     const Buscar = () => {
         const q = buscador.toLowerCase();
 
@@ -29,9 +33,10 @@ export default function Autores({
         );
 
         setListaProcesada(filtrados);
-        pag.setPaginaActual(0);
+        pag.setPaginaActual(0); // reseteamos a la pagina 1
     };
 
+    // si limpian el buscador (texto vacio), mostramos todo de nuevo
     useEffect(() => {
         if (buscador.trim() === "") {
             setListaProcesada(autores);
@@ -39,6 +44,8 @@ export default function Autores({
         }
     }, [buscador]);
 
+    // si cambia la data original en el padre (ej: creaste un autor nuevo),
+    // actualizamos nuestra lista local para reflejar los cambios
     useEffect(() => {
         setListaProcesada(autores);
         pag.setPaginaActual(0);
@@ -98,6 +105,7 @@ export default function Autores({
                 </thead>
 
                 <tbody>
+                    {/* renderizado paginado: solo items de la pagina actual */}
                     {pag.paginaItems.map(autor => (
                         <tr key={autor.id}>
                             <td>{autor.id}</td>
@@ -121,6 +129,7 @@ export default function Autores({
                 </tbody>
             </table>
 
+            {/* controles de paginacion (solo si hay resultados) */}
             {listaProcesada.length > 0 && (
                 <div style={{ textAlign: "center", marginTop: 20 }}>
                     <button

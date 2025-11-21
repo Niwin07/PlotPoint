@@ -1,44 +1,47 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Link } from "wouter";
 import "/src/componentes/home/busqueda.css";
 
 const Busqueda = () => {
+  // estados
   const [busqueda, setBusqueda] = useState("");
   const [categoria, setCategoria] = useState("");
   const [generos, setGeneros] = useState([]);
   const [resultados, setResultados] = useState([]);
 
+  // cuando se carga la página, mandamos a traer los generos para llenar el <select> de los filtros
   useEffect(() => {
     cargarGeneros();
   }, []);
 
   const cargarGeneros = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/busqueda/libros/generos');
-      const data = await response.json();
-      
-      if (data.status === 'ok') {
-        setGeneros(data.generos);
+      const response = await axios.get('http://localhost:3000/api/busqueda/libros/generos');
+      if (response.data.status === 'ok') {
+        setGeneros(response.data.generos);
       }
     } catch (err) {
       console.error('Error al cargar géneros:', err);
     }
   };
 
+  // esta es la funcion principal, es la que ve que tipo de busqueda hacer y la solicita
   const manejarBusqueda = async () => {
     const termino = busqueda.trim();
 
+    // en este caso si el user escoge una categoria se hace la busqueda filtrada por ele genero escogido
     if (categoria !== "") {
       try {
-        const params = new URLSearchParams({ genero: categoria });
-        if (termino) {
-          params.append('q', termino);
-        }
+        // añadimos el filtro y el texto que ingreso el user (si es que metio algo)
+        const params = { genero: categoria };
+        if (termino) params.q = termino;
         
-        const response = await fetch(`http://localhost:3000/api/busqueda/libros?${params}`);
-        const data = await response.json();
+        const response = await axios.get('http://localhost:3000/api/busqueda/libros', { params });
         
-        if (data.status === 'ok') {
-          setResultados([{ tipo: "libros", data: data.libros }]);
+        // solo guardamos libros, usuarios no traemos por que estamos filtrando por genero
+        if (response.data.status === 'ok') {
+          setResultados([{ tipo: "libros", data: response.data.libros }]);
         }
       } catch (err) {
         console.error('Error en búsqueda por género:', err);
@@ -47,35 +50,22 @@ const Busqueda = () => {
       return;
     }
 
+    // validamos que el termino no este pelado
     if (termino === "") {
       setResultados([]);
       return;
     }
 
-
+    // busqueda general, aca traemos tanto usuarios como libros
     try {
-      const response = await fetch(`http://localhost:3000/api/busqueda?q=${encodeURIComponent(termino)}`);
+      const response = await axios.get('http://localhost:3000/api/busqueda', {
+        params: { q: termino }
+      });
       
-      if (!response.ok) {
-        console.error('Error HTTP:', response.status, response.statusText);
-        setResultados([]);
-        return;
-      }
+      const data = response.data;
 
-      const contentType = response.headers.get("content-type");
-      if (!contentType || !contentType.includes("application/json")) {
-        console.error('La respuesta no es JSON. Content-Type:', contentType);
-        const text = await response.text();
-        console.error('Contenido recibido:', text.substring(0, 200));
-        setResultados([]);
-        return;
-      }
-
-      const data = await response.json();
-      
       if (data.status === 'ok') {
-         console.log('Datos recibidos:', data); 
-         console.log('Usuarios:', data.usuarios); 
+        // creamos un array con dos grupos para poder mostrarlos separados
         setResultados([
           { tipo: "usuarios", data: data.usuarios || [] },
           { tipo: "libros", data: data.libros || [] }
@@ -88,7 +78,8 @@ const Busqueda = () => {
   };
 
   return (
-    <div className="containe">
+    <div className="containe"> {/* en su momento creia que lo habias escrito mal y rompi toda la busqueda xd */}
+    
       <div className="buscador">
         <input
           type="text"
@@ -102,6 +93,7 @@ const Busqueda = () => {
           onChange={(e) => setCategoria(e.target.value)}
         >
           <option value="">Seleccionar categoría</option>
+          {/* mapeamos los generos que tragimos al cargar la pag */}
           {generos.map((genero) => (
             <option key={genero.id} value={genero.nombre}>
               {genero.nombre}
@@ -116,36 +108,40 @@ const Busqueda = () => {
         {resultados.length === 0 ? (
           <p className="sin-resultados">Sin resultados</p>
         ) : (
+          // mapeamos los grupos de resultados (usuarios y libros) el condicional se ejecuta hasta que se agote el array de cada grupo
           resultados.map((grupo, i) =>
             grupo.data.length > 0 ? (
               <div key={i}>
+                {/* render condicional, en este caso renderiza si la lista que recibe es de users */}
                 {grupo.tipo === "usuarios" ? (
                   <div className="usuarios">
                     {grupo.data.map((usuario) => (
-                      <a href={`/usuario/${usuario.id}`} key={usuario.id}>
-                        <div className="usuario">
+                      <Link href={`/perfil/${usuario.id}`} key={usuario.id}>
+                        <div className="usuario" style={{ cursor: "pointer" }}>
                           <img 
                             src={`${usuario.url_avatar}`} 
                             alt={usuario.nombre_usuario}
                           />
                           <p>{usuario.nombre_usuario}</p>
                         </div>
-                      </a>
+                      </Link>
                     ))}
                   </div>
-                ) : (
+                ) : ( // este es el operador que renderiza acorde al caso (miralo como un if else)
+                  // y en este caso si es de libros
                   <div className="book-grid2">
                     {grupo.data.map((libro) => (
                       <div className="book-item2" key={libro.id}>
-                        <a href={`/libro/${libro.id}`}>
-                          <img 
-                            src={libro.url_portada || "/src/img/libro.webp"} 
-                            alt={libro.titulo}
-                            onError={(e) => {
-                              e.target.src = "/src/img/libro.webp";
-                            }}
-                          />
-                        </a>
+                        <Link href={`/libro/${libro.id}`}>
+                            <img 
+                              src={libro.url_portada || "/src/img/libro.webp"} 
+                              alt={libro.titulo}
+                              style={{ cursor: "pointer" }}
+                              onError={(e) => {
+                                e.target.src = "/src/img/libro.webp";
+                              }}
+                            />
+                        </Link>
                       </div>
                     ))}
                   </div>

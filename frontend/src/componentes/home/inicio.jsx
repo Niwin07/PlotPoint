@@ -3,25 +3,26 @@ import axios from 'axios';
 import { Link } from "wouter";
 import '/src/componentes/home/inicio.css';
 
-
 const Inicio = () => {
 
+    // definimos los estados para cada sección
     const [mejoresCalificados, setMejoresCalificados] = useState([]);
     const [masGustados, setMasGustados] = useState([]);
     const [seleccionParaTi, setSeleccion] = useState([]);
+
+    // useEffect con []: se ejecuta UNA sola vez cuando se carga la pagina
     useEffect(() => {
         
         const fetchDatosInicio = async () => {
             try {
-                const peticionMejores = axios.get('http://localhost:3000/api/libros?promedio=true');
-                const peticionGustados = axios.get('http://localhost:3000/api/likes/libro/gustados');
-                const peticionSeleccion = axios.get('http://localhost:3000/api/libros?random=true')
+                // con Promise.all: mandamos las 3 peticiones en paralelo
                 const [resMejores, resGustados, resSeleccion] = await Promise.all([
-                    peticionMejores,
-                    peticionGustados,
-                    peticionSeleccion
+                    axios.get('http://localhost:3000/api/libros?promedio=true'),
+                    axios.get('http://localhost:3000/api/likes/libro/gustados'),
+                    axios.get('http://localhost:3000/api/libros?random=true')
                 ]);
 
+                // verificamos antes de setear los datos 
                 if (resMejores.data.status === 'ok') {
                     console.log(resMejores.data.libros);
                     setMejoresCalificados(resMejores.data.libros);
@@ -47,11 +48,13 @@ const Inicio = () => {
 
 
     return (
-        <div class="container">
-            <section class="section">
+        <div className="container">
+            <section className="section">
                 <h1>Los mejores calificados </h1>
-                <div class="book-grid">
+                <div className="book-grid">
+                    {/* .map recorre el array y crea un div por cada libro */}
                     {mejoresCalificados.map((libro) => (
+                        // 'key' ayuda a React a identificar cada item como uno unico
                         <div key={libro.id} className="book-item">
                             <Link href={`/libro/${libro.id}`}>
                                 <img src={libro.url_portada} alt={libro.titulo}></img>
@@ -61,9 +64,9 @@ const Inicio = () => {
                 </div>
             </section >
 
-            <section class="section">
+            <section className="section">
                 <h1>Mas gustados</h1>
-                <div class="book-grid">
+                <div className="book-grid">
                     {masGustados.map((gustado) => (
                         <div key={gustado.id} className="book-item">
                             <Link href={`/libro/${gustado.id}`}>
@@ -74,9 +77,9 @@ const Inicio = () => {
                 </div>
             </section>
 
-            <section class="section">
+            <section className="section">
                 <h1>Nuestra seleccion para ti</h1>
-                <div class="book-grid">
+                <div className="book-grid">
                     {seleccionParaTi.map((favorito) => (
                         <div key={favorito.id} className="book-item">
                             <Link href={`/libro/${favorito.id}`}>
