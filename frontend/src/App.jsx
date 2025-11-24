@@ -39,9 +39,7 @@ function App() {
   const [location] = useLocation();
   const [showModal, setShowModal] = useState(false);
   
-  const ocultarLayout = 
-      ["/iniciarsesion", "/registro", "/terminosycondiciones"].includes(location) || 
-      location.startsWith("/admin");
+  const ocultarLayout = ["/iniciarsesion", "/registro", "/terminosycondiciones"].includes(location);
 
   return (
     <section className="appBase">

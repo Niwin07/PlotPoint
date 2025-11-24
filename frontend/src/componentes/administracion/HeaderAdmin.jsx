@@ -11,7 +11,7 @@ import Usuarios from './Usuarios.jsx';
 import Editoriales from './Editoriales.jsx';
 import Generos from './Generos.jsx';
 
-import { Route, Link, useLocation, Redirect } from "wouter";
+import { Route, Link, useLocation, Switch } from "wouter";
 import axios from 'axios';
 
 const HeaderAdmin = () => {
@@ -262,95 +262,110 @@ const HeaderAdmin = () => {
 
     // la logica visual para que se pinte de otro color la pestaña donde estás
     const [location] = useLocation();
-    const isActive = (path) => location === path;
+    const isActive = (path) => {
+        // Si es exacto o si empieza con el path (para subsecciones)
+        return location === path || location === path + "/";
+    };
 
 
     return (
         <div className="admin-container"> 
+            {/* --- MENÚ DE NAVEGACIÓN (Pestañas) --- */}
             <nav className="nav">
+                {/* Nota: En wouter los href llevan la ruta completa */}
                 <Link href="/admin">
-                    <div className={`nav-item ${isActive("/admin") ? "nav-item-active" : ""}`}>Libros</div>
+                    <div className={`nav-item ${location === "/admin" || location === "/admin/" ? "nav-item-active" : ""}`}>
+                        Libros
+                    </div>
                 </Link>
-
-                <Link href="/admin/">
-                    <div className={`nav-item ${isActive("/admin") ? "nav-item-active" : ""}`}>Libros</div>
-                </Link>
-
                 <Link href="/admin/usuarios">
-                    <div className={`nav-item ${isActive("/admin/usuarios") ? "nav-item-active" : ""}`}>Usuarios</div>
+                    <div className={`nav-item ${isActive("/admin/usuarios") ? "nav-item-active" : ""}`}>
+                        Usuarios
+                    </div>
                 </Link>
                 <Link href="/admin/autores">
-                    <div className={`nav-item ${isActive("/admin/autores") ? "nav-item-active" : ""}`}>Autores</div>
+                    <div className={`nav-item ${isActive("/admin/autores") ? "nav-item-active" : ""}`}>
+                        Autores
+                    </div>
                 </Link>
                 <Link href="/admin/generos">
-                    <div className={`nav-item ${isActive("/admin/generos") ? "nav-item-active" : ""}`}>Géneros</div>
+                    <div className={`nav-item ${isActive("/admin/generos") ? "nav-item-active" : ""}`}>
+                        Géneros
+                    </div>
                 </Link>
                 <Link href="/admin/editoriales">
-                    <div className={`nav-item ${isActive("/admin/editoriales") ? "nav-item-active" : ""}`}>Editoriales</div>
+                    <div className={`nav-item ${isActive("/admin/editoriales") ? "nav-item-active" : ""}`}>
+                        Editoriales
+                    </div>
                 </Link>
             </nav>
 
-            {/* Rutas definidas tal cual las tenías. 
-                Al quitar el Router interno, wouter usará la URL global que gestiona App.jsx */}
-            
-            <Route path="/admin" component={() =>
-                <Libros
-                    libros={libros}
-                    autores={autores}
-                    editoriales={editoriales}
-                    generos={generos}
-                    loading={loading.libros}
-                    fetchLibros={fetchLibros}
-                    crearLibro={crearLibro}
-                    actualizarLibro={actualizarLibro}
-                    eliminarLibro={eliminarLibro}
-                    api={api}
-                />
-            }/>
+            {/* --- CONTENIDO DE LAS PESTAÑAS --- */}
+            {/* Usamos Switch para renderizar SOLO UNO de estos componentes a la vez */}
+            <Switch>
+                
+                <Route path="/admin/usuarios" component={() =>
+                    <Usuarios
+                        usuarios={usuarios}
+                        loading={loading.usuarios}
+                        fetchUsuarios={fetchUsuarios}
+                        crearUsuario={crearUsuario}
+                        actualizarUsuario={actualizarUsuario}
+                        eliminarUsuario={eliminarUsuario}
+                    />
+                } />
 
-            <Route path="/admin/autores" component={() =>
-                <Autores
-                    autores={autores}
-                    loading={loading.autores}
-                    fetchAutores={fetchAutores}
-                    crearAutor={crearAutor}
-                    actualizarAutor={actualizarAutor}
-                    eliminarAutor={eliminarAutor}
-                />
-            } />
+                <Route path="/admin/autores" component={() =>
+                    <Autores
+                        autores={autores}
+                        loading={loading.autores}
+                        fetchAutores={fetchAutores}
+                        crearAutor={crearAutor}
+                        actualizarAutor={actualizarAutor}
+                        eliminarAutor={eliminarAutor}
+                    />
+                } />
 
-            <Route path="/admin/editoriales" component={() =>
-                <Editoriales
-                    editoriales={editoriales}
-                    loading={loading.editoriales}
-                    fetchEditoriales={fetchEditoriales}
-                    crearEditorial={crearEditorial}
-                    actualizarEditorial={actualizarEditorial}
-                    eliminarEditorial={eliminarEditorial}
-                />
-            } />
+                <Route path="/admin/editoriales" component={() =>
+                    <Editoriales
+                        editoriales={editoriales}
+                        loading={loading.editoriales}
+                        fetchEditoriales={fetchEditoriales}
+                        crearEditorial={crearEditorial}
+                        actualizarEditorial={actualizarEditorial}
+                        eliminarEditorial={eliminarEditorial}
+                    />
+                } />
 
-            <Route path="/admin/generos" component={() =>
-                <Generos
-                    generos={generos}
-                    loading={loading.generos}
-                    fetchGeneros={fetchGeneros}
-                    crearGenero={crearGenero}
-                    actualizarGenero={actualizarGenero}
-                    eliminarGenero={eliminarGenero}
-                />
-            } />
+                <Route path="/admin/generos" component={() =>
+                    <Generos
+                        generos={generos}
+                        loading={loading.generos}
+                        fetchGeneros={fetchGeneros}
+                        crearGenero={crearGenero}
+                        actualizarGenero={actualizarGenero}
+                        eliminarGenero={eliminarGenero}
+                    />
+                } />
 
-            <Route path="/admin/usuarios" component={() =>
-                <Usuarios
-                    usuarios={usuarios}
-                    loading={loading.usuarios}
-                    fetchUsuarios={fetchUsuarios}
-                    crearUsuario={crearUsuario}
-                    actualizarUsuario={actualizarUsuario}
-                    eliminarUsuario={eliminarUsuario}
-                />
-            } />
+                {/* Ruta por defecto (/admin): Muestra LIBROS. 
+                    Al estar al final y dentro del Switch, evita duplicados. */}
+                <Route path="/admin">
+                    <Libros
+                        libros={libros}
+                        autores={autores}
+                        editoriales={editoriales}
+                        generos={generos}
+                        loading={loading.libros}
+                        fetchLibros={fetchLibros}
+                        crearLibro={crearLibro}
+                        actualizarLibro={actualizarLibro}
+                        eliminarLibro={eliminarLibro}
+                        api={api}
+                    />
+                </Route>
+
+            </Switch>
         </div>
     );
 };
