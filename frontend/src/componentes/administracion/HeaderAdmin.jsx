@@ -271,8 +271,8 @@ const HeaderAdmin = () => {
     return (
         <div className="admin-container"> 
             <nav className="nav">
-                <Link href="/admin/">
-                    <div className={`nav-item ${isActive("/admin/") ? "nav-item-active" : ""}`}>Libros</div>
+                <Link href="/admin">
+                    <div className={`nav-item ${isActive("/admin") || location === "/admin/" ? "nav-item-active" : ""}`}>Libros</div>
                 </Link>
 
                 {/* 2. LOS DEMÁS: Usamos .includes() o .startsWith().

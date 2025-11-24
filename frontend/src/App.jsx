@@ -77,7 +77,10 @@ function App() {
           <Route path="/soporte" component={Soporte} />
           <Route path="/terminosycondiciones" component={Tyc} />
 
-          {/* Admin seccion*/}
+          {/* 1. Atrapa la ruta exacta (sin barra o base) */}
+          <Route path="/admin" component={HeaderAdmin}/>
+          
+          {/* 2. Atrapa todo lo demás (subrutas) */}
           <Route path="/admin/:rest*" component={HeaderAdmin}/>
 
           {/*  Página no encontrada */}
