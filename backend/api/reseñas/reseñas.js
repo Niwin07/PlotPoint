@@ -2,7 +2,7 @@ const router = require('express').Router();
 const db = require('../../conexion');
 const verificarToken = require('../middlewares/auth');
 
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'https://plotpoint-production.up.railway.app';
 
 const transformReseñaURLs = (reseña) => {
     if (reseña.url_portada && !reseña.url_portada.startsWith('http')) {

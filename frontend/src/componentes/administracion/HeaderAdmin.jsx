@@ -34,7 +34,7 @@ const HeaderAdmin = () => {
     // definimos los const del token y la api (googlear .create)
     const token = localStorage.getItem('token');
     const api = axios.create({
-        baseURL: 'http://localhost:3000/api',
+        baseURL: 'https://plotpoint-production.up.railway.app',
         headers: { 'Authorization': `Bearer ${token}` }
     });
 

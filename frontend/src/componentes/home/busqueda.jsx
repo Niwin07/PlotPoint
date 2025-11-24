@@ -17,7 +17,7 @@ const Busqueda = () => {
 
   const cargarGeneros = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/busqueda/libros/generos');
+      const response = await axios.get('https://plotpoint-production.up.railway.app/api/busqueda/libros/generos');
       if (response.data.status === 'ok') {
         setGeneros(response.data.generos);
       }
@@ -37,7 +37,7 @@ const Busqueda = () => {
         const params = { genero: categoria };
         if (termino) params.q = termino;
         
-        const response = await axios.get('http://localhost:3000/api/busqueda/libros', { params });
+        const response = await axios.get('https://plotpoint-production.up.railway.app/api/busqueda/libros', { params });
         
         // solo guardamos libros, usuarios no traemos por que estamos filtrando por genero
         if (response.data.status === 'ok') {
@@ -58,7 +58,7 @@ const Busqueda = () => {
 
     // busqueda general, aca traemos tanto usuarios como libros
     try {
-      const response = await axios.get('http://localhost:3000/api/busqueda', {
+      const response = await axios.get('https://plotpoint-production.up.railway.app/api/busqueda', {
         params: { q: termino }
       });
       

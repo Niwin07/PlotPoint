@@ -8,7 +8,7 @@ const ListaReseñasInicio = () => {
   // sacamos el token y el id del user del localstorage
   // con 'miId' sabremos si la reseña que se muestra fue escrita por el user logueado
   const token = localStorage.getItem('token');
-  const BACKEND_URL = 'http://localhost:3000';
+  const BACKEND_URL = 'https://plotpoint-production.up.railway.app';
   const usuario = JSON.parse(localStorage.getItem("usuario"));
   const miId = usuario?.id;
 

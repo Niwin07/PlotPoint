@@ -4,7 +4,7 @@ const db = require('../../conexion');
 const librosRouter = require('./libros');
 const usuariosRouter = require('./usuarios');
 
-const BASE_URL = 'http://localhost:3000'; 
+const BASE_URL = 'https://plotpoint-production.up.railway.app'; 
 
 const transformarLibro = (libro) => {
     if (libro.url_portada && !libro.url_portada.startsWith('http')) {

@@ -3,7 +3,7 @@ const db = require('../../conexion');
 const verificarToken = require('../middlewares/auth');
 
 
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'https://plotpoint-production.up.railway.app';
 
 const transformComentsURLs = (coments) => {
     if (coments.url_portada && !coments.url_portada.startsWith('http')) {

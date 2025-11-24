@@ -9,7 +9,7 @@ const verificarAdmin = require('../middlewares/admin');
 
 // definimos la carpeta donde se guardaran las fotos fisicamente en el servidor
 const directorio = path.join(__dirname, "..", "..", "uploads", "portadas");
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'https://plotpoint-production.up.railway.app';
 
 // si la carpeta no existe, la creamos para que no de error al guardar
 if (!fs.existsSync(directorio)){

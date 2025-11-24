@@ -5,7 +5,7 @@ import ModalContraseña from '/src/componentes/modals/usuario/ModalContraseña.j
 import useUsuario from '/src/hooks/useUsuario';
 import '/src/componentes/perfil/EditarPerfil.css';
 
-const BACKEND_URL = 'http://localhost:3000';
+const BACKEND_URL = 'https://plotpoint-production.up.railway.app';
 
 export default function EditarPerfil({ obtenerPerfil }) {
     const [usuario, setUsuario] = useUsuario();

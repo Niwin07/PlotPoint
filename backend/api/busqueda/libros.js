@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const db = require('../../conexion');
 
-const BASE_URL = 'http://localhost:3000'; 
+const BASE_URL = 'https://plotpoint-production.up.railway.app'; 
 
 const transformarLibro = (libro) => {
     if (libro.url_portada && !libro.url_portada.startsWith('http')) {
