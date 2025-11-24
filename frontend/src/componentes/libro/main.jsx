@@ -10,7 +10,7 @@ import ModalNoCuenta from '/src/componentes/modals/usuario/ModalNoCuenta';
 
 
 export default function Libro() {
-    const BACKEND_URL = "http://localhost:3000";
+    const BACKEND_URL = "https://plotpoint-production.up.railway.app";
     // Obtener el ID del libro desde la URL
     const [match, params] = useRoute("/libro/:id");
     //libroId es el id que obtenemos de los parametros de la url

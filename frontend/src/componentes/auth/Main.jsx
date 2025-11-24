@@ -26,7 +26,7 @@ export default function AuthMain() {
             };
 
             // Realizar la solicitud de registro
-            await axios.post("http://localhost:3000/api/usuarios/registro", datos);
+            await axios.post("https://plotpoint-production.up.railway.app/api/usuarios/registro", datos);
 
             alert("Registro exitoso. Ahora puedes iniciar sesión.");
             // Redirigir a la página de inicio de sesión
@@ -57,7 +57,7 @@ export default function AuthMain() {
             };
             // Realizar la solicitud de inicio de sesión
             const resp = await axios.post(
-                "http://localhost:3000/api/usuarios/login",
+                "https://plotpoint-production.up.railway.app/api/usuarios/login",
                 body
             );
             // Manejar la respuesta

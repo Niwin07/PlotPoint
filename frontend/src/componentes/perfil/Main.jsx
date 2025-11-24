@@ -8,7 +8,7 @@ import EditarPerfil from '/src/componentes/perfil/EditarPerfil.jsx';
 import ModalNoCuenta from '/src/componentes/modals/usuario/ModalNoCuenta';
 import '/src/componentes/perfil/PerfilPag.css';
 
-const BACKEND_URL = 'http://localhost:3000';
+const BACKEND_URL = 'https://plotpoint-production.up.railway.app';
 
 export default function Main() {
     // Estados principales

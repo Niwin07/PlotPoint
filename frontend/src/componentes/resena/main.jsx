@@ -9,7 +9,7 @@ import ModalNoCuenta from '/src/componentes/modals/usuario/ModalNoCuenta';
 import { Route } from "wouter";
 
 export default function DetalleResena() {
-    const BACKEND_URL = "http://localhost:3000";
+    const BACKEND_URL = "https://plotpoint-production.up.railway.app";
     // Obtener el token y el ID del usuario desde el localStorage
     const token = localStorage.getItem("token");
     const usuario = JSON.parse(localStorage.getItem("usuario"));

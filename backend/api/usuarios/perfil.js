@@ -8,7 +8,7 @@ const fs = require("fs");
 // Directorio para guardar las fotos de perfil
 const directorio = path.join(__dirname, "..", "..", "uploads", "avatars");
 
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'https://plotpoint-production.up.railway.app';
 
 // Crear directorio si no existe
 if (!fs.existsSync(directorio)){
