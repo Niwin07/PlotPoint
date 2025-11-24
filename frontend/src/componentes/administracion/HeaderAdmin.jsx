@@ -263,22 +263,18 @@ const HeaderAdmin = () => {
     return (
         <Router>
             <nav className="nav">
-                <Link href="/admin/">
-                    <div className={`nav-item ${isActive("/admin/") ? "nav-item-active" : ""}`}>Libros</div>
+                <Link href="/admin">
+                    <div className={`nav-item ${isActive("/admin") ? "nav-item-active" : ""}`}>Libros</div>
                 </Link>
-
                 <Link href="/admin/usuarios">
                     <div className={`nav-item ${isActive("/admin/usuarios") ? "nav-item-active" : ""}`}>Usuarios</div>
                 </Link>
-
                 <Link href="/admin/autores">
                     <div className={`nav-item ${isActive("/admin/autores") ? "nav-item-active" : ""}`}>Autores</div>
                 </Link>
-
                 <Link href="/admin/generos">
                     <div className={`nav-item ${isActive("/admin/generos") ? "nav-item-active" : ""}`}>Géneros</div>
                 </Link>
-
                 <Link href="/admin/editoriales">
                     <div className={`nav-item ${isActive("/admin/editoriales") ? "nav-item-active" : ""}`}>Editoriales</div>
                 </Link>
@@ -287,7 +283,7 @@ const HeaderAdmin = () => {
 
             {/*  mandamos los datos y funciones a los hijos */}
             
-            <Route path="/admin/" component={() =>
+            <Route path="/admin" component={() =>
                 <Libros
                     libros={libros}
                     autores={autores}       // necesario para el Select de autores al crear libro
