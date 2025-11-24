@@ -38,9 +38,10 @@ import ModalNoCuenta from './componentes/modals/usuario/ModalNoCuenta';
 function App() {
   const [location] = useLocation();
   const [showModal, setShowModal] = useState(false);
-
-  // Ocultar Header y Footer en estas rutas
-  const ocultarLayout = ["/iniciarsesion", "/registro", "/terminosycondiciones"].includes(location);
+  
+  const ocultarLayout = 
+      ["/iniciarsesion", "/registro", "/terminosycondiciones"].includes(location) || 
+      location.startsWith("/admin");
 
   return (
     <section className="appBase">

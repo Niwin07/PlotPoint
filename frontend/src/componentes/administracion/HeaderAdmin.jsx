@@ -11,7 +11,7 @@ import Usuarios from './Usuarios.jsx';
 import Editoriales from './Editoriales.jsx';
 import Generos from './Generos.jsx';
 
-import { Route, Link, useLocation } from "wouter";
+import { Route, Link, useLocation, Redirect } from "wouter";
 import axios from 'axios';
 
 const HeaderAdmin = () => {
@@ -35,6 +35,11 @@ const HeaderAdmin = () => {
 
     // definimos los const del token y la api (googlear .create)
     const token = localStorage.getItem('token');
+
+    if (!token) {
+        return <Redirect to="/iniciarsesion" />;
+    }
+
     const api = axios.create({
         baseURL: 'https://plotpoint-production.up.railway.app/api',
         headers: { 'Authorization': `Bearer ${token}` }
@@ -266,6 +271,11 @@ const HeaderAdmin = () => {
                 <Link href="/admin">
                     <div className={`nav-item ${isActive("/admin") ? "nav-item-active" : ""}`}>Libros</div>
                 </Link>
+
+                <Link href="/admin/">
+                    <div className={`nav-item ${isActive("/admin") ? "nav-item-active" : ""}`}>Libros</div>
+                </Link>
+
                 <Link href="/admin/usuarios">
                     <div className={`nav-item ${isActive("/admin/usuarios") ? "nav-item-active" : ""}`}>Usuarios</div>
                 </Link>
