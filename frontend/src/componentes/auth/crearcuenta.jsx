@@ -103,7 +103,7 @@ export default function CrearCuenta({ registrar, mensaje }) {
                     </div>
                 </form>
                 <div className="imagen-form">
-                    <img src="src/img/ilustracion.webp" alt="" />
+                    <img src="/img/ilustracion.webp" alt="" />
                 </div>
             </div>
         </div>

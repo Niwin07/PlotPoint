@@ -20,7 +20,7 @@ const Soporte = () => {
                     </div>
                 </form>
                 <div className="imagen-form">
-                    <img src="/src/img/ilustracion.webp" alt=""></img>
+                    <img src="/img/ilustracion.webp" alt=""></img>
                 </div>
             </div>
 

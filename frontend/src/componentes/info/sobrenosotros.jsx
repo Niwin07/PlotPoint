@@ -40,7 +40,7 @@ const SobreNosotros = () => {
                 <h1 class="cabeza">Sobre nosotros</h1>
                 <div class="row">
                     <div class="imagen">
-                        <img src="/src/img/sobrenosotros.webp" alt=""></img>
+                        <img src="/img/sobrenosotros.webp" alt=""></img>
                     </div>
                     <div class="accordion-container">
                         <div class="box-preguntas">
@@ -98,7 +98,7 @@ const SobreNosotros = () => {
                     <div class="base">
                         <div class="developer">
                             <div class="developer-info">
-                                <img src="/src/img/david.webp" alt=""></img>
+                                <img src="/img/david.webp" alt=""></img>
                                 <h3>Aranda Cristian David</h3>
                                 <p>Oriundo de Ushuaia, Aranda Cristian David se encargo del desarrollo del frontend, componentes de React y diseño responsivo .                               </p>
 
@@ -107,7 +107,7 @@ const SobreNosotros = () => {
                         </div>
                         <div class="developer">
                             <div class="developer-info">
-                                <img src="/src/img/nehuen.webp" alt=""></img>
+                                <img src="/img/nehuen.webp" alt=""></img>
                                 <h3>Henry Nehuen Mesias Rios </h3>
                                 <p>Oriunda de Ushuaia, Mesias Henry Nehuen se encargo del desarrollo del backend, APIs, base de datos y seguridad.
                                 </p>
