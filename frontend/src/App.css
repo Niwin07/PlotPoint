@@ -70,7 +70,7 @@ a{
 }
 
 html {
-    background-image: url(./img/fondo.webp);
+    background-image: url(../public/img/fondo.webp);
     background-size: cover;
     font-size: 62.5%;
     scroll-behavior: smooth;
