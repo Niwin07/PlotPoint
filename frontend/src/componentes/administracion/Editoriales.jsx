@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import '/src/componentes/administracion/admin.css';
-
-import ModalEditarEditorial from '/src/componentes/modals/editorial/ModalEditarEditorial.jsx';
-import ModalCrearEditorial from '/src/componentes/modals/editorial/ModalCrearEditorial.jsx';
-
-import usePaginacion from "/src/hooks/usePaginacion.jsx";
+import './admin.css';
+import ModalEditarEditorial from '../modals/editorial/ModalEditarEditorial.jsx';
+import ModalCrearEditorial from '../modals/editorial/ModalCrearEditorial.jsx';
+import usePaginacion from "../../hooks/usePaginacion.jsx";
 
 export default function Editoriales({
     editoriales,

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import '/src/componentes/administracion/admin.css';
 
-import ModalEditarAutor from '/src/componentes/modals/autor/ModalEditarAutor.jsx';
-import ModalCrearAutor from '/src/componentes/modals/autor/ModalCrearAutor.jsx';
-
-import usePaginacion from "/src/hooks/usePaginacion.jsx";
+import './admin.css';
+import ModalEditarAutor from '../modals/autor/ModalEditarAutor.jsx';
+import ModalCrearAutor from '../modals/autor/ModalCrearAutor.jsx';
+import usePaginacion from "../../hooks/usePaginacion.jsx";
 
 export default function Autores({
     autores,

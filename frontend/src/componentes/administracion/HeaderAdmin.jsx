@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import '/src/componentes/common/header.css';
-import '/src/componentes/administracion/admin.css';
-import '/src/componentes/perfil/PerfilPag.css';
 
-import Libros from '/src/componentes/administracion/Libros.jsx';
-import Autores from '/src/componentes/administracion/Autores.jsx';
-import Usuarios from '/src/componentes/administracion/Usuarios.jsx';
-import Editoriales from '/src/componentes/administracion/Editoriales.jsx';
-import Generos from '/src/componentes/administracion/Generos.jsx';
+import '../common/header.css'; 
+import './admin.css';         
+import '../perfil/PerfilPag.css';
+
+
+import Libros from './Libros.jsx';
+import Autores from './Autores.jsx';
+import Usuarios from './Usuarios.jsx';
+import Editoriales from './Editoriales.jsx';
+import Generos from './Generos.jsx';
 
 import { Router, Route, Link, useLocation } from "wouter";
 import axios from 'axios';
