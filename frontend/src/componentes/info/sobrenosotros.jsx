@@ -58,7 +58,7 @@ const SobreNosotros = () => {
                                 ¿Puedo usar PlotPoint desde el celular?
                             </h1>
                             <p class="respuesta">
-                                ¡Si! PlotPoint es uan aplicacion web responsiva, por lo que podés usarla tanto desde tu celular como desde tu computadora sin perder calidad ni funcionalidad.
+                                ¡Si! PlotPoint es una aplicacion web responsiva, por lo que podés usarla tanto desde tu celular como desde tu computadora sin perder calidad ni funcionalidad.
                             </p>
                         </div>
                         <div class="box-preguntas">
@@ -109,7 +109,7 @@ const SobreNosotros = () => {
                             <div class="developer-info">
                                 <img src="/src/img/nehuen.webp" alt=""></img>
                                 <h3>Henry Nehuen Mesias Rios </h3>
-                                <p>Oriunda de Ushuaia, Mesias Henry Nehuen se encargo del desarrollo del backend, APIs, base de datos y seguridad.
+                                <p>Oriundo de Ushuaia, Mesias Henry Nehuen se encargo del desarrollo del backend, APIs, base de datos y seguridad.
                                 </p>
 
                             </div>
