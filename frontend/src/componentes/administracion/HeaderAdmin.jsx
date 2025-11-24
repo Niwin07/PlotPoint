@@ -272,29 +272,36 @@ const HeaderAdmin = () => {
         <div className="admin-container"> 
             {/* --- MENÚ DE NAVEGACIÓN (Pestañas) --- */}
             <nav className="nav">
-                {/* Nota: En wouter los href llevan la ruta completa */}
+                {/* 1. LIBROS: Usamos comprobación EXACTA (===). 
+                   Solo se ilumina si estamos estrictamente en /admin o /admin/ */}
                 <Link href="/admin">
                     <div className={`nav-item ${location === "/admin" || location === "/admin/" ? "nav-item-active" : ""}`}>
                         Libros
                     </div>
                 </Link>
+
+                {/* 2. LOS DEMÁS: Usamos .includes() o .startsWith().
+                   Se iluminan si la ruta contiene su sección */}
                 <Link href="/admin/usuarios">
-                    <div className={`nav-item ${isActive("/admin/usuarios") ? "nav-item-active" : ""}`}>
+                    <div className={`nav-item ${location.includes("/admin/usuarios") ? "nav-item-active" : ""}`}>
                         Usuarios
                     </div>
                 </Link>
+
                 <Link href="/admin/autores">
-                    <div className={`nav-item ${isActive("/admin/autores") ? "nav-item-active" : ""}`}>
+                    <div className={`nav-item ${location.includes("/admin/autores") ? "nav-item-active" : ""}`}>
                         Autores
                     </div>
                 </Link>
+
                 <Link href="/admin/generos">
-                    <div className={`nav-item ${isActive("/admin/generos") ? "nav-item-active" : ""}`}>
+                    <div className={`nav-item ${location.includes("/admin/generos") ? "nav-item-active" : ""}`}>
                         Géneros
                     </div>
                 </Link>
+
                 <Link href="/admin/editoriales">
-                    <div className={`nav-item ${isActive("/admin/editoriales") ? "nav-item-active" : ""}`}>
+                    <div className={`nav-item ${location.includes("/admin/editoriales") ? "nav-item-active" : ""}`}>
                         Editoriales
                     </div>
                 </Link>
