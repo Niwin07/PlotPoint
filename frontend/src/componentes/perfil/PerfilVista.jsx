@@ -1,7 +1,7 @@
 import { Link } from 'wouter';
 import '/src/componentes/perfil/PerfilPag.css';
 
-const BACKEND_URL = 'http://localhost:3000';
+const BACKEND_URL = 'https://plotpoint-production.up.railway.app';
 
 export default function PerfilVista({ perfil, esMiPerfil, siguiendo, onFollowToggle, token }) {
     if (!perfil) {

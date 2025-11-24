@@ -17,9 +17,9 @@ const Inicio = () => {
             try {
                 // con Promise.all: mandamos las 3 peticiones en paralelo
                 const [resMejores, resGustados, resSeleccion] = await Promise.all([
-                    axios.get('http://localhost:3000/api/libros?promedio=true'),
-                    axios.get('http://localhost:3000/api/likes/libro/gustados'),
-                    axios.get('http://localhost:3000/api/libros?random=true')
+                    axios.get('https://plotpoint-production.up.railway.app/api/libros?promedio=true'),
+                    axios.get('https://plotpoint-production.up.railway.app/api/likes/libro/gustados'),
+                    axios.get('https://plotpoint-production.up.railway.app/api/libros?random=true')
                 ]);
 
                 // verificamos antes de setear los datos 
