@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import '/src/componentes/administracion/admin.css';
 
-import ModalEditarLibro from '/src/componentes/modals/libro/ModalEditarLibro.jsx';
-import ModalCrearLibro from '/src/componentes/modals/libro/ModalCrearLibro.jsx';
-
-import usePaginacion from "/src/hooks/usePaginacion.jsx";
+import './admin.css';
+import ModalEditarLibro from '../modals/libro/ModalEditarLibro.jsx';
+import ModalCrearLibro from '../modals/libro/ModalCrearLibro.jsx';
+import usePaginacion from "../../hooks/usePaginacion.jsx"; 
 
 export default function Libros({
     libros,

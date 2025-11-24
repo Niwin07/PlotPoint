@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import '/src/componentes/administracion/admin.css';
+import './admin.css';
 
-import ModalEditarGenero from '/src/componentes/modals/genero/ModalEditarGenero.jsx';
-import ModalCrearGenero from '/src/componentes/modals/genero/ModalCrearGenero.jsx';
-
-import usePaginacion from "/src/hooks/usePaginacion.jsx";
+import ModalEditarGenero from '../modals/genero/ModalEditarGenero.jsx';
+import ModalCrearGenero from '../modals/genero/ModalCrearGenero.jsx';
+import usePaginacion from "../../hooks/usePaginacion.jsx";
 
 export default function Generos({
     generos,

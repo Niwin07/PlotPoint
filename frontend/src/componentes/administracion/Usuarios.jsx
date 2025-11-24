@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import '/src/componentes/administracion/admin.css';
 
-import ModalEditarUsuario from '/src/componentes/modals/usuario/ModalEditarUsuario.jsx';
-import ModalCrearUsuario from '/src/componentes/modals/usuario/ModalCrearUsuario.jsx';
-import ModalNoCuenta from '/src/componentes/modals/usuario/ModalNoCuenta.jsx';
-
-import usePaginacion from "/src/hooks/usePaginacion.jsx";
+import './admin.css';
+import ModalEditarUsuario from '../modals/usuario/ModalEditarUsuario.jsx';
+import ModalCrearUsuario from '../modals/usuario/ModalCrearUsuario.jsx';
+import ModalNoCuenta from '../modals/usuario/ModalNoCuenta.jsx';
+import usePaginacion from "../../hooks/usePaginacion.jsx";
 
 export default function Usuarios({
     usuarios, // la data que viene de headerAdmin
