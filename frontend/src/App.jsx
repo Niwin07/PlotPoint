@@ -79,7 +79,7 @@ function App() {
           <Route path="/terminosycondiciones" component={Tyc} />
 
           {/* Admin seccion*/}
-          <Route path="/admin" component={HeaderAdmin}/>
+          <Route path="/admin/:rest*" component={HeaderAdmin}/>
 
           {/*  Página no encontrada */}
           <Route><h1>Página no existente :(</h1></Route>
