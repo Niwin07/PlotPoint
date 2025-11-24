@@ -270,14 +270,9 @@ const HeaderAdmin = () => {
 
     return (
         <div className="admin-container"> 
-            {/* --- MENÚ DE NAVEGACIÓN (Pestañas) --- */}
             <nav className="nav">
-                {/* 1. LIBROS: Usamos comprobación EXACTA (===). 
-                   Solo se ilumina si estamos estrictamente en /admin o /admin/ */}
-                <Link href="/admin">
-                    <div className={`nav-item ${location === "/admin" || location === "/admin/" ? "nav-item-active" : ""}`}>
-                        Libros
-                    </div>
+                <Link href="/admin/">
+                    <div className={`nav-item ${isActive("/admin/") ? "nav-item-active" : ""}`}>Libros</div>
                 </Link>
 
                 {/* 2. LOS DEMÁS: Usamos .includes() o .startsWith().
