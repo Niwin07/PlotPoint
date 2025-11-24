@@ -76,26 +76,26 @@ const Header = () => {
         };
     }, []);
     return (
-        <header class="header">
-            <section class="flex">
+        <header className="header">
+            <section className="flex">
                 <h1>PlotPoint</h1>
 
 
-                <nav class="navbar">
-                    <a href="/inicio">Inicio</a>
-                    <a href="/reseñasinicio">Reseñas</a>
-                    <a href="/busqueda">Busqueda</a>
-                    <a href="#" onClick={(e) => { e.preventDefault(); irAlPerfil(); }}>Perfil</a>
-                    {isAdmin && <a href="/admin/">Admin</a>}
+                <nav className="navbar">
+                    <Link href="/inicio">Inicio</Link>
+                    <Link href="/reseñasinicio">Reseñas</Link>
+                    <Link href="/busqueda">Busqueda</Link>
+                    <Link href="#" onClick={(e) => { e.preventDefault(); irAlPerfil(); }}>Perfil</Link>
+                    {isAdmin && <Link href="/admin/">Admin</Link>}
 
                     {isLogged ? (
-                        <Link href="#" onClick={cerrarSesion}>Cerrar sesión</Link>
+                        <Link href="/iniciarsesion" onClick={cerrarSesion}>Cerrar sesión</Link>
                     ) : (
                         <Link href="/iniciarsesion">Iniciar sesión</Link>
                     )}
                 </nav>
 
-                <div id="menu-btn" class="fas fa-bars-staggered"></div>
+                <div id="menu-btn" className="fas fa-bars-staggered"></div>
             </section>
 
             {showModalCuenta && <ModalNoCuenta onClose={() => setShowModalCuenta(false)} />}
