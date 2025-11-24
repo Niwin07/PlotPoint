@@ -26,7 +26,7 @@ export default function PerfilVista({ perfil, esMiPerfil, siguiendo, onFollowTog
                     <div className="editar">
                         <h2 className="nombre">{perfil.nombre ?? perfil.nombre_real ?? ''}</h2>
                         <Link href={`/perfil/${perfil.id}/editarperfil`}>
-                            <img src="/src/img/editar.webp" alt="Editar Perfil" />
+                            <img src="/img/editar.webp" alt="Editar Perfil" />
                         </Link>
                     </div>
                 ) : (
