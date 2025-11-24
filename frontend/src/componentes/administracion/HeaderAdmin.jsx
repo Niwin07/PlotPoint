@@ -331,7 +331,7 @@ const HeaderAdmin = () => {
                 />
             } />
 
-            <Route path="/admin/usuarios">
+            <Route path="/admin/usuarios" component={() =>
                 <Usuarios
                     usuarios={usuarios}
                     loading={loading.usuarios}
@@ -340,7 +340,7 @@ const HeaderAdmin = () => {
                     actualizarUsuario={actualizarUsuario}
                     eliminarUsuario={eliminarUsuario}
                 />
-            </Route>
+            } />
 
         </Router>
     );
