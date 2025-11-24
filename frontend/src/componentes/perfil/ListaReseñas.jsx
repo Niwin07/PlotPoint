@@ -24,7 +24,7 @@ export default function ListaReseñas({ reseñas, loading, miId, obtenerReseñas
                     url_avatar={reseña.url_avatar}
                     miId={miId}
                     usuario_id={reseña.usuario_id}
-                    onReseñaEliminada={() => obtenerReseñas()}
+                    onReseñaEliminada={() => eliminarReseña(reseña.id)  }
                 />
             ))}
         </div>

@@ -143,6 +143,22 @@ export default function Main() {
             setLoadingLibros(false);
         }
     };
+      const eliminarReseña = async (idReseña) => {
+    if (!confirm("¿Eliminar reseña?")) return;
+
+    try {
+      await axios.delete(`${BACKEND_URL}/api/resenas/${idReseña}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      // despues de borrar una reseña, volvemos a llamar a la api
+      // para que la lista en pantalla se actualice y desaparezca lo borrado.
+      obtenerReseñas();
+    } catch (error) {
+      alert(error);
+    }
+  };
+
 
     const toggleSeguir = async () => {
         // Si no hay token, mostrar modal de que debes iniciar sesion o registrarte
@@ -256,6 +272,7 @@ export default function Main() {
                     loading={loadingReseñas}
                     miId={miId}
                     obtenerReseñas={obtenerReseñas}
+                    eliminarReseña={eliminarReseña}
                 />
             </Route>
 
