@@ -11,7 +11,7 @@ import Usuarios from './Usuarios.jsx';
 import Editoriales from './Editoriales.jsx';
 import Generos from './Generos.jsx';
 
-import { Router, Route, Link, useLocation } from "wouter";
+import { Route, Link, useLocation } from "wouter";
 import axios from 'axios';
 
 const HeaderAdmin = () => {
@@ -261,7 +261,7 @@ const HeaderAdmin = () => {
 
 
     return (
-        <Router>
+        <div className="admin-container"> 
             <nav className="nav">
                 <Link href="/admin">
                     <div className={`nav-item ${isActive("/admin") ? "nav-item-active" : ""}`}>Libros</div>
@@ -280,15 +280,15 @@ const HeaderAdmin = () => {
                 </Link>
             </nav>
 
-
-            {/*  mandamos los datos y funciones a los hijos */}
+            {/* Rutas definidas tal cual las tenías. 
+                Al quitar el Router interno, wouter usará la URL global que gestiona App.jsx */}
             
             <Route path="/admin" component={() =>
                 <Libros
                     libros={libros}
-                    autores={autores}       // necesario para el Select de autores al crear libro
-                    editoriales={editoriales} // necesario para el Select de editoriales
-                    generos={generos}       // necesario para el Select de géneros
+                    autores={autores}
+                    editoriales={editoriales}
+                    generos={generos}
                     loading={loading.libros}
                     fetchLibros={fetchLibros}
                     crearLibro={crearLibro}
@@ -341,8 +341,7 @@ const HeaderAdmin = () => {
                     eliminarUsuario={eliminarUsuario}
                 />
             } />
-
-        </Router>
+        </div>
     );
 };
 
