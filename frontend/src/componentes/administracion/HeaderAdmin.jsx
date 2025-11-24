@@ -270,10 +270,6 @@ const HeaderAdmin = () => {
                     <div className={`nav-item ${isActive("/admin/") ? "nav-item-active" : ""}`}>Libros</div>
                 </Link>
 
-                <Link href='/admin/libros'>
-                    <div className={`nav-item ${isActive("/admin/libros") ? "nav-item-active" : "" }`}>Libros</div>
-                </Link>
-
                 <Link href="/admin/usuarios">
                     <div className={`nav-item ${isActive("/admin/usuarios") ? "nav-item-active" : ""}`}>Usuarios</div>
                 </Link>
