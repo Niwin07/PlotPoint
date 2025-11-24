@@ -36,7 +36,7 @@ const HeaderAdmin = () => {
     // definimos los const del token y la api (googlear .create)
     const token = localStorage.getItem('token');
     const api = axios.create({
-        baseURL: 'https://plotpoint-production.up.railway.app',
+        baseURL: 'https://plotpoint-production.up.railway.app/api',
         headers: { 'Authorization': `Bearer ${token}` }
     });
 
@@ -268,6 +268,10 @@ const HeaderAdmin = () => {
             <nav className="nav">
                 <Link href="/admin/">
                     <div className={`nav-item ${isActive("/admin/") ? "nav-item-active" : ""}`}>Libros</div>
+                </Link>
+
+                <Link href='/admin/libros'>
+                    <div className={`nav-item ${isActive("/admin/libros") ? "nav-item-active" : "" }`}>Libros</div>
                 </Link>
 
                 <Link href="/admin/usuarios">
