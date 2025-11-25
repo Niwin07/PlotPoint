@@ -33,42 +33,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/:id', async (req, res) => {
-    const { id } = req.params;
-
-    try {
-        const sql = "SELECT id, nombre, descripcion FROM Genero WHERE id = ?";
-        const [rows] = await db.query(sql, [id]);
-
-        if (rows.length === 0) {
-            return res.status(404).json({ 
-                error: 'Género no encontrado',
-                message: 'No existe un género con ese ID' 
-            });
-        }
-
-        const sqlLibros = `
-            SELECT l.id, l.titulo, l.anio_publicacion 
-            FROM Libro l
-            INNER JOIN LibroGenero lg ON l.id = lg.libro_id
-            WHERE lg.genero_id = ?
-            ORDER BY l.anio_publicacion DESC
-        `;
-        const [libros] = await db.query(sqlLibros, [id]);
-
-        res.json({ 
-            ...rows[0],
-            libros: libros 
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ 
-            error: 'Error del servidor',
-            message: 'Error al obtener el género' 
-        });
-    }
-});
-
 router.post('/', verificarToken, verificarAdmin, async (req, res) => {
     const { nombre, descripcion } = req.body;
 

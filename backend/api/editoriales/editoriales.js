@@ -34,42 +34,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/:id', async (req, res) => {
-    const { id } = req.params;
-
-    try {
-        const sql = "SELECT id, nombre, pais FROM Editorial WHERE id = ?";
-        const [rows] = await db.query(sql, [id]);
-
-        if (rows.length === 0) {
-            return res.status(404).json({
-                error: 'Editorial no encontrada',
-                message: 'No existe una editorial con ese ID'
-            });
-        }
-
-        const sqlLibros = `
-            SELECT id, titulo, anio_publicacion
-            FROM Libro
-            WHERE editorial_id = ?
-            ORDER BY anio_publicacion DESC
-        `;
-        const [libros] = await db.query(sqlLibros, [id]);
-
-        res.json({
-            ...rows[0],
-            libros
-        });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            error: 'Error del servidor',
-            message: 'Error al obtener la editorial'
-        });
-    }
-});
-
 router.post('/', verificarToken, verificarAdmin, async (req, res) => {
     const { nombre, pais } = req.body;
 
@@ -108,6 +72,7 @@ router.post('/', verificarToken, verificarAdmin, async (req, res) => {
         });
     }
 });
+
 router.put('/:id', verificarToken, verificarAdmin, async (req, res) => {
     const { id } = req.params;
     const { nombre, pais } = req.body;

@@ -265,39 +265,5 @@ router.get('/libro/:libro_id/promedio', async (req, res) => {
     }
 });
 
-router.get('/mias', verificarToken, async (req, res) => {
-    const usuario_id = req.usuario.id;
-
-    try {
-        const sql = `
-            SELECT 
-                r.id, r.puntuacion, r.contenido, r.fecha_creacion,
-                r.usuario_id, u.nombre_usuario, u.nombre AS usuario_nombre, u.url_avatar,
-                r.libro_id, l.titulo AS libro_titulo, l.url_portada
-            FROM Resena r
-            INNER JOIN Usuario u ON r.usuario_id = u.id
-            INNER JOIN Libro l ON r.libro_id = l.id
-            WHERE r.usuario_id = ?
-            ORDER BY r.fecha_creacion DESC
-        `;
-
-        const [resenas] = await db.query(sql, [usuario_id]);
-
-        const resenasTransformadas = resenas.map(transformReseñaURLs);
-
-        res.json({
-            status: 'ok',
-            resenas: resenasTransformadas, 
-            total: resenasTransformadas.length
-        });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            error: 'Error del servidor',
-            message: 'Error al obtener mis reseñas'
-        });
-    }
-});
 
 module.exports = router;

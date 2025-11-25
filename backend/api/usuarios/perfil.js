@@ -197,54 +197,6 @@ router.post('/upload-avatar', fileUpload(), function(req, res, next) {
     });
 });
 
-// DELETE /api/usuarios/perfil/delete-avatar - Eliminar foto de perfil
-router.delete('/delete-avatar', function(req, res, next) {
-    const userId = req.usuario.id;
-    
-    // Obtener el avatar actual
-    const sqlSelect = "SELECT url_avatar FROM Usuario WHERE id = ?";
-    
-    db.query(sqlSelect, [userId])
-        .then(([rows]) => {
-            if (rows.length === 0) {
-                return res.status(404).json({ 
-                    error: 'Usuario no encontrado' 
-                });
-            }
-            
-            const avatarActual = rows[0].url_avatar;
-            
-            // Si tiene un avatar personalizado, eliminarlo del servidor
-            if (avatarActual && avatarActual.startsWith('/uploads/avatars/')) {
-                const nombreArchivo = path.basename(avatarActual);
-                const filepath = path.join(directorio, nombreArchivo);
-                
-                if (fs.existsSync(filepath)) {
-                    fs.unlinkSync(filepath);
-                }
-            }
-            
-            // Establecer avatar por defecto en la BD
-            const avatarDefault = '/uploads/avatars/default.png';
-            const sqlUpdate = "UPDATE Usuario SET url_avatar = ? WHERE id = ?";
-            
-            return db.query(sqlUpdate, [avatarDefault, userId]);
-        })
-        .then(() => {
-            res.json({ 
-                status: 'ok',
-                message: 'Avatar eliminado exitosamente',
-                url_avatar: '/uploads/avatars/default.png'
-            });
-        })
-        .catch((error) => {
-            console.error(error);
-            res.status(500).json({ 
-                error: 'Error al eliminar avatar' 
-            });
-        });
-});
-
 // PUT /api/usuarios/perfil/cambiar-password - Cambiar contraseña
 router.put('/cambiar-password', async function(req, res, next) {
     const { contrasenaActual, contrasenaNueva } = req.body;

@@ -12,13 +12,6 @@ const transformLibroURL = (libro) => {
     return libro;
 };
 
-const transformUsuarioURL = (usuario) => {
-    if (usuario.url_avatar && !usuario.url_avatar.startsWith('http')) {
-        usuario.url_avatar = `${BASE_URL}${usuario.url_avatar}`;
-    }
-    return usuario;
-};
-
 router.get('/usuario/:usuario_id', async (req, res) => {
     const { usuario_id } = req.params;
 
@@ -96,51 +89,6 @@ router.get('/libro/gustados', async (req, res) => {
     }
 });
 
-router.get('/libro/:libro_id', async (req, res) => {
-    const { libro_id } = req.params;
-
-    try {
-        const [libro] = await db.query("SELECT id FROM Libro WHERE id = ?", [libro_id]);
-        if (libro.length === 0) {
-            return res.status(404).json({
-                error: 'Libro no encontrado',
-                message: 'El libro especificado no existe'
-            });
-        }
-
-        const sql = `
-            SELECT 
-                lk.id as like_id,
-                lk.fecha_creacion,
-                u.id as usuario_id,
-                u.nombre_usuario,
-                u.nombre as usuario_nombre,
-                u.url_avatar
-            FROM Likes lk
-            INNER JOIN Usuario u ON lk.usuario_id = u.id
-            WHERE lk.libro_id = ?
-            ORDER BY lk.fecha_creacion DESC
-        `;
-        
-        const [usuarios] = await db.query(sql, [libro_id]);
-        
-        const usuariosTransformados = usuarios.map(transformUsuarioURL);
-
-        res.json({
-            status: 'ok',
-            libro_id,
-            usuarios: usuariosTransformados, 
-            total: usuariosTransformados.length
-        });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            error: 'Error del servidor',
-            message: 'Error al obtener usuarios'
-        });
-    }
-});
 
 router.get('/check/:libro_id', verificarToken, async (req, res) => {
     const { libro_id } = req.params;
@@ -248,62 +196,5 @@ router.delete('/:libro_id', verificarToken, async (req, res) => {
     }
 });
 
-
-router.get('/mis-favoritos', verificarToken, async (req, res) => {
-    const usuario_id = req.usuario.id;
-
-    try {
-        const sql = `
-            SELECT 
-                lk.id as like_id,
-                lk.fecha_creacion,
-                l.id as libro_id, 
-                l.titulo, 
-                l.isbn, 
-                l.url_portada,
-                l.sinopsis,
-                l.paginas,
-                l.anio_publicacion,
-                a.id as autor_id,
-                a.nombre as autor_nombre, 
-                a.apellido as autor_apellido,
-                e.id as editorial_id,
-                e.nombre as editorial_nombre
-            FROM Likes lk
-            INNER JOIN Libro l ON lk.libro_id = l.id
-            LEFT JOIN Autor a ON l.autor_id = a.id
-            LEFT JOIN Editorial e ON l.editorial_id = e.id
-            WHERE lk.usuario_id = ?
-            ORDER BY lk.fecha_creacion DESC
-        `;
-        
-        const [libros] = await db.query(sql, [usuario_id]);
-
-        for (let libro of libros) {
-            const [generos] = await db.query(`
-                SELECT g.id, g.nombre 
-                FROM Genero g
-                INNER JOIN LibroGenero lg ON g.id = lg.genero_id
-                WHERE lg.libro_id = ?
-            `, [libro.libro_id]);
-            libro.generos = generos;
-        }
-        
-        const librosTransformados = libros.map(transformLibroURL);
-
-        res.json({
-            status: 'ok',
-            libros_favoritos: librosTransformados,
-            total: librosTransformados.length
-        });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            error: 'Error del servidor',
-            message: 'Error al obtener tus favoritos'
-        });
-    }
-});
 
 module.exports = router;

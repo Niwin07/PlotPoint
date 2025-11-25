@@ -520,48 +520,6 @@ router.put('/:id', verificarToken, verificarAdmin, async (req, res) => {
     }
 });
 
-router.delete('/:id/delete-portada', verificarToken, verificarAdmin, async (req, res) => {
-    const { id } = req.params;
-
-    try {
-        const [libro] = await db.query("SELECT url_portada FROM Libro WHERE id = ?", [id]);
-
-        if (libro.length === 0) {
-            return res.status(404).json({
-                error: 'Libro no encontrado',
-                message: 'No existe un libro con ese ID'
-            });
-        }
-
-        // recuperamos la ruta de la portada para saber cual borrar
-        const url = libro[0].url_portada;
-        
-        // solo borramos si es una imagen subida por nosotros (empieza con /uploads) y no es la default
-        if (url && url.startsWith('/uploads/portadas/') && !url.includes('default')) {
-            const nombreArchivo = path.basename(url);
-            const filepath = path.join(directorio, nombreArchivo);
-
-            // verificamos existencia fisica y borramos
-            if (fs.existsSync(filepath)) {
-                fs.unlinkSync(filepath);
-            }
-        }
-
-        await db.query("UPDATE Libro SET url_portada = NULL WHERE id = ?", [id]);
-
-        res.json({
-            status: 'ok',
-            message: 'Portada eliminada correctamente'
-        });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            error: 'Error del servidor',
-            message: 'Error al eliminar la portada'
-        });
-    }
-});
 
 router.delete('/:id', verificarToken, verificarAdmin, async (req, res) => {
     const { id } = req.params;

@@ -46,57 +46,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/:id', async (req, res) => {
-    const { id } = req.params;
-
-    try {
-        const sql = `
-            SELECT 
-                a.id, 
-                a.nombre, 
-                a.apellido, 
-                a.nacionalidad,
-                COUNT(l.id) as libros
-            FROM Autor a
-            LEFT JOIN Libro l ON a.id = l.autor_id
-            WHERE a.id = ?
-            GROUP BY a.id, a.nombre, a.apellido, a.nacionalidad
-        `;
-
-        const [rows] = await db.query(sql, [id]);
-
-        if (rows.length === 0) {
-            return res.status(404).json({
-                error: 'Autor no encontrado',
-                message: 'No existe un autor con ese ID'
-            });
-        }
-
-        const sqlLibros = `
-            SELECT id, titulo, anio_publicacion
-            FROM Libro
-            WHERE autor_id = ?
-            ORDER BY anio_publicacion DESC
-        `;
-
-        const [libros] = await db.query(sqlLibros, [id]);
-
-        res.json({
-            status: 'ok',
-            autor: {
-                ...rows[0],
-                detalleLibros: libros
-            }
-        });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            error: 'Error del servidor',
-            message: 'Error al obtener el autor'
-        });
-    }
-});
 
 router.post('/', verificarToken, verificarAdmin, async (req, res) => {
     const { nombre, apellido, nacionalidad } = req.body;
