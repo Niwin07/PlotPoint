@@ -1,9 +1,9 @@
-const router = require('express').Router();
-const db = require('../../conexion');
+const router = require('express').Router(); // Crear un enrutador de Express
+const db = require('../../conexion'); // Importar la conexión a la base de datos
 
 const BASE_URL = 'http://localhost:3000'; 
 
-const transformarLibro = (libro) => {
+const transformarLibro = (libro) => { // Función para transformar la URL de la portada del libro
     if (libro.url_portada && !libro.url_portada.startsWith('http')) {
         libro.url_portada = `${BASE_URL}${libro.url_portada}`;
     }
@@ -35,7 +35,7 @@ router.get('/', async function(req, res, next) {
                 FROM LibroGenero lg2
                 INNER JOIN Genero g2 ON lg2.genero_id = g2.id
                 WHERE g2.nombre = ?
-            )`;
+            )`; 
             params.push(genero.trim());
         }
 

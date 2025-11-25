@@ -8,7 +8,7 @@ const TOKEN_EXPIRES_HOURS = 6;
 if (!TOKEN_SECRET) {
     console.error('ERROR: TOKEN_SECRET no está definido en las variables de entorno');
 }
-
+// Ruta para login de usuarios
 router.post('/', async function(req, res) {
     let { nombre_usuario, contrasena } = req.body;
 
@@ -27,13 +27,13 @@ router.post('/', async function(req, res) {
     }
 
     try {
-        const esEmail = nombre_usuario.includes('@');
+        const esEmail = nombre_usuario.includes('@'); // Determinar si es un email
 
         const sql = `
             SELECT id, nombre_usuario, contrasena_hash, rol, nombre, correo 
             FROM Usuario 
             WHERE ${esEmail ? 'correo = ?' : 'nombre_usuario = ?'}
-        `;
+        `; // Consulta SQL para obtener el usuario por nombre de usuario o correo
 
         const [usuarios] = await db.query(sql, [nombre_usuario.trim()]);
 
@@ -62,7 +62,7 @@ router.post('/', async function(req, res) {
                 nombre_usuario: usuario.nombre_usuario,
                 rol: usuario.rol || 'usuario'
             }
-        );
+        ); 
         
         res.status(200).json({
             status: "ok",

@@ -6,14 +6,14 @@ const usuariosRouter = require('./usuarios');
 
 const BASE_URL = 'http://localhost:3000'; 
 
-const transformarLibro = (libro) => {
+const transformarLibro = (libro) => { // Función para transformar la URL de la portada del libro
     if (libro.url_portada && !libro.url_portada.startsWith('http')) {
         libro.url_portada = `${BASE_URL}${libro.url_portada}`;
     }
     return libro;
 };
 
-const transformarUsuario = (usuario) => {
+const transformarUsuario = (usuario) => { // Función para transformar la URL del avatar del usuario
     // Asumiendo que tus avatares de usuario también están en /uploads/
     if (usuario.url_avatar && usuario.url_avatar.startsWith('/uploads/')) {
         usuario.url_avatar = `${BASE_URL}${usuario.url_avatar}`;

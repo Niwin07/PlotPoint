@@ -13,7 +13,7 @@ const transformReseñaURLs = (reseña) => {
     }
     return reseña;
 };
-
+// GET /api/reseñas - Listar reseñas (con filtros opcionales)
 router.get('/', async (req, res) => {
     const { libro_id, usuario_id } = req.query;
 
@@ -61,7 +61,7 @@ router.get('/', async (req, res) => {
         });
     }
 });
-
+// GET /api/reseñas/:id - Obtener una reseña por ID
 router.get('/:id', async (req, res) => {
     const { id } = req.params;
 
@@ -96,7 +96,7 @@ router.get('/:id', async (req, res) => {
         });
     }
 });
-
+// POST /api/reseñas - Crear una nueva reseña
 router.post('/', verificarToken, async (req, res) => {
     const { libro_id, puntuacion, contenido } = req.body;
     const usuario_id = req.usuario.id;
@@ -179,7 +179,7 @@ router.post('/', verificarToken, async (req, res) => {
     }
 });
 
-
+// DELETE /api/reseñas/:id - Eliminar una reseña
 router.delete('/:id', verificarToken, async (req, res) => {
     const { id } = req.params;
     const usuario_id = req.usuario.id;
@@ -220,7 +220,7 @@ router.delete('/:id', verificarToken, async (req, res) => {
         });
     }
 });
-
+// GET /api/reseñas/libro/:libro_id/promedio - Obtener estadísticas de reseñas para un libro
 router.get('/libro/:libro_id/promedio', async (req, res) => {
     const { libro_id } = req.params;
 
@@ -251,7 +251,7 @@ router.get('/libro/:libro_id/promedio', async (req, res) => {
         res.json({
             libro_id,
             total_resenas: rows[0].total_resenas,
-            promedio: Math.round(rows[0].promedio * 10) / 10,
+            promedio: Math.round(rows[0].promedio * 10) / 10, 
             minimo: rows[0].minimo,
             maximo: rows[0].maximo
         });
@@ -264,7 +264,7 @@ router.get('/libro/:libro_id/promedio', async (req, res) => {
         });
     }
 });
-
+// GET /api/reseñas/mias - Obtener las reseñas del usuario autenticado
 router.get('/mias', verificarToken, async (req, res) => {
     const usuario_id = req.usuario.id;
 

@@ -15,7 +15,7 @@ const transformComentsURLs = (coments) => {
     return coments;
 };
 
-
+// GET /api/comentarios - Listar comentarios (con filtros opcionales)
 router.get('/', async (req, res) => {
     const { resena_id, usuario_id } = req.query;
 
@@ -63,7 +63,7 @@ router.get('/', async (req, res) => {
         });
     }
 });
-
+// GET /api/comentarios/:id - Obtener un comentario por ID
 router.get('/:id', async (req, res) => {
     const { id } = req.params;
 
@@ -96,7 +96,7 @@ router.get('/:id', async (req, res) => {
         });
     }
 });
-
+// GET /api/comentarios/resena/:resena_id - Obtener comentarios de una reseña
 router.get('/resena/:resena_id', async (req, res) => {
     const { resena_id } = req.params;
 
@@ -135,7 +135,7 @@ router.get('/resena/:resena_id', async (req, res) => {
         });
     }
 });
-
+// POST /api/comentarios - Crear un nuevo comentario
 router.post('/', verificarToken, async (req, res) => {
     const { resena_id, contenido } = req.body;
     const usuario_id = req.usuario.id;
@@ -196,7 +196,7 @@ router.post('/', verificarToken, async (req, res) => {
         });
     }
 });
-
+// DELETE /api/comentarios/:id - Eliminar un comentario
 router.delete('/:id', verificarToken, async (req, res) => {
     const { id } = req.params;
     const usuario_id = req.usuario.id;

@@ -1,8 +1,8 @@
-const router = require('express').Router();
-const db = require('../../conexion');
+const router = require('express').Router(); // Crear un enrutador de Express
+const db = require('../../conexion'); // Importar la conexión a la base de datos
 const verificarToken = require('../middlewares/auth');
 const verificarAdmin = require('../middlewares/admin');
-
+// GET /api/generos - Listar todos los géneros (con búsqueda opcional)
 router.get('/', async (req, res) => {
     const { busqueda } = req.query;
 
@@ -32,7 +32,7 @@ router.get('/', async (req, res) => {
         });
     }
 });
-
+// GET /api/generos/:id - Obtener un género por ID
 router.get('/:id', async (req, res) => {
     const { id } = req.params;
 
@@ -68,7 +68,7 @@ router.get('/:id', async (req, res) => {
         });
     }
 });
-
+// POST /api/generos - Crear un nuevo género
 router.post('/', verificarToken, verificarAdmin, async (req, res) => {
     const { nombre, descripcion } = req.body;
 
@@ -107,7 +107,7 @@ router.post('/', verificarToken, verificarAdmin, async (req, res) => {
         });
     }
 });
-
+// PUT /api/generos/:id - Actualizar un género existente
 router.put('/:id', verificarToken, verificarAdmin, async (req, res) => {
     const { id } = req.params;
     const { nombre, descripcion } = req.body;
@@ -164,7 +164,7 @@ router.put('/:id', verificarToken, verificarAdmin, async (req, res) => {
         });
     }
 });
-
+// DELETE /api/generos/:id - Eliminar un género
 router.delete('/:id', verificarToken, verificarAdmin, async (req, res) => {
     const { id } = req.params;
 

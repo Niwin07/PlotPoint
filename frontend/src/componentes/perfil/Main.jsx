@@ -21,7 +21,7 @@ export default function Main() {
 
     // Obtener la ubicación actual para detectar cambios de ruta
     const [location] = useLocation();
-    
+
     // Estados para subcomponentes
     const [reseñas, setReseñas] = useState([]);
     const [libros, setLibros] = useState([]);
@@ -48,10 +48,26 @@ export default function Main() {
     const [matchPerfil] = useRoute("/perfil/:id");
     const [matchReseñas] = useRoute("/perfil/:id/reseñas");
     const [matchMeGustas] = useRoute("/perfil/:id/megustas");
-    
+
 
     // Determinar si es mi propio perfil
     const esMiPerfil = (miId === parseInt(usuarioId));
+
+    const eliminarReseña = async (idReseña) => {
+        if (!confirm("¿Eliminar reseña?")) return;
+
+        try {
+            await axios.delete(`${BACKEND_URL}/api/resenas/${idReseña}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            // despues de borrar una reseña, volvemos a llamar a la api
+            // para que la lista en pantalla se actualice y desaparezca lo borrado.
+            obtenerReseñas();
+        } catch (error) {
+            alert(error);
+        }
+    }
 
     const obtenerPerfil = async () => {
         // Validar que tenemos un ID de usuario
@@ -67,7 +83,7 @@ export default function Main() {
         try {
             // Obtener datos del perfil
             let perfilData;
-    
+
             if (esMiPerfil) {
                 // Obtener mi propio perfil
                 const response = await axios.get(`${BACKEND_URL}/api/usuarios/perfil`, {
@@ -144,6 +160,8 @@ export default function Main() {
         }
     };
 
+
+
     const toggleSeguir = async () => {
         // Si no hay token, mostrar modal de que debes iniciar sesion o registrarte
         if (!token) {
@@ -179,6 +197,8 @@ export default function Main() {
         }
     };
 
+
+
     useEffect(() => {
         // Cargar el perfil cuando cambie el usuarioId o el token
         obtenerPerfil();
@@ -198,7 +218,7 @@ export default function Main() {
         }
     }, [location, usuarioId]);
 
-    
+
     // Renderizado condicional según el estado de carga y error
     if (loading && !perfil) {
         return <div className="container" style={{ padding: '20px' }}>Cargando perfil...</div>;
@@ -245,22 +265,22 @@ export default function Main() {
             </Route>
 
             <Route path="/perfil/:id/editarperfil">
-                <EditarPerfil 
+                <EditarPerfil
                     obtenerPerfil={obtenerPerfil}
                 />
             </Route>
 
             <Route path="/perfil/:id/reseñas">
-                <ListaReseñas 
+                <ListaReseñas
                     reseñas={reseñas}
                     loading={loadingReseñas}
                     miId={miId}
-                    obtenerReseñas={obtenerReseñas}
+                    eliminarReseña={eliminarReseña}
                 />
             </Route>
 
             <Route path="/perfil/:id/megustas">
-                <MeGustas 
+                <MeGustas
                     libros={libros}
                     loading={loadingLibros}
                 />

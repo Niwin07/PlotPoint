@@ -1,9 +1,9 @@
-const router = require('express').Router();
+const router = require('express').Router(); // Crear un enrutador de Express
 const { hashPass, verificarPass } = require('@damianegreco/hashpass');
-const db = require('../../conexion');
-const fileUpload = require("express-fileupload");
-const path = require('path');
-const fs = require("fs");
+const db = require('../../conexion'); // Importar la conexión a la base de datos
+const fileUpload = require("express-fileupload"); // Middleware para manejo de archivos
+const path = require('path'); // Módulo para manejar rutas de archivos
+const fs = require("fs"); // Sistema de archivos
 
 // Directorio para guardar las fotos de perfil
 const directorio = path.join(__dirname, "..", "..", "uploads", "avatars");
@@ -15,7 +15,7 @@ if (!fs.existsSync(directorio)){
     fs.mkdirSync(directorio, { recursive: true });
 }
 
-const transformPerfilURL = (perfil) => {
+const transformPerfilURL = (perfil) => { // Función para transformar la URL del avatar
     if (perfil.url_avatar && !perfil.url_avatar.startsWith('http')) {
         perfil.url_avatar = `${BASE_URL}${perfil.url_avatar}`;
     }
@@ -327,7 +327,7 @@ router.obtenerPublico = async function(req, res, next) {
             db.query(sqlResenas, [id]),
             db.query(sqlSeguidores, [id]),
             db.query(sqlSeguidos, [id])
-        ]);
+        ]); // Ejecutar todas las consultas en paralelo
 
         if (perfilRows.length === 0) {
             return res.status(404).json({ 
@@ -351,7 +351,7 @@ router.obtenerPublico = async function(req, res, next) {
         });
     }
 };
-
+// DELETE /api/usuarios/perfil/borrar-cuenta - Borrar la cuenta del usuario autenticado
 router.delete('/borrar-cuenta', async function(req, res, next) {
     const id = req.usuario.id;
     try {

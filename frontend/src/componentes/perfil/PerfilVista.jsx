@@ -17,7 +17,7 @@ export default function PerfilVista({ perfil, esMiPerfil, siguiendo, onFollowTog
                         src={perfil.url_avatar ? `${perfil.url_avatar}` : '/src/img/perfil.webp'} 
                         alt={perfil.nombre_usuario ?? perfil.nombre}
                     />
-                    <div className="dot-decoration"></div>
+                    
                 </div>
                 
 

@@ -1,15 +1,15 @@
-const router = require('express').Router();
-const db = require('../../conexion');
-const { hashPass } = require('@damianegreco/hashpass');
+const router = require('express').Router(); // Crear un enrutador de Express
+const db = require('../../conexion'); // Importar la conexión a la base de datos
+const { hashPass } = require('@damianegreco/hashpass'); 
 
-const loginRouter = require('./login');
-const perfilRouter = require('./perfil');
-const adminRouter = require('./admin');
-const verificarToken = require('../middlewares/auth');
+const loginRouter = require('./login'); // Importar el enrutador de login
+const perfilRouter = require('./perfil'); // Importar el enrutador de perfil
+const adminRouter = require('./admin'); // Importar el enrutador de admin
+const verificarToken = require('../middlewares/auth'); // Middleware para verificar token
 
 
 // ========== RUTAS PÚBLICAS ==========
-router.use("/login", loginRouter);
+router.use("/login", loginRouter); // Ruta de login
 
 
 // Registro público de usuario
@@ -113,11 +113,11 @@ router.post('/registro', async function (req, res, next) {
             message: 'Error al registrar usuario' 
         });
     }
-});
+}); 
 
 // ========== RUTAS PROTEGIDAS ==========
-router.use('/perfil', verificarToken, perfilRouter);
-router.use('/admin', verificarToken, adminRouter);
-router.get('/publico/:id', perfilRouter.obtenerPublico);
+router.use('/perfil', verificarToken, perfilRouter); // Rutas de perfil (con autenticación)
+router.use('/admin', verificarToken, adminRouter); // Rutas de admin (con autenticación y verificación de admin)
+router.get('/publico/:id', perfilRouter.obtenerPublico); // Obtener perfil público por ID
 
 module.exports = router;

@@ -143,11 +143,12 @@ export default function EditarPerfil({ obtenerPerfil }) {
     const eliminarCuenta = async () => {
         if (window.confirm('¿Estás seguro de que deseas eliminar tu cuenta?')) {
             try {
-                await axios.delete(`${BACKEND_URL}/api/usuarios/perfil`, {
+                await axios.delete(`${BACKEND_URL}/api/usuarios/perfil/borrar-cuenta`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
                 localStorage.removeItem('token');
+                localStorage.removeItem('usuario');
                 setLocation('/');
             } catch (err) {
                 alert('Error al eliminar cuenta');

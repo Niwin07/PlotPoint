@@ -1,4 +1,4 @@
-const router = require('express').Router();
+const router = require('express').Router(); // Crear un enrutador de Express
 const db = require('../../conexion');
 const verificarToken = require('../middlewares/auth');
 
@@ -18,7 +18,7 @@ const transformUsuarioURL = (usuario) => {
     }
     return usuario;
 };
-
+// Obtener los libros favoritos de un usuario por su ID
 router.get('/usuario/:usuario_id', async (req, res) => {
     const { usuario_id } = req.params;
 
@@ -63,7 +63,7 @@ router.get('/usuario/:usuario_id', async (req, res) => {
         });
     }
 });
-
+//Conseguir los libros mas likeados
 router.get('/libro/gustados', async (req, res) => {
     try {
         const sql = `
@@ -95,7 +95,7 @@ router.get('/libro/gustados', async (req, res) => {
         });
     }
 });
-
+// Obtener los usuarios que le gustaron un libro específico
 router.get('/libro/:libro_id', async (req, res) => {
     const { libro_id } = req.params;
 
@@ -141,7 +141,7 @@ router.get('/libro/:libro_id', async (req, res) => {
         });
     }
 });
-
+// Verificar si un libro es favorito del usuario autenticado
 router.get('/check/:libro_id', verificarToken, async (req, res) => {
     const { libro_id } = req.params;
     const usuario_id = req.usuario.id;
@@ -163,7 +163,7 @@ router.get('/check/:libro_id', verificarToken, async (req, res) => {
         });
     }
 });
-
+// Agregar un libro a favoritos para el usuario autenticado
 router.post('/', verificarToken, async (req, res) => {
     const { libro_id } = req.body;
     const usuario_id = req.usuario.id;
@@ -218,7 +218,7 @@ router.post('/', verificarToken, async (req, res) => {
         });
     }
 });
-
+// Eliminar un libro de favoritos para el usuario autenticado
 router.delete('/:libro_id', verificarToken, async (req, res) => {
     const { libro_id } = req.params;
     const usuario_id = req.usuario.id;
@@ -248,7 +248,7 @@ router.delete('/:libro_id', verificarToken, async (req, res) => {
     }
 });
 
-
+// Obtener los libros favoritos del usuario autenticado
 router.get('/mis-favoritos', verificarToken, async (req, res) => {
     const usuario_id = req.usuario.id;
 

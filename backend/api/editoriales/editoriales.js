@@ -2,7 +2,7 @@ const router = require('express').Router();
 const db = require('../../conexion');
 const verificarToken = require('../middlewares/auth');
 const verificarAdmin = require('../middlewares/admin');
-
+// GET /api/editoriales - Listar todas las editoriales (con búsqueda opcional)
 router.get('/', async (req, res) => {
     const { busqueda } = req.query;
 
@@ -33,7 +33,7 @@ router.get('/', async (req, res) => {
         });
     }
 });
-
+// GET /api/editoriales/:id - Obtener una editorial por ID
 router.get('/:id', async (req, res) => {
     const { id } = req.params;
 
@@ -69,7 +69,7 @@ router.get('/:id', async (req, res) => {
         });
     }
 });
-
+// POST /api/editoriales - Crear una nueva editorial (ADMIN)
 router.post('/', verificarToken, verificarAdmin, async (req, res) => {
     const { nombre, pais } = req.body;
 
@@ -108,6 +108,7 @@ router.post('/', verificarToken, verificarAdmin, async (req, res) => {
         });
     }
 });
+// PUT /api/editoriales/:id - Actualizar una editorial existente (ADMIN)
 router.put('/:id', verificarToken, verificarAdmin, async (req, res) => {
     const { id } = req.params;
     const { nombre, pais } = req.body;
@@ -164,7 +165,7 @@ router.put('/:id', verificarToken, verificarAdmin, async (req, res) => {
         });
     }
 });
-
+// DELETE /api/editoriales/:id - Eliminar una editorial (ADMIN)
 router.delete('/:id', verificarToken, verificarAdmin, async (req, res) => {
     const { id } = req.params;
 

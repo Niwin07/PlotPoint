@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const db = require('../../conexion');
 const verificarToken = require('../middlewares/auth');
-
+// Seguir a un usuario
 router.post('/', verificarToken, async (req, res) => {
     const { seguido_id } = req.body;
     const seguidor_id = req.usuario.id;
@@ -56,7 +56,7 @@ router.post('/', verificarToken, async (req, res) => {
     }
 });
 
-
+// Dejar de seguir a un usuario
 router.delete('/:seguido_id', verificarToken, async (req, res) => {
     const { seguido_id } = req.params;
     const seguidor_id = req.usuario.id;
@@ -85,7 +85,7 @@ router.delete('/:seguido_id', verificarToken, async (req, res) => {
     }
 });
 
-
+// Verificar si el usuario autenticado sigue al usuario
 router.get('/check/:usuario_id', verificarToken, async (req, res) => {
     const { usuario_id } = req.params;
     const seguidor_id = req.usuario.id;
@@ -106,7 +106,7 @@ router.get('/check/:usuario_id', verificarToken, async (req, res) => {
     }
 });
 
-
+// Obtener la lista de usuarios que sigue un usuario dado
 router.get('/:usuario_id/seguidores', async (req, res) => {
     const { usuario_id } = req.params;
 
@@ -140,7 +140,7 @@ router.get('/:usuario_id/seguidores', async (req, res) => {
     }
 });
 
-
+// Obtener los usuarios que un usuario está siguiendo
 router.get('/:usuario_id/seguidos', async (req, res) => {
     const { usuario_id } = req.params;
 

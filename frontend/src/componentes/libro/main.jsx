@@ -225,10 +225,6 @@ export default function Libro() {
                 <ModalNoCuenta onClose={() => setShowModalCuenta(false)} />
             )}
 
-           
-        
-        
-        
         </div>
         </Route>
     );

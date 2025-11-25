@@ -2,7 +2,7 @@ const router = require('express').Router();
 const db = require('../../conexion');
 const verificarToken = require('../middlewares/auth');
 const verificarAdmin = require('../middlewares/admin');
-
+// GET /api/autores - Listar todos los autores (con búsqueda opcional)
 router.get('/', async (req, res) => {
     const { busqueda } = req.query;
 
@@ -45,7 +45,7 @@ router.get('/', async (req, res) => {
         });
     }
 });
-
+// GET /api/autores/:id - Obtener un autor por ID
 router.get('/:id', async (req, res) => {
     const { id } = req.params;
 
@@ -97,7 +97,7 @@ router.get('/:id', async (req, res) => {
         });
     }
 });
-
+// POST /api/autores - Crear un nuevo autor (ADMIN)
 router.post('/', verificarToken, verificarAdmin, async (req, res) => {
     const { nombre, apellido, nacionalidad } = req.body;
 
@@ -130,7 +130,7 @@ router.post('/', verificarToken, verificarAdmin, async (req, res) => {
         });
     }
 });
-
+// PUT /api/autores/:id - Actualizar un autor existente (ADMIN)
 router.put('/:id', verificarToken, verificarAdmin, async (req, res) => {
     const { id } = req.params;
     const { nombre, apellido, nacionalidad } = req.body;
@@ -193,7 +193,7 @@ router.put('/:id', verificarToken, verificarAdmin, async (req, res) => {
     }
 });
 
-
+// DELETE /api/autores/:id - Eliminar un autor (ADMIN)
 router.delete('/:id', verificarToken, verificarAdmin, async (req, res) => {
     const { id } = req.params;
 

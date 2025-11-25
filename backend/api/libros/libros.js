@@ -23,7 +23,7 @@ const transformarLibro = (libro) => {
     }
     return libro;
 };
-
+// GET /api/libros - Listar libros (con filtros opcionales)
 router.get('/', async (req, res) => {
     const { random, promedio, busqueda, autor_id, editorial_id, genero_id } = req.query;
 
@@ -88,7 +88,7 @@ router.get('/', async (req, res) => {
             LEFT JOIN Editorial e ON l.editorial_id = e.id
             LEFT JOIN LibroGenero lg ON l.id = lg.libro_id
             LEFT JOIN Genero g ON lg.genero_id = g.id
-        `;
+        `; 
 
         let conditions = [];
         let params = [];
@@ -130,14 +130,14 @@ router.get('/', async (req, res) => {
         const [libros] = await db.query(sql, params);
 
         const librosFinal = libros.map(libro => {
-            const generos = libro.generos_concatenados
+            const generos = libro.generos_concatenados 
                 ? libro.generos_concatenados.split('|').map(item => {
                     const [id, nombre] = item.split(':');
                     return { id: parseInt(id), nombre };
                 })
                 : [];
 
-            const { generos_concatenados, ...resto } = libro;
+            const { generos_concatenados, ...resto } = libro; //
             return transformarLibro({ ...resto, generos });
         });
 
@@ -155,7 +155,7 @@ router.get('/', async (req, res) => {
         });
     }
 });
-
+// GET /api/libros/:id - Obtener un libro por ID
 router.get('/:id', async (req, res) => {
     const { id } = req.params;
 
@@ -211,15 +211,18 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// IMPORTANTE: fileUpload() aqui es el middleware que intercepta el archivo antes de entrar a la ruta
+// IMPORTANTE: fileUpload() aqui es el middleware que intercepta el archivo antes de entrar a la ruta (Admin)
+// POST /api/libros - Crear un libro (Admin)
 router.post('/', verificarToken, verificarAdmin, fileUpload(), async (req, res) => {
     const { 
         titulo, isbn, sinopsis, paginas, anio_publicacion,
         autor_id, editorial_id
     } = req.body;
 
+    // recuperamos los generos que vienen en un array desde el formulario
     let generos = req.body['generos[]'];
 
+    // aseguramos que generos sea un array
     if (generos && !Array.isArray(generos)) {
         generos = [generos];
     }
@@ -316,7 +319,7 @@ router.post('/', verificarToken, verificarAdmin, fileUpload(), async (req, res) 
     }
 });
 
-// ruta especifica para actualizar SOLO la portada
+// ruta especifica para actualizar SOLO la portada de un libro
 router.post('/:id/upload-portada', verificarToken, verificarAdmin, fileUpload(), async (req, res) => {
     const { id } = req.params;
 
@@ -389,7 +392,7 @@ router.post('/:id/upload-portada', verificarToken, verificarAdmin, fileUpload(),
         });
     }
 });
-
+// PUT /api/libros/:id - Actualizar un libro (Admin)
 router.put('/:id', verificarToken, verificarAdmin, async (req, res) => {
     const { id } = req.params;
     const { 
@@ -519,7 +522,7 @@ router.put('/:id', verificarToken, verificarAdmin, async (req, res) => {
         });
     }
 });
-
+// DELETE /api/libros/:id/delete-portada - Eliminar la portada de un libro (Admin)
 router.delete('/:id/delete-portada', verificarToken, verificarAdmin, async (req, res) => {
     const { id } = req.params;
 
@@ -562,7 +565,7 @@ router.delete('/:id/delete-portada', verificarToken, verificarAdmin, async (req,
         });
     }
 });
-
+// DELETE /api/libros/:id - Eliminar un libro (Admin)
 router.delete('/:id', verificarToken, verificarAdmin, async (req, res) => {
     const { id } = req.params;
 
