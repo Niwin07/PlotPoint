@@ -7,6 +7,7 @@ export default function ModalEditarUsuario({ usuario, alCerrar, alGuardar }) {
   const [error, setError] = useState("");
   const [datos, setDato] = useUsuario();
   const [contrasena2, setContrasena2] = useState("");
+  const [enviando, setEnviando] = useState(false);
 
   useEffect(() => {
     if (usuario) {
@@ -17,7 +18,6 @@ export default function ModalEditarUsuario({ usuario, alCerrar, alGuardar }) {
       setContrasena2("");
     }
   }, [usuario]); 
-
 
   const manejarEnvio = async (e) => {
     e.preventDefault();
@@ -46,12 +46,20 @@ export default function ModalEditarUsuario({ usuario, alCerrar, alGuardar }) {
         datosParaEnviar.contrasena = datos.contrasenaHash;
     }
     
-    const res = await alGuardar(usuario.id, datosParaEnviar);
-    if (res.success) {
-      alert("Usuario actualizado correctamente");
-      alCerrar();
-    } else {
-      setError(res.message || "Error al actualizar el usuario");
+    setEnviando(true);
+
+    try {
+      const res = await alGuardar(usuario.id, datosParaEnviar);
+      if (res.success) {
+        alert("Usuario actualizado correctamente");
+        alCerrar();
+      } else {
+        setError(res.message || "Error al actualizar el usuario");
+      }
+    } catch (err) {
+      setError("Ocurrió un error inesperado");
+    } finally {
+      setEnviando(false);
     }
   };
 
@@ -59,7 +67,7 @@ export default function ModalEditarUsuario({ usuario, alCerrar, alGuardar }) {
     <div className="modal-overlay" onClick={alCerrar}>
       <div className="modal-usuario-simple" onClick={(e) => e.stopPropagation()}>
 
-        <button className="boton-volver" onClick={alCerrar}>VOLVER</button>
+        <button className="boton-volver" onClick={alCerrar} disabled={enviando}>VOLVER</button>
 
         <form onSubmit={manejarEnvio} className="formulario-usuario">
           
@@ -79,6 +87,7 @@ export default function ModalEditarUsuario({ usuario, alCerrar, alGuardar }) {
             value={datos.nombre}
             onChange={(e) => setDato("nombre", e.target.value)}
             className="campo-input"
+            disabled={enviando}
           />
 
           <label className="titulo-campo">Nombre de usuario</label>
@@ -87,6 +96,7 @@ export default function ModalEditarUsuario({ usuario, alCerrar, alGuardar }) {
             value={datos.nombreUsuario}
             onChange={(e) => setDato("nombreUsuario", e.target.value)}
             className="campo-input"
+            disabled={enviando}
           />
 
           <label className="titulo-campo">Correo</label>
@@ -95,6 +105,7 @@ export default function ModalEditarUsuario({ usuario, alCerrar, alGuardar }) {
             value={datos.correo}
             onChange={(e) => setDato("correo", e.target.value)}
             className="campo-input"
+            disabled={enviando}
           />
 
           <label className="titulo-campo">Nueva Contraseña</label>
@@ -105,6 +116,7 @@ export default function ModalEditarUsuario({ usuario, alCerrar, alGuardar }) {
             onChange={(e) => setDato("contrasenaHash", e.target.value)}
             className="campo-input"
             autoComplete="new-password"
+            disabled={enviando}
           />
 
           <label className="titulo-campo">Repetir Nueva Contraseña</label>
@@ -114,10 +126,16 @@ export default function ModalEditarUsuario({ usuario, alCerrar, alGuardar }) {
             onChange={(e) => setContrasena2(e.target.value)}
             className="campo-input"
             autoComplete="new-password"
+            disabled={enviando}
           />
 
-          <button type="submit" className="boton-crear-usuario">
-            Guardar cambios
+          <button 
+            type="submit" 
+            className="boton-crear-usuario"
+            disabled={enviando}
+            style={{ opacity: enviando ? 0.7 : 1, cursor: enviando ? 'not-allowed' : 'pointer' }}
+          >
+            {enviando ? "Guardando..." : "Guardar cambios"}
           </button>
 
         </form>

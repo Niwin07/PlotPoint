@@ -12,6 +12,8 @@ export default function ModalCrearLibro({
   const [datos, setDato] = useLibro();
   const [mostrarDropdownGeneros, setMostrarDropdownGeneros] = useState(false);
   const [archivoPortada, setArchivoPortada] = useState(null);
+  
+  const [enviando, setEnviando] = useState(false);
 
   const manejarCambioImagen = (e) => {
     const archivo = e.target.files[0];
@@ -57,7 +59,7 @@ export default function ModalCrearLibro({
     return genero ? genero.nombre : 'Desconocido';
   };
 
-  const manejarEnvio = (e) => {
+  const manejarEnvio = async (e) => {
     e.preventDefault();
     
     if (!datos.titulo.trim()) {
@@ -97,6 +99,8 @@ export default function ModalCrearLibro({
       return;
     }
 
+    setEnviando(true);
+
     const formData = new FormData();
     formData.append('titulo', datos.titulo.trim());
     formData.append('isbn', datos.isbn.trim());
@@ -111,14 +115,27 @@ export default function ModalCrearLibro({
       formData.append('generos[]', generoId);
     });
 
-    alGuardar(formData);
+    try {
+      const res = await alGuardar(formData);
+      
+      if (res && res.success) {
+        alCerrar();
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Hubo un error al crear el libro.");
+    } finally {
+      setEnviando(false);
+    }
   };
 
   return (
     <div className="modal-overlay-libro" onClick={alCerrar}>
       <div className="modal-libro-container" onClick={(e) => e.stopPropagation()}>
         
-        <button className="boton-volver-libro" onClick={alCerrar}>VOLVER</button>
+        <button className="boton-volver-libro" onClick={alCerrar} disabled={enviando}>
+          VOLVER
+        </button>
 
         <form onSubmit={manejarEnvio}>
           <div className="contenido-modal-libro">
@@ -137,6 +154,7 @@ export default function ModalCrearLibro({
                   accept="image/*" 
                   onChange={manejarCambioImagen}
                   hidden
+                  disabled={enviando}
                 />
               </label>
             </div>
@@ -149,6 +167,7 @@ export default function ModalCrearLibro({
                 onChange={(e) => setDato('titulo', e.target.value)}
                 className="campo-input-libro"
                 placeholder="Ingrese el título del libro"
+                disabled={enviando}
               />
 
               <h2 className="titulo-campo-libro">Autor</h2>
@@ -156,6 +175,7 @@ export default function ModalCrearLibro({
                 value={datos.autorId || ''}
                 onChange={(e) => setDato('autorId', e.target.value)}
                 className="campo-input-libro campo-select-libro"
+                disabled={enviando}
               >
                 <option value="" disabled>Seleccionar autor</option>
                 {autores.map(autor => (
@@ -174,6 +194,7 @@ export default function ModalCrearLibro({
                     onChange={(e) => setDato('anioPublicacion', e.target.value)}
                     className="campo-input-libro campo-pequeno"
                     placeholder="2024"
+                    disabled={enviando}
                   />
                 </div>
                 <div className="columna-libro">
@@ -184,6 +205,7 @@ export default function ModalCrearLibro({
                     onChange={(e) => setDato('paginas', e.target.value)}
                     className="campo-input-libro campo-pequeno"
                     placeholder="123"
+                    disabled={enviando}
                   />
                 </div>
                 <div className="columna-libro">
@@ -194,6 +216,7 @@ export default function ModalCrearLibro({
                     onChange={(e) => setDato('isbn', e.target.value)}
                     className="campo-input-libro"
                     placeholder="978-xxx-xxx-xxx-x"
+                    disabled={enviando}
                   />
                 </div>
               </div>
@@ -206,7 +229,8 @@ export default function ModalCrearLibro({
                   <div className="selector-generos">
                     <div 
                       className="display-generos"
-                      onClick={() => setMostrarDropdownGeneros(!mostrarDropdownGeneros)}
+                      onClick={() => !enviando && setMostrarDropdownGeneros(!mostrarDropdownGeneros)}
+                      style={{ cursor: enviando ? 'not-allowed' : 'pointer' }}
                     >
                       <div className="generos-seleccionados">
                         {datos.generos.length === 0 ? (
@@ -218,6 +242,7 @@ export default function ModalCrearLibro({
                               <button
                                 type="button"
                                 className="boton-eliminar-genero"
+                                disabled={enviando}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   eliminarGenero(generoId);
@@ -260,6 +285,7 @@ export default function ModalCrearLibro({
                     value={datos.editorialId || ''}
                     onChange={(e) => setDato('editorialId', e.target.value)}
                     className="campo-input-libro campo-select-libro"
+                    disabled={enviando}
                   >
                     <option value="" disabled>Seleccionar editorial</option>
                     {editoriales.map(editorial => (
@@ -278,10 +304,19 @@ export default function ModalCrearLibro({
                 className="campo-textarea-libro"
                 rows="5"
                 placeholder="Ingrese la sinopsis del libro"
+                disabled={enviando}
               />
 
-              <button type="submit" className="boton-crear-libro">
-                Crear
+              <button 
+                type="submit" 
+                className="boton-crear-libro"
+                disabled={enviando}
+                style={{ 
+                    opacity: enviando ? 0.7 : 1, 
+                    cursor: enviando ? 'not-allowed' : 'pointer' 
+                }}
+              >
+                {enviando ? "Guardando..." : "Crear"}
               </button>
             </div>
           </div>

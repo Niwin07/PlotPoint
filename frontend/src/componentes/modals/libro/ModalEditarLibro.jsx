@@ -16,6 +16,8 @@ export default function ModalEditarLibro({
   const [mostrarDropdownGeneros, setMostrarDropdownGeneros] = useState(false);
   const [archivoPortada, setArchivoPortada] = useState(null);
 
+  const [enviando, setEnviando] = useState(false);
+
   useEffect(() => {
     if (libro) {
       setDato('id', libro.id);
@@ -103,6 +105,8 @@ export default function ModalEditarLibro({
       return;
     }
 
+    setEnviando(true);
+
     try {
       if (archivoPortada) {
         const formData = new FormData();
@@ -124,10 +128,16 @@ export default function ModalEditarLibro({
         generos: datos.generos
       };
 
-      alGuardar(libroId, datosParaEnviar); 
+      const res = await alGuardar(libroId, datosParaEnviar); 
       
+      if (res && res.success) {
+        alCerrar();
+      }
+
     } catch (err) {
       alert(`Error: ${err.response?.data?.message || err.message}`);
+    } finally {
+      setEnviando(false);
     }
   };
 
@@ -135,7 +145,9 @@ export default function ModalEditarLibro({
     <div className="modal-overlay-libro" onClick={alCerrar}>
       <div className="modal-libro-container" onClick={(e) => e.stopPropagation()}>
         
-        <button className="boton-volver-libro" onClick={alCerrar}>VOLVER</button>
+        <button className="boton-volver-libro" onClick={alCerrar} disabled={enviando}>
+          VOLVER
+        </button>
 
         <form onSubmit={manejarEnvio}>
           <div className="contenido-modal-libro">
@@ -154,6 +166,7 @@ export default function ModalEditarLibro({
                   accept="image/*" 
                   onChange={manejarCambioImagen}
                   hidden
+                  disabled={enviando}
                 />
               </label>
             </div>
@@ -166,6 +179,7 @@ export default function ModalEditarLibro({
                 onChange={(e) => setDato('titulo', e.target.value)}
                 className="campo-input-libro"
                 placeholder="Ingrese el título del libro"
+                disabled={enviando}
               />
 
               <h2 className="titulo-campo-libro">Autor</h2>
@@ -173,6 +187,7 @@ export default function ModalEditarLibro({
                 value={datos.autorId}
                 onChange={(e) => setDato('autorId', parseInt(e.target.value))}
                 className="campo-input-libro campo-select-libro"
+                disabled={enviando}
               >
                 {autores.map(autor => (
                   <option key={autor.id} value={autor.id}>
@@ -190,6 +205,7 @@ export default function ModalEditarLibro({
                     onChange={(e) => setDato('anioPublicacion', e.target.value)}
                     className="campo-input-libro campo-pequeno"
                     placeholder="2024"
+                    disabled={enviando}
                   />
                 </div>
                 <div className="columna-libro">
@@ -200,6 +216,7 @@ export default function ModalEditarLibro({
                     onChange={(e) => setDato('paginas', e.target.value)}
                     className="campo-input-libro campo-pequeno"
                     placeholder="123"
+                    disabled={enviando}
                   />
                 </div>
                 <div className="columna-libro">
@@ -210,6 +227,7 @@ export default function ModalEditarLibro({
                     onChange={(e) => setDato('isbn', e.target.value)}
                     className="campo-input-libro"
                     placeholder="978-xxx-xxx-xxx-x"
+                    disabled={enviando}
                   />
                 </div>
               </div>
@@ -222,7 +240,8 @@ export default function ModalEditarLibro({
                   <div className="selector-generos">
                     <div 
                       className="display-generos"
-                      onClick={() => setMostrarDropdownGeneros(!mostrarDropdownGeneros)}
+                      onClick={() => !enviando && setMostrarDropdownGeneros(!mostrarDropdownGeneros)}
+                      style={{ cursor: enviando ? 'not-allowed' : 'pointer' }}
                     >
                       <div className="generos-seleccionados">
                         {datos.generos.length === 0 ? (
@@ -234,6 +253,7 @@ export default function ModalEditarLibro({
                               <button
                                 type="button"
                                 className="boton-eliminar-genero"
+                                disabled={enviando}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   eliminarGenero(generoId);
@@ -270,6 +290,7 @@ export default function ModalEditarLibro({
                     value={datos.editorialId}
                     onChange={(e) => setDato('editorialId', parseInt(e.target.value))}
                     className="campo-input-libro campo-select-libro"
+                    disabled={enviando}
                   >
                     {editoriales.map(editorial => (
                       <option key={editorial.id} value={editorial.id}>
@@ -287,10 +308,19 @@ export default function ModalEditarLibro({
                 className="campo-textarea-libro"
                 rows="5"
                 placeholder="Ingrese la sinopsis del libro"
+                disabled={enviando}
               />
 
-              <button type="submit" className="boton-editar-libro">
-                Editar
+              <button 
+                type="submit" 
+                className="boton-editar-libro"
+                disabled={enviando}
+                style={{ 
+                    opacity: enviando ? 0.7 : 1, 
+                    cursor: enviando ? 'not-allowed' : 'pointer' 
+                }}
+              >
+                {enviando ? "Guardando..." : "Editar"}
               </button>
             </div>
           </div>

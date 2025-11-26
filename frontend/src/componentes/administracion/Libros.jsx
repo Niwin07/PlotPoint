@@ -34,33 +34,43 @@ export default function Libros({
     // logica central de filtros: se encarga de ordenar y filtrar por categoría.
     // recibe una lista base (que puede venir del buscador de texto o del original)
     const aplicarFiltros = (base) => {
-        const toNum = (x) => Number(x) || 0;
+    const toNum = (x) => Number(x) || 0;
 
-        let temp = [...base]; // copia para no mutar el array original
+    let temp = [...base]; // copia para no mutar
 
-        // filtro por id de genero (categoria)
-        if (filtroCategoria !== "") {
-            temp = temp.filter(l =>
-                l.generos?.some(g => g.id === parseInt(filtroCategoria))
-            );
+    if (filtroCategoria !== "") {
+        temp = temp.filter(l =>
+            l.generos?.some(g => g.id === parseInt(filtroCategoria))
+        );
+    }
+
+    temp.sort((a, b) => {
+        // solo entramos si el usuario seleccionó "recientes" o "antiguos"
+        if (ordenFecha !== "") {
+            let diff = 0;
+            if (ordenFecha === "recientes") {
+                diff = toNum(b.anio_publicacion) - toNum(a.anio_publicacion);
+            } else if (ordenFecha === "antiguos") {
+                diff = toNum(a.anio_publicacion) - toNum(b.anio_publicacion);
+            }
+            
+            // si las fechas son distintas (diff != 0), devolvemos ese resultado 
+            // y TERMINAMOS aca. El orden alfabético no se aplica.
+            if (diff !== 0) return diff;
         }
 
-        // ordenamiento por fecha (numerico)
-        if (ordenFecha === "recientes") {
-            temp.sort((a, b) => toNum(b.anio_publicacion) - toNum(a.anio_publicacion));
-        } else if (ordenFecha === "antiguos") {
-            temp.sort((a, b) => toNum(a.anio_publicacion) - toNum(b.anio_publicacion));
-        }
 
-        // ordenamiento alfabetico por titulo
-        if (ordenLetra === "a-z") {
-            temp.sort((a, b) => a.titulo.localeCompare(b.titulo));
-        } else if (ordenLetra === "z-a") {
-            temp.sort((a, b) => b.titulo.localeCompare(a.titulo));
+        // si no hay filtro de fecha, O si los años son iguales,
+        // el código llega hasta aca y ordena por título.
+        if (ordenLetra === "z-a") {
+            return b.titulo.localeCompare(a.titulo);
+        } else {
+            return a.titulo.localeCompare(b.titulo);
         }
+    });
 
-        return temp;
-    };
+    return temp;
+};
 
     // funcionalidad del buscador de texto:
     // primero filtra por string, y al resultado le aplica los demas filtros (fecha, cat)

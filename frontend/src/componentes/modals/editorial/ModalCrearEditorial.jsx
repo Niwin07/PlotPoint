@@ -1,14 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './ModalEditorial.css';
 import useEditorial from '/src/hooks/useEditorial';
 
 export default function ModalCrearEditorial({ alCerrar, alGuardar }) {
   const [datos, setDato] = useEditorial();
+  const [enviando, setEnviando] = useState(false);
 
-  const manejarEnvio = (e) => {
+  const manejarEnvio = async (e) => {
     e.preventDefault();
     
-    // Validaciones
     if (!datos.nombre.trim()) {
       alert('El nombre de la editorial es obligatorio');
       return;
@@ -18,15 +18,25 @@ export default function ModalCrearEditorial({ alCerrar, alGuardar }) {
       return;
     }
   
-    alGuardar(datos);
+    setEnviando(true);
+
+    try {
+      const res = await alGuardar(datos);
+      if (res && res.success) {
+        alCerrar();
+      }
+    } catch (error) {
+      alert("Ocurrió un error al crear la editorial");
+    } finally {
+      setEnviando(false);
+    }
   };
 
   return (
     <div className="modal-overlay-editorial" onClick={alCerrar}>
       <div className="modal-editorial-container" onClick={(e) => e.stopPropagation()}>
         
-        
-        <button className="boton-volver-editorial" onClick={alCerrar}>VOLVER</button>
+        <button className="boton-volver-editorial" onClick={alCerrar} disabled={enviando}>VOLVER</button>
 
         <form onSubmit={manejarEnvio} className="formulario-editorial">
           <h2 className="titulo-campo-editorial">Editorial</h2>
@@ -36,6 +46,7 @@ export default function ModalCrearEditorial({ alCerrar, alGuardar }) {
             onChange={(e) => setDato('nombre', e.target.value)}
             className="campo-input-editorial"
             placeholder="Editorial"
+            disabled={enviando}
           />
 
           <h2 className="titulo-campo-editorial">Pais</h2>
@@ -45,10 +56,16 @@ export default function ModalCrearEditorial({ alCerrar, alGuardar }) {
             onChange={(e) => setDato('pais', e.target.value)}
             className="campo-input-editorial"
             placeholder="Pais"
+            disabled={enviando}
           />
 
-          <button type="submit" className="boton-crear-editorial">
-            Crear
+          <button 
+            type="submit" 
+            className="boton-crear-editorial"
+            disabled={enviando}
+            style={{ opacity: enviando ? 0.7 : 1, cursor: enviando ? 'not-allowed' : 'pointer' }}
+          >
+            {enviando ? "Guardando..." : "Crear"}
           </button>
         </form>
       </div>
