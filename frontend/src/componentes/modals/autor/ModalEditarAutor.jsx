@@ -15,35 +15,35 @@ export default function ModalEditarAutor({ autor, alCerrar, alGuardar }) {
     }
   }, [autor]);
 
-  const manejarEnvio = async (e) => {
-    e.preventDefault();
-    
-    if (!datos.nombre.trim()) {
-      alert('El nombre es obligatorio');
-      return;
-    }
-    if (!datos.apellido.trim()) {
-      alert('El apellido es obligatorio');
-      return;
-    }
-    if (!datos.nacionalidad.trim()) {
-      alert('La nacionalidad es obligatoria');
-      return;
-    }
+const manejarEnvio = async (e) => {
+  e.preventDefault();
 
-    setEnviando(true);
+  if (!datos.nombre.trim()) {
+    alert('El nombre es obligatorio');
+    return;
+  }
+  if (!datos.apellido.trim()) {
+    alert('El apellido es obligatorio');
+    return;
+  }
+  if (!datos.nacionalidad.trim()) {
+    alert('La nacionalidad es obligatoria');
+    return;
+  }
 
-    try {
-      const res = await alGuardar(datos);
-      if (res && res.success) {
-        alCerrar();
-      }
-    } catch (error) {
-      alert("Ocurrió un error al editar el autor");
-    } finally {
-      setEnviando(false);
+  setEnviando(true);
+
+  try {
+    const res = await alGuardar(datos.id, datos);
+    if (res && res.success) {
+      alCerrar();
     }
-  };
+  } catch (error) {
+    alert("Ocurrió un error al editar el autor");
+  } finally {
+    setEnviando(false);
+  }
+};
 
   return (
     <div className="modal-overlay-autor" onClick={alCerrar}>

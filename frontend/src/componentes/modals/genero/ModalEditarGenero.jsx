@@ -15,30 +15,30 @@ export default function ModalEditarGenero({ genero, alCerrar, alGuardar }) {
   }, [genero]);
 
   const manejarEnvio = async (e) => {
-    e.preventDefault();
-    
-    if (!datos.nombre.trim()) {
-      alert('El nombre del género es obligatorio');
-      return;
-    }
-    if (!datos.descripcion.trim()) {
-      alert('La descripción es obligatoria');
-      return;
-    }
+  e.preventDefault();
 
-    setEnviando(true);
+  if (!datos.nombre.trim()) {
+    alert('El nombre del género es obligatorio');
+    return;
+  }
+  if (!datos.descripcion.trim()) {
+    alert('La descripción es obligatoria');
+    return;
+  }
 
-    try {
-      const res = await alGuardar(datos);
-      if (res && res.success) {
-        alCerrar();
-      }
-    } catch (error) {
-      alert("Ocurrió un error al editar el género");
-    } finally {
-      setEnviando(false);
+  setEnviando(true);
+
+  try {
+    const res = await alGuardar(datos.id, datos);
+    if (res && res.success) {
+      alCerrar();
     }
-  };
+  } catch (error) {
+    alert("Ocurrió un error al editar el género");
+  } finally {
+    setEnviando(false);
+  }
+};
 
   return (
     <div className="modal-overlay-genero" onClick={alCerrar}>

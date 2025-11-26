@@ -19,49 +19,49 @@ export default function ModalEditarUsuario({ usuario, alCerrar, alGuardar }) {
     }
   }, [usuario]); 
 
-  const manejarEnvio = async (e) => {
-    e.preventDefault();
-    setError("");
+const manejarEnvio = async (e) => {
+  e.preventDefault();
+  setError("");
 
-    if (!datos.nombre.trim()) return setError("El nombre real es obligatorio");
-    if (!datos.nombreUsuario.trim()) return setError("El nombre de usuario es obligatorio");
-    if (!datos.correo.trim()) return setError("El correo es obligatorio");
+  if (!datos.nombre.trim()) return setError("El nombre real es obligatorio");
+  if (!datos.nombreUsuario.trim()) return setError("El nombre de usuario es obligatorio");
+  if (!datos.correo.trim()) return setError("El correo es obligatorio");
 
-    const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!regexCorreo.test(datos.correo)) return setError("Correo inválido");
+  const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!regexCorreo.test(datos.correo)) return setError("Correo inválido");
 
-    const datosParaEnviar = {
-      nombre: datos.nombre.trim(),
-      nombre_usuario: datos.nombreUsuario.trim(), 
-      correo: datos.correo.trim(),
-    };
-
-    if (datos.contrasenaHash.trim() !== "") {
-        if (datos.contrasenaHash.length < 6) {
-            return setError("La nueva contraseña debe tener al menos 6 caracteres.");
-        }
-        if (datos.contrasenaHash !== contrasena2) {
-            return setError("Las nuevas contraseñas no coinciden.");
-        }
-        datosParaEnviar.contrasena = datos.contrasenaHash;
-    }
-    
-    setEnviando(true);
-
-    try {
-      const res = await alGuardar(usuario.id, datosParaEnviar);
-      if (res.success) {
-        alert("Usuario actualizado correctamente");
-        alCerrar();
-      } else {
-        setError(res.message || "Error al actualizar el usuario");
-      }
-    } catch (err) {
-      setError("Ocurrió un error inesperado");
-    } finally {
-      setEnviando(false);
-    }
+  const datosParaEnviar = {
+    nombre: datos.nombre.trim(),
+    nombre_usuario: datos.nombreUsuario.trim(), 
+    correo: datos.correo.trim(),
   };
+
+  if (datos.contrasenaHash.trim() !== "") {
+      if (datos.contrasenaHash.length < 6) {
+          return setError("La nueva contraseña debe tener al menos 6 caracteres.");
+      }
+      if (datos.contrasenaHash !== contrasena2) {
+          return setError("Las nuevas contraseñas no coinciden.");
+      }
+      datosParaEnviar.contrasena = datos.contrasenaHash;
+  }
+  
+  setEnviando(true);
+
+  try {
+    const res = await alGuardar(usuario.id, datosParaEnviar);
+    if (res.success) {
+      alert("Usuario actualizado correctamente");
+      alCerrar();
+    } else {
+      setError(res.message || "Error al actualizar el usuario");
+    }
+  } catch (err) {
+    setError("Ocurrió un error inesperado");
+  } finally {
+    setEnviando(false);
+  }
+};
 
   return (
     <div className="modal-overlay" onClick={alCerrar}>

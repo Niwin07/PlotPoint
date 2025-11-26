@@ -15,30 +15,30 @@ export default function ModalEditarEditorial({ editorial, alCerrar, alGuardar })
   }, [editorial]);
 
   const manejarEnvio = async (e) => {
-    e.preventDefault();
-    
-    if (!datos.nombre.trim()) {
-      alert('El nombre de la editorial es obligatorio');
-      return;
-    }
-    if (!datos.pais.trim()) {
-      alert('El país es obligatorio');
-      return;
-    }
+  e.preventDefault();
 
-    setEnviando(true);
+  if (!datos.nombre.trim()) {
+    alert('El nombre de la editorial es obligatorio');
+    return;
+  }
+  if (!datos.pais.trim()) {
+    alert('El país es obligatorio');
+    return;
+  }
 
-    try {
-      const res = await alGuardar(datos);
-      if (res && res.success) {
-        alCerrar();
-      }
-    } catch (error) {
-      alert("Ocurrió un error al editar la editorial");
-    } finally {
-      setEnviando(false);
+  setEnviando(true);
+
+  try {
+    const res = await alGuardar(datos.id, datos);
+    if (res && res.success) {
+      alCerrar();
     }
-  };
+  } catch (error) {
+    alert("Ocurrió un error al editar la editorial");
+  } finally {
+    setEnviando(false);
+  }
+};
 
   return (
     <div className="modal-overlay-editorial" onClick={alCerrar}>
