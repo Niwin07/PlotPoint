@@ -7,32 +7,16 @@ import '/src/componentes/perfil/EditarPerfil.css';
 
 const BACKEND_URL = 'https://plotpoint-production.up.railway.app';
 
-export default function EditarPerfil({ obtenerPerfil }) {
+export default function EditarPerfil({ perfil }) {
     const [usuario, setUsuario] = useUsuario();
     const [previewUrl, setPreviewUrl] = useState(null);
     const [showModal, setShowModal] = useState(false);
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+
     const token = localStorage.getItem('token');
     const [, setLocation] = useLocation();
-
-    const obtenerDatosUsuario = async () => {
-        try {
-            const response = await axios.get(`${BACKEND_URL}/api/usuarios/perfil`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-
-            const data = response.data;
-            setUsuario('id', data.id || '');
-            setUsuario('nombre', data.nombre || '');
-            setUsuario('correo', data.correo || '');
-            setUsuario('biografia', data.biografia || '');
-            setUsuario('urlAvatar', data.url_avatar || '');
-        } catch (err) {
-            setError('Error al cargar perfil');
-            console.error(err);
-        }
-    };
 
     const subirAvatar = async (file) => {
         try {
@@ -40,8 +24,8 @@ export default function EditarPerfil({ obtenerPerfil }) {
             formData.append('avatar', file);
 
             const response = await axios.post(
-                `${BACKEND_URL}/api/usuarios/perfil/upload-avatar`, 
-                formData, 
+                `${BACKEND_URL}/api/usuarios/perfil/upload-avatar`,
+                formData,
                 { headers: { 'Authorization': `Bearer ${token}` } }
             );
 
@@ -124,12 +108,7 @@ export default function EditarPerfil({ obtenerPerfil }) {
             );
 
             alert('Perfil actualizado exitosamente!');
-            
-            // Actualizar perfil en el componente padre
-            if (obtenerPerfil) {
-                await obtenerPerfil();
-            }
-            
+
             setLocation(`/perfil/${usuario.id}`);
         } catch (err) {
             console.error('Error:', err);
@@ -169,7 +148,11 @@ export default function EditarPerfil({ obtenerPerfil }) {
     };
 
     useEffect(() => {
-        obtenerDatosUsuario();
+        setUsuario('id', perfil.id || '');
+        setUsuario('nombre', perfil.nombre || '');
+        setUsuario('correo', perfil.correo || '');
+        setUsuario('biografia', perfil.biografia || '');
+        setUsuario('urlAvatar', perfil.url_avatar || '');
     }, []);
 
     useEffect(() => {

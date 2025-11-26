@@ -262,7 +262,7 @@ export default function Main() {
 
             <Route path="/perfil/:id/editarperfil">
                 <EditarPerfil 
-                    obtenerPerfil={obtenerPerfil}
+                    perfil={perfil}
                 />
             </Route>
 

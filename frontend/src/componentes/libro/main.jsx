@@ -150,7 +150,7 @@ export default function Libro() {
                 }
             );
 
-            // Refrescar las reseñas y el detalle del libro
+            // Refrescar las reseñas y el promedio del libro (lamentablemente esta ligado a obtener toda la informacion del libro)
             obtenerResenas(libroId);
             obtenerLibro(libroId);
 

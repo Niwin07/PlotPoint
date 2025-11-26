@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 export default function FormularioComentario({ guardarComentario }) {
-    const [contenido, setContenido] = useState("");
+    const [contenido, setContenido] = useState();
 
     const guardar = (e) => {
         e.preventDefault();
