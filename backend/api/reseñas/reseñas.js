@@ -97,6 +97,7 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+
 router.post('/', verificarToken, async (req, res) => {
     const { libro_id, puntuacion, contenido } = req.body;
     const usuario_id = req.usuario.id;

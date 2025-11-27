@@ -27,6 +27,7 @@
     color: var(--texto);
     padding: 1rem 0;
     font-weight: 500;
+    max-width: 220px;
 }
 
 .footer .box-footer .box-info a i {

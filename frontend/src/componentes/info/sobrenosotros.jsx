@@ -66,7 +66,7 @@ const SobreNosotros = () => {
                                 ¿Qué tecnologías usan para PlotPoint?
                             </h1>
                             <p class="respuesta">
-                                Nuestro stack es MERN, que incluye MySQL, Express, React y Node.js. Esto nos permite ofrecer una experiencia rápida, moderna y segura.
+                                Nuestro stack tecnológico incluye MySQL, Express, React y Node.js. Esto nos permite ofrecer una experiencia rápida, moderna y segura.
                             </p>
                         </div>
                         <div class="box-preguntas">

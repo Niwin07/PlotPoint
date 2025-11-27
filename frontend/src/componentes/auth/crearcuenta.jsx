@@ -6,6 +6,7 @@ export default function CrearCuenta({ registrar, mensaje }) {
     const [usuario, setUsuario] = useUsuario();
     const [terminos, setTerminos] = useState(false);
     const [errores, setErrores] = useState({});
+    const [pendiente, setPendiente] = useState(false);
 
 
     const handleCheck = (e) => {
@@ -16,7 +17,7 @@ export default function CrearCuenta({ registrar, mensaje }) {
         }
     };
 
-    const validar = (e) => {
+    const validar = async (e) => {
         e.preventDefault();
 
         let temp = {};
@@ -36,8 +37,10 @@ export default function CrearCuenta({ registrar, mensaje }) {
         setErrores(temp);
 
         if (Object.keys(temp).length === 0) {
+            setPendiente(true);
             console.log('Datos válidos:', usuario);
-            registrar(usuario);
+            await registrar(usuario);
+            setPendiente(false);
         }
     };
 
@@ -98,7 +101,7 @@ export default function CrearCuenta({ registrar, mensaje }) {
 
                         {mensaje && <span className="error">{mensaje}</span>}
 
-                        <input type="submit" className="btn" value="REGISTRARSE" />
+                        <input type="submit" className="btn" value={pendiente ? "Registrando..." : "Registrarse"} disabled={pendiente} />
                         <p>¿Ya tienes una cuenta? <span><Link href={"/iniciarsesion"}>Iniciar sesión</Link></span></p>
                     </div>
                 </form>

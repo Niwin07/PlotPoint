@@ -5,8 +5,9 @@ import { Link } from "wouter";
 export default function IniciarSesion({ login, mensaje }) {
   const [usuario, setUsuario] = useUsuario();
   const [errores, setErrores] = useState({});
+  const [pendiente, setPendiente] = useState(false);
 
-  const validar = (e) => {
+  const validar = async (e) => {
     e.preventDefault();
 
     let temp = {};
@@ -19,7 +20,10 @@ export default function IniciarSesion({ login, mensaje }) {
 
     setErrores(temp);
 
-    if (Object.keys(temp).length === 0) login(usuario);
+    if (Object.keys(temp).length === 0) 
+      setPendiente(true);
+      await login(usuario);
+      setPendiente(false);
   };
 
   return (
@@ -52,7 +56,7 @@ export default function IniciarSesion({ login, mensaje }) {
               {errores.contrasenaHash && <span className="error">{errores.contrasenaHash}</span>}
             </div>
 
-            <input type="submit" value="Continuar" className="btn" />
+            <input type="submit" value= {pendiente ? "Iniciando..." : "Continuar"} disabled={pendiente} className="btn" />
             {mensaje && <p className="error">{mensaje}</p>}
 
             <p>¿No tienes una cuenta? <span><Link href={"/registro"}>Crear cuenta</Link></span></p>
