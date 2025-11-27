@@ -12,10 +12,6 @@ export default function ModalCalificar({ cerrarModal, guardarResena }) {
 
     const guardar = async (e) => {
         e.preventDefault();
-        console.log(token)
-
-      
-        
         setPendiente(true);
         
         const resena = {
@@ -23,10 +19,15 @@ export default function ModalCalificar({ cerrarModal, guardarResena }) {
             contenido
         };
         
-        await guardarResena(resena);
+        const exito = await guardarResena(resena);
+        
         setPendiente(false);
-        setPuntuacion(0);
-        setContenido("");
+
+        if (exito) {
+            setPuntuacion(0);
+            setContenido("");
+            cerrarModal(); 
+        }
     };
 
     return (

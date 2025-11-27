@@ -125,7 +125,7 @@ export default function Libro() {
         // Validaciones básicas
         if (datos.puntuacion === 0 || datos.contenido.trim().length < 10) {
             alert("La puntuación es requerida y el contenido debe tener al menos 10 caracteres");
-            return;
+            return false;
         }
 
         if (datos.contenido.trim().length > 1000) {
@@ -157,6 +157,7 @@ export default function Libro() {
             // Cerrar el modal y mostrar mensaje de éxito
             setShowModal(false);
             alert("Reseña publicada exitosamente");
+            return true;
         } catch (err) {
             //Manejar errores específicos
             console.error("Error:", err);
@@ -169,6 +170,7 @@ export default function Libro() {
             } else {
                 alert("Error al publicar la reseña");
             }
+            return false;
         }
     };
 
